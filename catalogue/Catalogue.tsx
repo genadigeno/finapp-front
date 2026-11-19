@@ -1,0 +1,212 @@
+// The component catalogue (P18-TSK-007): every design-system component, with representative props, on
+// one page - built for production and served with the real CSP, so axe and the browser judge what
+// customers will get.
+//
+// These values are DEMONSTRATION props for a test page - never product data. The catalogue is a separate
+// build (vite.catalogue.config.ts) and never part of the application's bundle.
+import { Button, Card, Stack, Text, Title } from '@mantine/core';
+import { IconArrowsExchange, IconCreditCard, IconHome, IconShieldLock, IconWallet } from '@tabler/icons-react';
+import { useState } from 'react';
+import { ApiError } from '../src/platform/api/api-error.ts';
+import {
+  BalanceTriplet,
+  BusinessDate,
+  ConfirmDangerous,
+  CorrelationReference,
+  Countdown,
+  CROSS_BORDER_STATUS,
+  CustomerShell,
+  EmptyState,
+  ErrorExplained,
+  FeatureUnavailable,
+  KYC_STATUS,
+  LoadingState,
+  Money,
+  MoneyInput,
+  parseMoneyInput,
+  Rate,
+  ResultPanel,
+  ReviewPanel,
+  SessionExpiring,
+  StatusChip,
+  StepUpDialog,
+  TextButton,
+  Timestamp,
+  TRANSFER_STATUS,
+  UnknownOutcome,
+  WITHDRAWAL_STATUS,
+  Wizard,
+  type NavItem,
+  type ParsedMoneyInput,
+} from '../src/design-system/index.ts';
+
+const NOW = Date.parse('2026-11-19T12:00:00Z');
+const CORRELATION = '0190a3c1-1111-7222-8333-444455556666';
+
+const NAVIGATION: NavItem[] = [
+  { label: 'Home', href: '#home', icon: IconHome, active: true },
+  { label: 'Accounts', href: '#accounts', icon: IconWallet },
+  { label: 'Move money', href: '#move', icon: IconArrowsExchange },
+  { label: 'Credit', href: '#credit', icon: IconCreditCard },
+  { label: 'Security', href: '#security', icon: IconShieldLock },
+];
+
+const STALE = new ApiError({
+  kind: 'problem',
+  method: 'POST',
+  route: '/v1/me/fx/conversions',
+  status: 409,
+  code: 'fx.QuoteExpired',
+  correlationId: CORRELATION,
+});
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card withBorder padding="lg" radius="md" component="section" aria-label={title}>
+      <Stack gap="md">
+        <Title order={2}>{title}</Title>
+        {children}
+      </Stack>
+    </Card>
+  );
+}
+
+export function Catalogue() {
+  const [stepUpOpen, setStepUpOpen] = useState(false);
+  const [dangerOpen, setDangerOpen] = useState(false);
+  const [amount, setAmount] = useState('1,250.505');
+  const [parsed, setParsed] = useState<ParsedMoneyInput | undefined>(undefined);
+
+  return (
+    <CustomerShell
+      navigation={NAVIGATION}
+      account={<TextButton onClick={() => undefined}>Sign out</TextButton>}
+      banner={<SessionExpiring remainingMs={95_000} onStay={() => undefined} />}
+    >
+      <Stack gap="xl">
+        <Title order={1}>Component catalogue</Title>
+
+        <Section title="Money and rates">
+          <Text>
+            Euro: <Money amount="1234.5" currency="EUR" /> · Yen: <Money amount="98000" currency="JPY" /> · Dinar:{' '}
+            <Money amount="12.125" currency="BHD" /> · Negative: <Money amount="-42.10" currency="GBP" /> · Unreadable:{' '}
+            <Money amount="12,5" currency="EUR" />
+          </Text>
+          <Text>
+            Large: <Money amount="12345678901234567890.12" currency="EUR" size="lg" />
+          </Text>
+          <Text>
+            Rate: <Rate rate="1.08234" source="EUR" destination="USD" />
+          </Text>
+          <BalanceTriplet
+            currency="EUR"
+            available="1180.25"
+            settled="1250.25"
+            holds="70.00"
+            asOf="2026-11-19T12:00:00Z"
+          />
+        </Section>
+
+        <Section title="Entering an amount">
+          <MoneyInput
+            label="Amount to send"
+            description="Up to 2 decimals"
+            value={amount}
+            onChange={setAmount}
+            currency="EUR"
+            problem={parsed !== undefined && !parsed.ok ? parsed.problem : undefined}
+          />
+          <div>
+            <Button variant="default" onClick={() => setParsed(parseMoneyInput(amount, 'EUR', 'en-GB'))}>
+              Check amount
+            </Button>
+          </div>
+        </Section>
+
+        <Section title="Statuses">
+          <Stack gap="xs" align="flex-start">
+            <StatusChip value="COMPLETED" map={TRANSFER_STATUS} />
+            <StatusChip value="INITIATED" map={TRANSFER_STATUS} />
+            <StatusChip value="FAILED" map={TRANSFER_STATUS} />
+            <StatusChip value="HELD" map={WITHDRAWAL_STATUS} />
+            <StatusChip value="UNKNOWN" map={WITHDRAWAL_STATUS} />
+            <StatusChip value="DELIVERED" map={CROSS_BORDER_STATUS} />
+            <StatusChip value="PENDING_DECISION" map={KYC_STATUS} />
+            <StatusChip value="SOMETHING_NEW" map={TRANSFER_STATUS} />
+          </Stack>
+        </Section>
+
+        <Section title="Dates and time">
+          <Text>
+            Value date: <BusinessDate value="2026-11-20" /> · Created:{' '}
+            <Timestamp value="2026-11-19T12:00:00Z" withZone />
+          </Text>
+          <Text>
+            Quote: <Countdown expiresAt="2026-11-19T12:00:45Z" now={() => NOW} /> · Old quote:{' '}
+            <Countdown expiresAt="2026-11-19T11:59:00Z" now={() => NOW} />
+          </Text>
+          <CorrelationReference correlationId={CORRELATION} />
+        </Section>
+
+        <Section title="States">
+          <LoadingState rows={2} />
+          <EmptyState title="No transfers yet">When you send money, it will appear here.</EmptyState>
+          <ErrorExplained error={STALE} onRetry={() => undefined} />
+          <FeatureUnavailable correlationId={CORRELATION} />
+          <UnknownOutcome correlationId={CORRELATION} onCheck={() => undefined} onSendSame={() => undefined} />
+        </Section>
+
+        <Section title="Sending money">
+          <Wizard steps={['Recipient', 'Amount', 'Review']} current={2}>
+            <ReviewPanel
+              title="Review your transfer"
+              rows={[
+                { label: 'To', value: 'Savings account' },
+                { label: 'Amount', value: <Money amount="250.00" currency="EUR" />, emphasis: true },
+                { label: 'Fee', value: <Money amount="0.00" currency="EUR" />, emphasis: true },
+              ]}
+              notice={<Text size="sm">Transfers between your own accounts arrive immediately.</Text>}
+              onConfirm={() => undefined}
+              onBack={() => undefined}
+            />
+          </Wizard>
+          <ResultPanel kind="succeeded" title="Money sent" correlationId={CORRELATION}>
+            €250.00 is on its way to Savings account.
+          </ResultPanel>
+          <ResultPanel kind="pending" title="Your payment is being processed">
+            We will update the status here when the bank confirms it.
+          </ResultPanel>
+          <ResultPanel kind="refused" title="This could not be done">
+            Nothing was changed.
+          </ResultPanel>
+          <ResultPanel kind="unknown" title="We are checking whether this went through" />
+        </Section>
+
+        <Section title="Dialogs">
+          <div>
+            <Button onClick={() => setStepUpOpen(true)}>Open step-up dialog</Button>
+          </div>
+          <div>
+            <Button color="red" variant="light" onClick={() => setDangerOpen(true)}>
+              Open close-wallet confirmation
+            </Button>
+          </div>
+          <StepUpDialog
+            opened={stepUpOpen}
+            onSubmit={async () => setStepUpOpen(false)}
+            onCancel={() => setStepUpOpen(false)}
+          />
+          <ConfirmDangerous
+            opened={dangerOpen}
+            title="Close this wallet?"
+            confirmLabel="Close wallet"
+            onConfirm={() => setDangerOpen(false)}
+            onCancel={() => setDangerOpen(false)}
+          >
+            <Text>The wallet must be empty. Closing it cannot be undone.</Text>
+          </ConfirmDangerous>
+        </Section>
+      </Stack>
+    </CustomerShell>
+  );
+}

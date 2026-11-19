@@ -1,0 +1,157 @@
+# The Customer Application's supply chain (ADR-F03; P18-TSK-001, -009). Adapted from
+# finapp-admin-panel/.github/workflows/ci.yml (ADR-F08): every action is pinned by commit SHA (the console's
+# pins); the token is read-only; installs come from the lockfile.
+name: ci
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install exactly the lockfile
+        run: npm ci --ignore-scripts
+
+      - name: Pins match the lockfile
+        run: npm run check:pins
+
+      - name: Licence policy
+        run: npm run check:licences
+
+      - name: The client matches the pinned backend contract
+        run: npm run check:contract
+
+      - name: Audit - anything that ships, at any severity
+        run: npm audit --omit=dev --audit-level=low
+
+      - name: Audit - development tooling, high and critical
+        run: npm audit --audit-level=high
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint (money, injection, storage and module-boundary rules)
+        run: npm run lint
+
+      - name: Formatting
+        run: npm run format:check
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: The bundle carries no source map and no test double, within budget
+        run: npm run check:bundle
+
+      - name: Two builds are byte-identical
+        run: npm run check:reproducible
+
+      - name: SBOM (CycloneDX, shipped dependencies)
+        run: npm run sbom
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: customer-web-${{ github.sha }}
+          path: |
+            dist/
+            sbom.cdx.json
+          if-no-files-found: error
+
+  image:
+    # The finapp-customer-web image (P18-TSK-009): built from the Dockerfile with the CLI's own buildx - no
+    # third-party action - and kept as an OCI archive with this commit's CycloneDX SBOM. It is NOT pushed or
+    # signed here: admission trusts an environment's authority (finapp deploy/admission), so signing,
+    # attesting and the Argo application are finapp's delivery's (docs/FINAPP_BACKEND_WORK.md B1.2).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install exactly the lockfile (for the SBOM)
+        run: npm ci --ignore-scripts
+
+      - name: SBOM (CycloneDX, shipped dependencies)
+        run: npm run sbom
+
+      - name: Build the image as an OCI archive
+        run: |
+          docker buildx create --use --name customer-web
+          docker buildx build \
+            --label org.opencontainers.image.revision=${{ github.sha }} \
+            --output type=oci,dest=finapp-customer-web.oci.tar \
+            .
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: finapp-customer-web-image-${{ github.sha }}
+          path: |
+            finapp-customer-web.oci.tar
+            sbom.cdx.json
+          if-no-files-found: error
+
+  catalogue:
+    # Every design-system component and the application's start page, built for production and served with
+    # the real headers: axe (WCAG 2.2 AA, no serious or critical) and the CSP with Trusted Types, in both
+    # themes, on a desktop and a phone viewport (P18-TSK-007).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install exactly the lockfile
+        run: npm ci --ignore-scripts
+
+      - name: Install the pinned Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Catalogue - accessibility and content security policy
+        run: npm run test:catalogue
+
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

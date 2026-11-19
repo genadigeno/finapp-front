@@ -1,0 +1,165 @@
+# Phase 18 Plan — Customer Application
+
+**Status: DRAFT — Phase 18 is `PLANNED`; its entry gate has not been run.** Written by `P18-DOC-001` (2026-11-19) after the
+owner approved the blueprint's decisions D-A…D-H ("Approve all"). Nothing here changes `finapp`'s phases, tasks, waves or
+milestones: Phase 16 is `IN_REVIEW` there and Phase 17 (the Operator Console) is `PLANNED` with its foundation built ahead of
+it. The entry gate (`P18-INIT`) reviews this plan against the code as it then stands, corrects it, accepts ADR-F01…F08,
+registers the threats of §6, and marks the first Stage 2 task `READY`. Until then every task is `PLANNED`, except the Stage 1
+tasks D-A allows in this repository (§2).
+
+Source: the owner's brief of 2026-11-19 and the blueprint written in answer to it
+([`CUSTOMER_APP_BLUEPRINT.md`](CUSTOMER_APP_BLUEPRINT.md)). This plan carries the blueprint into the phase's record; **where
+the two differ, this plan is right.** The blueprint keeps the analysis (personas, journeys, screen inventory, capability matrix,
+diagrams); this plan keeps scope, stages, tasks, gates and decisions.
+
+Inspected: `finapp` master `5227f57e2` (2026-11-17); `finapp-admin-panel` master `5cd1d5b`. File references are relative to
+the `finapp` repository's root unless they name this one.
+
+---
+
+## 1. Objective and scope
+
+Give individuals and business registrants a consumer-grade web application to register, verify, hold multi-currency money,
+see it, move it, borrow, and manage their security and consents — **on the customer surface `finapp` already serves**, with
+every missing capability closed in its owning module, never simulated.
+
+**In scope** (blueprint §5, §14): sign-in, registration, MFA enrolment and step-up, sessions, consents, KYC; organisation
+registration and KYB ownership declaration; wallets, balances, statements, history; beneficiaries, internal transfers, top-up,
+payment methods, withdrawals, FX conversion, cross-border payments, receipts; credit profile and decisions, loans (instalment,
+revolving), BNPL servicing, checkout confirmation; security centre, password, profile.
+
+**Excluded (D-H)** until backend capabilities exist: card issuing (external, ADR-0059 §5), investments (no capability),
+scheduled payments, notifications, support and complaints. Credit, lending and BNPL are built but answer `ProductNotOffered` in
+production; offering them is a business decision, not this phase's.
+
+**Not in this phase:** organisation members, mandates and "act as organisation" (G-09, an epic of its own); native mobile
+applications; a PWA or service worker; marketing pages.
+
+## 2. Governance (D-A)
+
+- Phase 18 of the `finapp` programme, governed **here**: this plan, [`BACKLOG.md`](BACKLOG.md),
+  [`DECISIONS.md`](DECISIONS.md), [`adr/`](adr/README.md) (`ADR-F…`), [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md)
+  (`DOD-CUST`).
+- Frontend tasks are `P18-TSK-0xx`; `finapp` tasks are `P18-TSK-1xx`, written for `finapp`'s team in
+  [`FINAPP_BACKEND_WORK.md`](FINAPP_BACKEND_WORK.md). They enter `finapp`'s backlog, under its process, when the owner
+  schedules them (D-G).
+- **Pre-phase allowance.** `P18-TSK-001`…`-009` (Stage 1) may proceed before the phase opens, in this repository only. They
+  change nothing in `finapp` and consume only its published contract. Their completion is recorded at `P18-INIT`. Everything
+  that touches `finapp`'s code or `deploy/` waits for the owner to schedule it there.
+- `finapp`'s rule of one phase `IN_PROGRESS` is respected: Phase 18 opens only after the owner sequences it behind Phase 16
+  and Phase 17.
+
+## 3. Stages
+
+| Stage | Objective | Frontend tasks | Backend dependencies | Exit |
+|---|---|---|---|---|
+| **0 Discovery** | Approved architecture | `P18-DOC-001` | none | D-A…D-H decided ✅ (2026-11-19); this plan, backlog, ADRs, DoD, backend handoff written ✅ |
+| **1 Foundation** | Buildable, gated, empty shell | `P18-TSK-001`…`-009` | **none** (G-14 improves typing, does not block) | §4 |
+| **2 Identity & onboarding** | Register, sign in, step up, consent, KYC; KYB for registrants | `-010`…`-016` | **G-04, G-15** (hard); G-03 (recovery and verification screens ship only when it lands); G-08, G-07 | E2E 1–4, 12 against a real `finapp` |
+| **3 Core banking** | See my money | `-017`…`-020` | G-01, G-02 (degrade honestly if absent); G-05, G-06 optional | E2E 8, 10 |
+| **4 Money movement** | Move money safely | `-021`…`-027` | G-12; G-10 for card top-up; G-01 lists | E2E 5–7, 9, 11 |
+| **5 Credit** | Borrow and repay | `-028`…`-031` | product offering (business); G-13 dispute read | offer and terms-hash journeys; MFA paths |
+| **6 Self-service** | Manage myself | `-032`…`-035` | G-11; G-03; G-13 | security-centre journeys |
+| **7 Production readiness** | Release | `-036`…`-040` | the public-edge route deployed to staging (G-15) | exit review |
+
+Stage details, screens and journeys: blueprint §4, §6, §14, §18.
+
+## 4. Stage 1 — Foundation (full fields)
+
+Every Stage 1 task: DoD `DOD-CUST`; this repository only; no backend change; no application screen beyond the shell and the
+catalogue.
+
+| Task | Delivers | Acceptance (blueprint §22 item) |
+|---|---|---|
+| `P18-TSK-001` Repository, toolchain and supply-chain gates | `package.json` with exact pins and committed lock file; Node engine pin; TypeScript strict; Prettier; licence allow-list check; `npm audit` policy; gitleaks; SBOM; `npm run verify` composing every gate; reproducible build check | 1 |
+| `P18-TSK-002` Contract pin and generated types | `contract/openapi.json` pinned by `finapp` commit + sha256 (`contract/SOURCE.json`); `contract:pull`, `contract:generate`, `contract:check`; `src/generated/finapp-api.ts` committed; drift fails CI | 2 |
+| `P18-TSK-003` API platform | openapi-fetch client (same-origin `/v1`, `X-Finapp-Request` header, client correlation id); `ApiError` with a kind per §11.1 class (validation, unauthenticated, assurance, forbidden, not-found, conflict, in-progress, rate-limited, unavailable, stale, unknown-outcome, defect); problem-code catalogue; `IdempotencyIntent`; read retry with backoff; command timeout → unknown outcome | 3, 4 |
+| `P18-TSK-004` Session platform | carrier-agnostic session port: cookie carrier (ADR-F02) and in-memory fallback (ADR-C131) behind one interface; standing store fed by `GET /v1/me`; step-up flow (`AssuranceRequired` → dialog → rotate → replay once); idle-expiry warning; cross-tab sign-out by `BroadcastChannel` | 3, 6 |
+| `P18-TSK-005` Design-system core | customer theme and tokens (generated stylesheet, no runtime style injection); `Money`, `MoneyInput`, `Rate`, `BalanceTriplet`, `StatusChip` (exhaustive maps, unknown → "in progress"), `Countdown`, `CorrelationReference`; states `Loading`, `Empty`, `ErrorExplained`, `FeatureUnavailable`, `UnknownOutcome`, `StepUpDialog`, `SessionExpiring`; `Wizard`, `ReviewPanel`, `ResultPanel`, `ConfirmDangerous`; scale tests 0/2/3 | 5, 6 |
+| `P18-TSK-006` Shell and routing | TanStack Router with typed routes and module code-splitting; route guards (session, standing, feature availability); route-level error boundaries; `returnTo` allow-list; FormatJS with an English catalogue; telemetry skeleton with an allow-list schema and spy transport | 6, 8 |
+| `P18-TSK-007` Component catalogue and CSP proof | catalogue of every design-system component in light and dark; Playwright run with axe and the production CSP + Trusted Types; zero violations required; visual baselines | 7 |
+| `P18-TSK-008` Lint as control | ESLint rules: money-as-number, injection sinks, storage of query data, `localStorage` beyond the allow-listed key, cross-module imports, runtime-style Mantine components; `tests/eslint-guards` proving each rule fails on a planted violation; storage test | 5, 9 |
+| `P18-TSK-009` Packaging and CI | `config/customer-web-headers.mjs` (the CSP of ADR-F07 as data, for `finapp`'s edge), `config/nginx.conf`, Dockerfile (nginx-unprivileged, read-only root), bundle scan (no source maps, no MSW in `dist/`), CI workflow running `verify`, catalogue and image build; README with commands | 1, 10, 11 |
+
+Item 10 of §22 (the documents) is delivered by `P18-DOC-001`. Item 11 (no mock data outside tests; no screen claiming a missing
+capability) is checked across every task.
+
+**Sequence:** `001` → `002` → (`003`, `005`, `008` in parallel) → `004` → `006` → `007` → `009`.
+
+### 4.1 Stage 1 record (2026-11-19, the owner's "Start Stage 1")
+
+Built in this repository under D-A's pre-phase allowance; `finapp` unchanged. Completion is recorded at `P18-INIT`.
+
+| §22 item | Evidence |
+|---|---|
+| 1 `npm run verify` green, reproducible | `verify` passes: pins, licences (47 shipped / 254 tooling packages), contract, typecheck, lint, format, 186 tests, build, bundle scan. `check:reproducible`: two builds byte-identical. `npm audit --omit=dev`: 0 vulnerabilities |
+| 2 Contract pinned, drift fails | `contract/SOURCE.json` pins finapp `5227f57e2627eb040f694487b31cea83709ef831` by sha256; `tests/contract-pin.test.ts` proves removing `ProfileResponse.kind` breaks the build |
+| 3 `ApiError` classes; no auto-retry; unknown outcome distinct | `src/platform/api/api-error.ts` (`category`, `commandOutcome`), `command.ts`; `api-error.test.ts`, `command.test.ts` |
+| 4 `IdempotencyIntent` once per review, reused | `idempotency.ts` freezes the reviewed body; `command.test.ts` asserts one key and one body across step-up and in-progress re-sends |
+| 5 Money string-only, scales 0/2/3, lint proven | `design-system/money.ts` (Intl on the string, digit-for-digit check, fallback); `money.test.ts`; `tests/eslint-guards.test.ts` |
+| 6 Shell, router, boundaries, `FeatureUnavailable`, `UnknownOutcome`, `StepUpDialog` in the catalogue | `src/app/`, `catalogue/Catalogue.tsx`; `app.test.tsx` |
+| 7 Catalogue axe + zero CSP violations, both themes | `npm run test:catalogue`: 22 checks pass on a desktop and a phone viewport (axe WCAG 2.2 AA, CSP with Trusted Types, 44 px targets, the application's own start page and redirect) |
+| 8 Nothing sensitive reaches telemetry | `telemetry.test.ts` with a spy transport |
+| 9 Only the preferences key in storage | lint rules + `platform.test.ts` + the browser check of the built application |
+| 10 Documents | `P18-DOC-001`; this record; README with commands |
+| 11 No mock data outside tests; no claimed capability | MSW not installed; bundle scan; the start page says sign-in is not available yet; the shell shows only pages that exist |
+
+**Deviations and corrections** (where this plan and the blueprint differ, this plan is right):
+1. **Blueprint §11.1 corrected.** It listed `*.ProviderUnavailable` with the 503s after which "nothing was done". finapp's
+   `ERROR_CONTRACT.md` declares that only for `api.Overloaded` and `api.TemporarilyUnavailable`; a provider 503 on a
+   command is therefore an **unknown outcome** here, and is never re-sent automatically.
+2. **The session carrier defaults to `memory`** (`VITE_SESSION_CARRIER`) until finapp ships G-04; the cookie carrier is
+   built and tested, and switching is configuration.
+3. **Feature availability** is enforced by the route error boundary: a 503 that finapp declares not served renders
+   `FeatureUnavailable` for that page while the rest works. A per-module availability store waits for the first module.
+4. **Route-level code splitting** is configured (vendor chunks; modules load on first visit) but has no module to split
+   until Stage 2.
+5. **Not delivered: visual-regression baselines** (`P18-TSK-007`). Screenshots differ by machine and font stack; they are
+   recorded on the CI runner once CI exists for this repository. Carried to Stage 2.
+6. **React Hook Form and Zod are not installed yet**: no form exists in Stage 1. They join with the first form
+   (`P18-TSK-010`), pinned as ADR-F03 says.
+7. **Money formatting** uses the locale's currency symbol, which `Intl` disambiguates by locale (`JP¥` in `en-GB`).
+8. **Dialogs are judged by axe once settled** (reduced motion): during the fade-in their text is translucent.
+9. **Local browser runs** use an installed browser (`PW_CHANNEL=msedge`): the Chromium build Playwright 1.65.0 pins is not
+   on this machine and was not downloaded. CI installs the pinned one.
+10. **Tooling audit**: 9 moderate advisories (minimatch, through eslint and typescript-eslint), none in what ships; CI's
+    tooling gate is `high`. The console carries the same; both clear when eslint and typescript-eslint are bumped.
+
+## 5. Owner decisions
+
+| # | Decision | Decided | Record |
+|---|---|---|---|
+| D-A | Phase 18 governance here; pre-phase allowance for Stage 1 | 2026-11-19, "Approve all" | §2 |
+| D-B | This directory is the `finapp-front-end` repository | 2026-11-19 | ADR-F01 |
+| D-C | One application for individuals and business registrants | 2026-11-19 | ADR-F01, ADR-F06 |
+| D-D | Cookie session carrier in the monolith (option B) | 2026-11-19 | ADR-F02 |
+| D-E | No BFF, no gateway | 2026-11-19 | ADR-F01 |
+| D-F | Stack per blueprint §8 | 2026-11-19 | ADR-F03 |
+| D-G | G-04, G-15, G-03 are P0 for `finapp` | 2026-11-19 | `FINAPP_BACKEND_WORK.md` |
+| D-H | Exclusions | 2026-11-19 | §1 |
+
+Further decisions are numbered from D-I and recorded in [`DECISIONS.md`](DECISIONS.md).
+
+## 6. Threats to register at `P18-INIT`
+
+To be added to `finapp`'s `THREAT_MODEL.md` as a customer-web boundary (Stage 7 at the latest):
+1. Session riding by injected script while the page is open (ADR-F02 residual; ADR-F07 control).
+2. CSRF against the cookie carrier (ADR-F02 §4).
+3. Duplicate money movement from client retries (ADR-F05).
+4. Leakage of personal or financial data through telemetry, storage, URLs or caches (ADR-F07).
+5. Open redirect through the post-sign-in return path.
+6. Account enumeration through registration and recovery screens (uniform responses; G-03).
+7. Supply-chain compromise of a frontend dependency (ADR-F03 gates).
+8. Misleading financial display (float conversion, stale balances, local time-zone shifts of business dates) (ADR-F04).
+
+## 7. Risks
+
+| Risk | Effect | Mitigation |
+|---|---|---|
+| ADR-F02 not adopted or delayed in `finapp` | Stage 2 blocked | Session port supports the in-memory carrier; owner may ship with option A and record the UX cost |
+| No notifier (G-03) has an owning phase | No e-mail verification or password recovery | Those two screens ship only when G-03 lands; nothing pretends |
+| Contract enums weak (G-14) | Statuses stringly typed | Exhaustive maps with an "unknown" branch; re-pin when G-14 lands |
+| Credit and BNPL not offered in production | Stage 5 dark in production | Build and test against non-production; show `ProductNotOffered` honestly |
+| Organisation model thin (G-09) | Business banking limited to registration and KYB | Stated in scope; epic for `finapp` |
+| Dependency churn (TypeScript 7 vs typescript-eslint) | Toolchain friction | Follow the console's recorded deviation |
+| One owner across three repositories | Throughput | Stage 1 needs nothing from `finapp`; backend items are self-contained handoffs |

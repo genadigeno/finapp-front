@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-catalogue/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+sbom.cdx.json
+*.md
+src/generated/
+contract/
+src/design-system/theme.generated.css

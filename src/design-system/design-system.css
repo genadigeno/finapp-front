@@ -1,0 +1,266 @@
+/* The application's own classes - a bundled file, so the CSP's `style-src 'self'` serves it (ADR-F07). */
+
+/* Touch targets of at least 44 px (blueprint §7; WCAG 2.5.8 asks 24, the customer standard is 44). */
+.mantine-Button-root,
+.mantine-ActionIcon-root,
+.mantine-Input-input {
+  min-height: var(--finapp-touch-target);
+}
+
+.mantine-ActionIcon-root {
+  min-width: var(--finapp-touch-target);
+}
+
+.finapp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.finapp-numeric,
+.finapp-money,
+.finapp-countdown {
+  font-variant-numeric: var(--finapp-numeric);
+}
+
+.finapp-money {
+  white-space: nowrap;
+}
+
+.finapp-money[data-size='lg'] {
+  font-size: var(--mantine-font-size-xl);
+  font-weight: 600;
+}
+
+.finapp-money[data-size='xl'] {
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.finapp-input-currency {
+  color: var(--mantine-color-dimmed);
+  font-weight: 600;
+}
+
+.finapp-mono {
+  font-family: var(--mantine-font-family-monospace);
+  overflow-wrap: anywhere;
+}
+
+.finapp-invalid {
+  color: var(--mantine-color-red-text);
+}
+
+.finapp-countdown[data-expired] {
+  color: var(--mantine-color-red-text);
+  font-weight: 600;
+}
+
+/* Page scroll locked while a CustomerModal is open - a static rule instead of the <style> element
+   Mantine's scroll lock would inject, which the CSP refuses. */
+body[data-finapp-scroll-locked] {
+  overflow: hidden;
+}
+
+/* ---- The shell ---------------------------------------------------------------------------------- */
+
+.finapp-shell {
+  --finapp-header-height: 64px;
+  --finapp-bottom-nav-height: 64px;
+  min-height: 100vh;
+  background: var(--mantine-color-body);
+}
+
+.finapp-skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 200;
+  padding: 0.75rem 1rem;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  border: 2px solid var(--mantine-primary-color-filled);
+  border-radius: var(--mantine-radius-md);
+}
+
+.finapp-skip-link:focus {
+  top: 0.5rem;
+}
+
+.finapp-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: var(--finapp-header-height);
+  padding: 0 1rem;
+  background: var(--mantine-color-body);
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.finapp-shell__brand {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.finapp-shell__nav {
+  display: flex;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.finapp-shell__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--finapp-touch-target);
+  padding: 0 0.875rem;
+  border-radius: var(--mantine-radius-md);
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.finapp-shell__link:hover {
+  background: var(--mantine-color-default-hover);
+}
+
+.finapp-shell__link[aria-current='page'] {
+  background: var(--mantine-primary-color-light);
+  color: var(--mantine-primary-color-light-color);
+}
+
+.finapp-shell__link:focus-visible,
+.finapp-text-button:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+.finapp-shell__account {
+  margin-left: auto;
+}
+
+.finapp-shell__banner,
+.finapp-shell__main {
+  width: 100%;
+  max-width: var(--finapp-content-width);
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.finapp-shell__banner {
+  padding-bottom: 0;
+}
+
+.finapp-shell__main:focus {
+  outline: none;
+}
+
+/* Phones: the goals move to a bottom bar, icon over label. Mantine's `sm` breakpoint is 48em. */
+@media (max-width: 47.99em) {
+  .finapp-shell[data-has-nav] .finapp-shell__nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    justify-content: space-around;
+    height: var(--finapp-bottom-nav-height);
+    padding: 0 0.25rem;
+    background: var(--mantine-color-body);
+    border-top: 1px solid var(--mantine-color-default-border);
+  }
+
+  .finapp-shell[data-has-nav] .finapp-shell__link {
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--mantine-font-size-xs);
+  }
+
+  .finapp-shell[data-has-nav] .finapp-shell__main {
+    padding-bottom: calc(var(--finapp-bottom-nav-height) + 1.5rem);
+  }
+}
+
+.finapp-text-button {
+  color: var(--mantine-color-anchor);
+  text-decoration: underline;
+  min-height: var(--finapp-touch-target);
+  padding: 0 0.25rem;
+}
+
+/* ---- Workflow ----------------------------------------------------------------------------------- */
+
+.finapp-wizard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finapp-wizard__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--mantine-color-dimmed);
+}
+
+.finapp-wizard__step[data-state='current'] {
+  color: var(--mantine-color-text);
+  font-weight: 600;
+}
+
+.finapp-wizard__index {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+}
+
+.finapp-wizard__step[data-state='current'] .finapp-wizard__index {
+  background: var(--mantine-primary-color-filled);
+  border-color: var(--mantine-primary-color-filled);
+  color: var(--mantine-color-white);
+}
+
+.finapp-review {
+  margin: 0;
+}
+
+.finapp-review__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.finapp-review__row dt {
+  color: var(--mantine-color-dimmed);
+}
+
+.finapp-review__row dd {
+  margin: 0;
+  text-align: right;
+}
+
+.finapp-review__row[data-emphasis] dd {
+  font-weight: 650;
+}

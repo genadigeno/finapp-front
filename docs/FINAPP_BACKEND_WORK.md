@@ -1,0 +1,164 @@
+# finapp backend work for the Customer Application — Phase 18
+
+**For:** the `finapp` backend team. **From:** `finapp-front-end`. **Written:** 2026-11-19 by `P18-DOC-001`, when the owner
+approved the blueprint's decisions D-A…D-H ("Approve all"). What is listed here is the work only `finapp` can do. Nothing here
+is scheduled in `finapp` yet: each item enters `finapp`'s backlog, under its process and its DoD profiles, when the owner
+schedules it there (D-G names G-04, G-15 and G-03 as P0).
+
+**Read against:** `finapp` `master` at `5227f57e2`. Every file reference below is relative to the `finapp` repository's root
+unless it says `finapp-front-end`.
+
+**How the Customer Application picks up a change:** a change to `docs/api/openapi.json` reaches it when it re-pins
+(`P18-TSK-002`: `contract:pull`, `contract:generate`). A change that only adds a refusal (a step-up, a rate limit) needs
+nothing here: the application already answers every problem document by its `code`.
+
+## Summary
+
+| # | Work | Gap | Task | Priority | Blocks |
+|---|---|---|---|---|---|
+| B0.1 | Phase 18 in `finapp`'s own records | — | — | At `P18-INIT` | The phase opening |
+| B0.2 | Adopt ADR-F02 in `finapp`'s register | G-04 | `P18-TSK-101` | **P0** | B1.1 |
+| B1.1 | Cookie session carrier and CSRF defence on the public surface | G-04 | `P18-TSK-101` | **P0** | Stage 2 |
+| B1.2 | Public-edge route, headers and deployable for `finapp-customer-web`; `no-store` on customer API | G-15 | `P18-TSK-102` | **P0** | Stage 2 |
+| B1.3 | Notification delivery for verification and recovery tokens | G-03 | `P18-TSK-103` | **P0** | Recovery and e-mail verification screens |
+| B2.1 | Customer standing on `GET /v1/me` | G-08 | `P18-TSK-104` | P1 | Standing-based routing |
+| B2.2 | Personal data capture | G-07 | `P18-TSK-105` | P1 | Profile completeness |
+| B2.3 | Test-only seeding for the customer E2E | — | — | P1 | Stage 2 acceptance |
+| B3.1 | Cursor pagination and missing customer lists | G-01 | `P18-TSK-106` | P1 | Stage 3–4 lists |
+| B3.2 | Customer activity read | G-02 | `P18-TSK-107` | P1 | Dashboard, history |
+| B3.3 | Contract quality | G-14 | `P18-TSK-108` | P1 | Typed statuses |
+| B4.1 | Browser card tokenisation | G-10 | `P18-TSK-109` | P2 | Card top-up |
+| B4.2 | Idempotency on `POST /v1/beneficiaries` | G-12 | `P18-TSK-110` | P2 | Beneficiary creation |
+| B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
+| B6.2 | Support and complaints; BNPL dispute read | G-13 | `P18-TSK-112` | P3 | Support screens |
+| E1 | Downloadable statements; receiving identifiers | G-05, G-06 | — | P3 | Nice-to-have |
+| E2 | Organisation members, mandates, "act as organisation" | G-09 | epic | P3 | Business banking |
+
+---
+
+## B0.1 — Phase 18 in `finapp`'s records
+
+`finapp`'s roadmap and `CURRENT_STATE.md` do not name Phase 18. When the owner sequences it (after Phases 16 and 17, keeping
+the one-phase-`IN_PROGRESS` rule), `finapp`'s records gain the phase and the backend tasks below, pointing to
+`finapp-front-end/docs/PHASE_18_PLAN.md`. No status changes before then.
+
+## B0.2 — Adopt ADR-F02 in `finapp`'s register
+
+`finapp-front-end/docs/adr/ADR-F02-cookie-session-carrier-on-the-public-surface.md` amends ADR-0030 and concerns `finapp`'s
+code. `finapp` writes it as its own `ADR-NNNN` (next free number at the time), with ADR-F02 cited as its source, and records the
+CSRF decision in the semgrep baseline as `finapp-spring-csrf-disabled`'s message asks
+(`infra/semgrep/rules/spring.yml`). If `finapp` declines, say so: the Customer Application falls back to the in-memory token.
+
+## B1.1 — Cookie session carrier and CSRF defence (G-04)
+
+**Where:** `app/src/main/java/com/finapp/app/session/SessionAuthenticationInterceptor.java`;
+`app/src/main/java/com/finapp/app/authentication/AuthenticationController.java` (sign-in, step-up);
+`app/src/main/java/com/finapp/app/session/SessionController.java` (sign-out, revoke current); password change.
+
+**What** (ADR-F02 §Decision):
+1. On the `public` surface only (`X-Finapp-Surface: public`), accept the token from cookie `fa_session`; refuse a request
+   carrying both a bearer header and the cookie.
+2. When the request opts in (`X-Finapp-Session-Carrier: cookie`), sign-in, step-up and password change answer
+   `Set-Cookie: fa_session=…; HttpOnly; Secure; SameSite=Strict; Path=/v1` and omit `sessionToken` from the body; without the
+   header, today's response exactly.
+3. Rotation replaces the cookie; `DELETE /v1/sessions/current` clears it (`Max-Age=0`).
+4. For every unsafe method authenticated by the cookie: require `X-Finapp-Request: 1` and an `Origin` equal to the public
+   origin; refuse otherwise with `403` and a code of its own (proposed `identity.CsrfRejected`) in `ERROR_CONTRACT.md`.
+5. Never accept the cookie on the operator surface.
+6. Document in `API_CONVENTIONS.md` and the contract (`securitySchemes`: `bearerAuth` and `cookieAuth`).
+
+**Acceptance:** tests for cross-site form post, cross-origin fetch without the header, a foreign or missing `Origin`, the
+cookie on the operator surface, both carriers at once, rotation on step-up and password change, sign-out clearing the cookie,
+revocation from another session refused at the next request; existing bearer behaviour unchanged (the console's suite green).
+**DoD:** `DOD-SEC`, `DOD-API`.
+
+## B1.2 — Public-edge route, headers and deployable (G-15)
+
+Mirror X-TSK-020, which hosts the console on the operator edge (`deploy/console/**`, `deploy/edge/base/operator-edge.yaml`
+`finapp-console` service and `console-headers`, `ConsoleHostingManifestsTest`, `edge.rego` `[edge-console-headers]`).
+
+**What:**
+1. `deploy/customer-web/{base,overlays/kind,overlays/staging,overlays/production}`: namespace `finapp-customer-web`,
+   nginx-unprivileged on 8080, read-only root, two or more replicas, no egress, NetworkPolicy ingress from the public edge only,
+   resource quota.
+2. `deploy/edge/base/public-edge.yaml`: a `finapp-customer-web` service and a `customer-web-headers` middleware carrying the
+   CSP of ADR-F07, copied from `finapp-front-end/config/customer-web-headers.mjs` (written by `P18-TSK-009`), plus HSTS,
+   nosniff, no-referrer, frame-deny; no `Cache-Control` (nginx sets it per path).
+3. `deploy/edge/base/public-routes.yaml` (generated by `app/src/test/java/com/finapp/app/api/EdgeAllowListTest.java`): a
+   router for `GET /` and `GET /assets/**` and the SPA's deep links to `finapp-customer-web`, at a lower priority than the
+   `/v1/**` allow-list; no API route changes.
+4. `Cache-Control: no-store` on every customer API response (as the operator path has).
+5. `deploy/admission/clusterimagepolicies.yaml`: admit the customer-web image by signature; `deploy/delivery/{staging,
+   production}/applications.yaml`: its Argo CD application; registry repository.
+6. A hosting manifests test and an `edge.rego` rule holding the headers to the generated string.
+
+**Acceptance:** kind E2E serves the SPA and `/v1/me` from one origin; the CSP header equals the generated string; no API route
+reaches nginx; nginx reaches nothing. **DoD:** `DOD-SEC`, ops.
+
+## B1.3 — Notification delivery for verification and recovery (G-03)
+
+**Where:** `identity/src/main/java/com/finapp/identity/RecoveryService.java` (returns the token "for a notifier that does not
+exist yet") and `ContactChannelService.java` (the challenge "is delivered nowhere, and that is a seam").
+
+**What:** a notifier port in the platform with a simulated adapter (recording deliveries for test and kind, as the simulated
+providers do), attached where the seams already are, in the same transaction or by outbox. Uniform responses preserved (no
+enumeration). No token in logs (`RESTRICTED-PII`).
+
+**Acceptance:** recovery and e-mail verification complete end to end on kind through the simulated adapter; responses identical
+for known and unknown identifiers. **DoD:** `DOD-SEC`. *(No owning phase today; the owner assigns one.)*
+
+## B2.1 — Customer standing on `GET /v1/me` (G-08)
+
+**Where:** `app/src/main/java/com/finapp/app/profile/MeController.java`, party module. **What:** add party kind and customer
+status (and, optionally, a list of required actions the backend decides: verify contact, enrol MFA, complete KYC, accept
+consent version). The client derives navigation from it (ADR-F06) and never infers it. **DoD:** `DOD-API`.
+
+## B2.2 — Personal data capture (G-07)
+
+Legal name, date of birth, address and phone: decide where they live (party or KYC) by an ADR, then expose customer read and
+update with `RESTRICTED-PII` handling. **DoD:** `DOD-API`, `DOD-SEC`.
+
+## B2.3 — Test-only seeding for the customer E2E
+
+Two seeded customers (for ownership-swap tests), one organisation registrant, a seeded MFA secret, wallets in EUR, JPY and a
+3-decimal currency, and a fault-injection hook for "response lost after commit" (blueprint §17 scenario 5). Test profile
+only; never in production images. Model: the console's B2.1.
+
+## B3.1 — Cursor pagination and missing customer lists (G-01)
+
+Implement `API_CONVENTIONS.md` §7 (`{items, nextCursor}`) on customer lists, and add list endpoints for withdrawals, FX trades,
+cross-border payments and credit applications. Each in its owning module. **DoD:** `DOD-API`.
+
+## B3.2 — Customer activity read (G-02)
+
+A per-wallet activity read (transfers, payments, withdrawals, FX, cross-border, loan movements) with references to the
+originating operation, likely derived from ledger statements; owner decided by an ADR (ledger or accounts). **DoD:**
+`DOD-API`, `DOD-FIN`.
+
+## B3.3 — Contract quality (G-14)
+
+In `docs/api/openapi.json`: `securitySchemes` and per-operation `security`; status fields as `enum`s; each operation's problem
+codes listed; the two webhook routes the contract omits. Non-breaking. **DoD:** `DOD-API`.
+
+## B4.1 — Browser card tokenisation (G-10)
+
+How a browser tokenises a card for the simulated PSP (hosted fields or a tokenisation endpoint) and the CSP consequence
+(`frame-src`); an ADR in paymentmethods. Until then, top-up by saved method only. **DoD:** `DOD-SEC`.
+
+## B4.2 — Idempotency on `POST /v1/beneficiaries` (G-12)
+
+Require `Idempotency-Key` as on other customer commands. **DoD:** `DOD-API`.
+
+## B6.1 — MFA factor removal and recovery codes (G-11)
+
+Remove or replace a factor under step-up; recovery codes issued once and stored hashed. **DoD:** `DOD-SEC`.
+
+## B6.2 — Support and complaints; BNPL dispute read (G-13)
+
+A new capability; until it exists the application shows no support screen (D-H). **DoD:** `DOD-API`.
+
+## E1, E2 — Epics
+
+- **G-05, G-06:** downloadable statements (PDF) and customer-visible receiving identifiers; Stage 3 works without them.
+- **G-09:** organisation members, mandates and "act as organisation" — a new `authorization` module per ADR-0031's split
+  trigger. Business banking beyond registration and KYB waits on it.

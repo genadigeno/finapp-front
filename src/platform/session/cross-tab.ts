@@ -40,3 +40,15 @@ export function openCrossTab(onMessage: (message: CrossTabMessage) => void): Cro
     close: () => channel.close(),
   };
 }
+
+let poster: ((message: CrossTabMessage) => void) | undefined;
+
+/** Set by the application while its channel is open (src/app/App.tsx). */
+export function setCrossTabPoster(post: ((message: CrossTabMessage) => void) | undefined): void {
+  poster = post;
+}
+
+/** Tells other tabs to re-read these query roots - never what changed (ADR-F05 decision 8). */
+export function broadcastInvalidation(roots: readonly string[]): void {
+  poster?.({ type: 'invalidate', roots });
+}

@@ -83,6 +83,6 @@ export function sessionCarrier(): SessionCarrier {
 }
 
 /** Test-only: swap the carrier. */
-export function useCarrierForTests(next: SessionCarrier): void {
+export function setCarrierForTests(next: SessionCarrier): void {
   carrier = next;
 }

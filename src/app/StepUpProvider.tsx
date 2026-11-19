@@ -3,13 +3,12 @@
 // `requestStepUp()` opens the dialog and resolves once finapp has accepted the code and rotated the
 // session; it rejects if the customer cancels. Concurrent requests share one dialog and one outcome, so
 // two refused reads never ask twice.
-import { createContext, use, useCallback, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { StepUpDialog } from '../design-system/Dialogs.tsx';
 import { useApi } from '../platform/api/api-context.tsx';
 import { stepUp } from '../platform/session/auth-api.ts';
 import type { RequestStepUp } from '../platform/session/step-up.ts';
-
-const StepUpContext = createContext<RequestStepUp | undefined>(undefined);
+import { StepUpContext } from '../platform/session/step-up-context.ts';
 
 interface Pending {
   promise: Promise<void>;
@@ -56,10 +55,4 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
       />
     </StepUpContext>
   );
-}
-
-export function useStepUp(): RequestStepUp {
-  const request = use(StepUpContext);
-  if (request === undefined) throw new Error('useStepUp() needs a <StepUpProvider>.');
-  return request;
 }

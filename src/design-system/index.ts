@@ -26,7 +26,14 @@ export {
   type MoneyProps,
 } from './Values.tsx';
 export { ResultPanel, ReviewPanel, Wizard, type ResultKind, type ReviewRow } from './Workflow.tsx';
-export { basisPointsToPercent, formatMoney, minorUnits, parseMoneyInput, type ParsedMoneyInput } from './money.ts';
+export {
+  basisPointsToPercent,
+  formatMoney,
+  minorUnits,
+  parseMoneyInput,
+  percentToBasisPoints,
+  type ParsedMoneyInput,
+} from './money.ts';
 export { formatBusinessDate, formatInstant } from './dates.ts';
 export * from './status.ts';
 export { TONE_COLOR, type Tone } from './tone.ts';

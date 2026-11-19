@@ -125,6 +125,50 @@ Built in this repository under D-A's pre-phase allowance; `finapp` unchanged. Co
 10. **Tooling audit**: 9 moderate advisories (minimatch, through eslint and typescript-eslint), none in what ships; CI's
     tooling gate is `high`. The console carries the same; both clear when eslint and typescript-eslint are bumped.
 
+### 4.2 Stage 2 record (2026-11-19, D-I: the owner's "Start Stage 2")
+
+Built in this repository ahead of the entry gate; `finapp` unchanged. Every screen is over a door finapp serves today,
+read against `5227f57e2` controller by controller (sign-in, registration, MFA, sessions, consents, KYC, organisations,
+KYB, channels), with the in-memory session carrier (`VITE_SESSION_CARRIER=memory`) until G-04.
+
+| Task | Built | Evidence |
+|---|---|---|
+| `P18-TSK-010` | Sign-in (uniform refusal; password never kept), sign-out, signed-in devices with confirmed sign-out of another; signed-out visitors go to sign-in with a validated `returnTo`, signed-in customers skip it | `security.test.tsx`; browser check of `/sign-in` |
+| `P18-TSK-011` | Registration under an idempotency key, then sign-in with the same credentials (finapp does not sign in on registration); uniform `party.RegistrationRefused`; unknown outcome re-sent with the same key | `onboarding.test.tsx`; browser check of `/register` |
+| `P18-TSK-012` | Authenticator enrolment: setup key shown once, grouped, held in memory only, forgotten on confirmation; replacing a factor steps up first and re-sends on the rotated token | `security.test.tsx` |
+| `P18-TSK-013` | Consents with finapp's own text and version; grant names the version read; withdrawal confirmed | `onboarding.test.tsx` |
+| `P18-TSK-014` | Identity verification: consent gate, start, document upload (base64, finapp's type names, 512 KB and type checked before sending) | `onboarding.test.tsx` |
+| `P18-TSK-015` | Business registration; KYB status and owners; declaring an owner by customer reference, share by string arithmetic to basis points | `onboarding.test.tsx` |
+| `P18-TSK-016` | The onboarding checklist on Home, every step from finapp's reads | `onboarding.test.tsx` |
+
+Gates: `npm run verify` green (213 tests); `test:catalogue` 28 browser checks green (axe and zero CSP violations on the
+real `/sign-in` and `/register`, the onboarding controls, both themes, desktop and phone); builds byte-identical; first
+load 195 kB gzipped.
+
+**Found, fixed, recorded:**
+1. **Zod 4 probes `new Function`** on first parse; the CSP refuses it and the browser reports a Trusted Types violation.
+   Zod runs `jitless` (`src/platform/forms/zod-resolver.ts`). `@hookform/resolvers` was not taken (days-old major, dozens
+   of peers): a 15-line resolver does the job.
+2. **One Mantine vendor chunk** put every component any page uses into the first load (206 kB gzipped, over budget). It is
+   no longer grouped; the entry cap rises from 64 to 96 KiB with the reason recorded in `scripts/lib/bundle-scan.mjs`.
+3. **Mantine's placeholder colour** fails 4.5:1; overridden in the generated theme.
+4. **`useCommand` would have reused one request's idempotency key for another** (`submit` after a definite outcome). An
+   intent now outlives its send only while its outcome is unknown, and only for the identical request.
+
+**New gaps** (handed to finapp in `FINAPP_BACKEND_WORK.md`):
+- **G-16 (P0): KYC checks are never run in production.** A case stays `OPEN`; no customer can reach `APPROVED`. The
+  application shows the status finapp reports and promises nothing more.
+- **G-17: no read of the customer's own second factor.** Two-step verification is offered, never shown as on.
+- **G-09 (detail):** an owner can be named only by party id, which nothing lets a registrant look up; every customer's
+  Home shows their own reference to share.
+
+**Not built:** password recovery and contact verification (G-03 - nothing delivers the token); profile edit (Stage 6).
+**Not yet run:** the E2E scenarios 1–4 and 12 against a real finapp (acceptance of this stage) - the local finapp stack
+needs container images this machine does not have; pulling them is the owner's call.
+
+**Open decision D-J (owner):** a QR code for authenticator setup needs a QR library (MIT options exist) - a new shipped
+dependency. Until decided, the setup key is typed or opened by link.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -138,7 +182,9 @@ Built in this repository under D-A's pre-phase allowance; `finapp` unchanged. Co
 | D-G | G-04, G-15, G-03 are P0 for `finapp` | 2026-11-19 | `FINAPP_BACKEND_WORK.md` |
 | D-H | Exclusions | 2026-11-19 | §1 |
 
-Further decisions are numbered from D-I and recorded in [`DECISIONS.md`](DECISIONS.md).
+| D-I | Start Stage 2 ahead of the entry gate, frontend only; finapp work stays handed off | 2026-11-19, "Start Stage 2" | §4.2 |
+
+Further decisions are numbered from D-J and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

@@ -41,14 +41,16 @@ export function scanBundle(directory) {
 /**
  * The performance budget (blueprint §16: initial JavaScript at most 200 kB gzip for the signed-in shell):
  *   - the first load - the entry plus every chunk index.html loads or preloads - at most 200 KiB of
- *     gzipped JavaScript (the blueprint's budget; 186 kB at Stage 1, 2026-11-19);
+ *     gzipped JavaScript (the blueprint's budget; 186 kB at Stage 1, 195 kB at Stage 2);
  *   - the same first load at most 700 KiB raw (596 KiB at Stage 1);
- *   - the entry chunk at most 64 KiB raw (40 KiB at Stage 1), so module code stays out of it;
+ *   - the entry chunk at most 96 KiB raw, so module code stays out of it (40 KiB at Stage 1; 83 KiB at Stage 2,
+ *     when Mantine stopped being one vendor chunk - that chunk put every component any page uses into the first
+ *     load - and its shared core moved into the entry; raised from 64 KiB to the console's 96 KiB for that reason);
  *   - any single JavaScript chunk at most 256 KiB raw.
  * A heavy dependency or a module pulled into the entry fails the build instead of creeping in. Raise a limit
  * only with a recorded reason.
  */
-export const BUDGET = { entry: 64 * 1024, chunk: 256 * 1024, firstLoad: 700 * 1024, firstLoadGzip: 200 * 1024 };
+export const BUDGET = { entry: 96 * 1024, chunk: 256 * 1024, firstLoad: 700 * 1024, firstLoadGzip: 200 * 1024 };
 
 /**
  * @param {string} directory

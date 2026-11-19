@@ -34,6 +34,8 @@ const LIGHT_TEXT: Readonly<Record<string, string>> = {
 function contrastOverrides(scheme: 'light' | 'dark'): Record<string, string> {
   const overrides: Record<string, string> = {
     '--mantine-color-dimmed': scheme === 'light' ? 'var(--mantine-color-gray-7)' : 'var(--mantine-color-dark-1)',
+    // Placeholder text: Mantine's default is under 4.5:1 (found by the Stage 2 catalogue run on a FileInput).
+    '--mantine-color-placeholder': scheme === 'light' ? 'var(--mantine-color-gray-7)' : 'var(--mantine-color-dark-1)',
     // A field's error text: red-9 (5.3:1) on light, red-3 on dark (the console's every-route axe run).
     '--mantine-color-error': scheme === 'light' ? 'var(--mantine-color-red-9)' : 'var(--mantine-color-red-3)',
   };

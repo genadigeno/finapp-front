@@ -8,12 +8,13 @@ import { ApiError } from '../platform/api/api-error.ts';
 import { ApiProvider } from '../platform/api/api-context.tsx';
 import { createApiClient } from '../platform/api/client.ts';
 import { AppIntlProvider } from '../platform/i18n/IntlProvider.tsx';
-import { memoryCarrier, useCarrierForTests } from '../platform/session/carrier.ts';
+import { memoryCarrier, setCarrierForTests } from '../platform/session/carrier.ts';
 import { acceptIssuedSession, endSession } from '../platform/session/session-store.ts';
 import { setTelemetryTransport, type TelemetryEvent } from '../platform/telemetry/telemetry.ts';
 import { renderWithProviders } from '../testing/render.tsx';
 import { createAppQueryClient } from './App.tsx';
-import { createAppRouter, RouteError, useReturnTo } from './router.tsx';
+import { useReturnTo } from '../platform/return-to.ts';
+import { createAppRouter, RouteError } from './router.tsx';
 import { StepUpProvider } from './StepUpProvider.tsx';
 
 function renderApp(path: string, answer: (url: string) => Response) {
@@ -46,10 +47,10 @@ afterEach(() => {
 });
 
 describe('routing (P18-TSK-006; blueprint §17 scenario 1)', () => {
-  it('a signed-out visitor to a protected page lands on the start page, with only an allow-listed return path', async () => {
+  it('a signed-out visitor to a protected page goes to sign in, with only an allow-listed return path', async () => {
     const router = renderApp('/home', () => json({}));
-    expect(await screen.findByRole('heading', { name: 'Welcome to FinApp' })).toBeTruthy();
-    expect(router.state.location.pathname).toBe('/');
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy();
+    expect(router.state.location.pathname).toBe('/sign-in');
     expect(router.state.location.search).toEqual({ returnTo: '/home' });
   });
 
@@ -87,8 +88,8 @@ describe('routing (P18-TSK-006; blueprint §17 scenario 1)', () => {
     expect(router.state.matches.at(-1)?._strictSearch).toEqual({});
   });
 
-  it('a signed-in customer sees their own profile from GET /v1/me, and nothing about other goals', async () => {
-    useCarrierForTests(memoryCarrier());
+  it('a signed-in customer sees their own profile from GET /v1/me', async () => {
+    setCarrierForTests(memoryCarrier());
     acceptIssuedSession({
       sessionToken: 't',
       assurance: 'PASSWORD',
@@ -96,8 +97,6 @@ describe('routing (P18-TSK-006; blueprint §17 scenario 1)', () => {
     });
     renderApp('/home', (url) => (url.endsWith('/v1/me') ? json({ displayName: 'Ada', kind: 'PERSON' }) : json({})));
     expect(await screen.findByRole('heading', { name: 'Hello, Ada' })).toBeTruthy();
-    const nav = screen.getByRole('navigation', { name: 'Main' });
-    expect(nav.textContent).toBe('Home');
   });
 
   it('an unknown address says so', async () => {

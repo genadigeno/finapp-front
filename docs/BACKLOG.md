@@ -57,20 +57,22 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 2 — Identity and onboarding
 
-| Task | Title | Depends on | Gaps | DoD |
-|---|---|---|---|---|
-| `P18-TSK-010` | Sign-in, sign-out, sessions list and revoke | Stage 1, 101, 102 | G-04, G-15 | DOD-CUST |
-| `P18-TSK-011` | Registration (person) and first sign-in | 010 | G-07, G-03 (verification) | DOD-CUST |
-| `P18-TSK-012` | MFA enrolment and step-up | 010 | — | DOD-CUST |
-| `P18-TSK-013` | Consents: current text and version, grant, withdraw, history | 010 | — | DOD-CUST |
-| `P18-TSK-014` | KYC: case, documents, customer-shaped status | 010, 013 | — | DOD-CUST |
-| `P18-TSK-015` | Organisation registration and KYB ownership declaration | 014 | G-09 (limits) | DOD-CUST |
-| `P18-TSK-016` | Onboarding checklist and standing-based routing; password recovery when G-03 lands | 011–015 | G-08, G-03 | DOD-CUST |
-| `P18-TSK-101` *(backend)* | Cookie session carrier and CSRF defence (ADR-F02) | — | G-04 | finapp `DOD-SEC`, `DOD-API` |
-| `P18-TSK-102` *(backend)* | Public-edge SPA route, headers, deployable, NetworkPolicy, admission, Argo app; `no-store` on customer API | 009 | G-15 | finapp `DOD-SEC`, ops |
-| `P18-TSK-103` *(backend)* | Notification delivery for verification and recovery tokens | — | G-03 | finapp `DOD-SEC` |
-| `P18-TSK-104` *(backend)* | Customer standing on `GET /v1/me` | — | G-08 | finapp `DOD-API` |
-| `P18-TSK-105` *(backend)* | Personal data capture | — | G-07 | finapp `DOD-API`, `DOD-SEC` |
+| Task | Title | Depends on | Gaps | DoD | Status |
+|---|---|---|---|---|---|
+| `P18-TSK-010` | Sign-in, sign-out, sessions list and revoke | Stage 1, 101, 102 | G-04, G-15 | DOD-CUST | Built (D-I), in-memory carrier until 101 |
+| `P18-TSK-011` | Registration (person) and first sign-in | 010 | G-07, G-03 (verification) | DOD-CUST | Built (D-I); contact verification not built (G-03) |
+| `P18-TSK-012` | MFA enrolment and step-up | 010 | — | DOD-CUST | Built (D-I); enrolment state unreadable (G-17); no QR (D-J) |
+| `P18-TSK-013` | Consents: current text and version, grant, withdraw, history | 010 | — | DOD-CUST | Built (D-I) |
+| `P18-TSK-014` | KYC: case, documents, customer-shaped status | 010, 013 | — | DOD-CUST | Built (D-I); cases cannot progress (G-16) |
+| `P18-TSK-015` | Organisation registration and KYB ownership declaration | 014 | G-09 (limits) | DOD-CUST | Built (D-I); owners named by party id (G-09) |
+| `P18-TSK-016` | Onboarding checklist and standing-based routing; password recovery when G-03 lands | 011–015 | G-08, G-03 | DOD-CUST | Built (D-I) as the checklist; recovery not built (G-03) |
+| `P18-TSK-101` *(backend)* | Cookie session carrier and CSRF defence (ADR-F02) | — | G-04 | finapp `DOD-SEC`, `DOD-API` | |
+| `P18-TSK-102` *(backend)* | Public-edge SPA route, headers, deployable, NetworkPolicy, admission, Argo app; `no-store` on customer API | 009 | G-15 | finapp `DOD-SEC`, ops | |
+| `P18-TSK-103` *(backend)* | Notification delivery for verification and recovery tokens | — | G-03 | finapp `DOD-SEC` | |
+| `P18-TSK-104` *(backend)* | Customer standing on `GET /v1/me` | — | G-08 | finapp `DOD-API` | |
+| `P18-TSK-105` *(backend)* | Personal data capture | — | G-07 | finapp `DOD-API`, `DOD-SEC` | |
+| `P18-TSK-113` *(backend)* | Run KYC checks in production | — | G-16 | finapp `DOD-API`, `DOD-SEC` | |
+| `P18-TSK-114` *(backend)* | A read of the customer's own second factor | — | G-17 | finapp `DOD-API` | |
 
 ## Stage 3 — Core banking
 

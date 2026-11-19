@@ -24,6 +24,8 @@ nothing here: the application already answers every problem document by its `cod
 | B2.1 | Customer standing on `GET /v1/me` | G-08 | `P18-TSK-104` | P1 | Standing-based routing |
 | B2.2 | Personal data capture | G-07 | `P18-TSK-105` | P1 | Profile completeness |
 | B2.3 | Test-only seeding for the customer E2E | — | — | P1 | Stage 2 acceptance |
+| B2.4 | KYC checks are never run in production | G-16 | `P18-TSK-113` | **P0** | Any customer reaching APPROVED; every money journey after it |
+| B2.5 | A read of the customer's own second factor | G-17 | `P18-TSK-114` | P2 | Showing two-step verification as on or off |
 | B3.1 | Cursor pagination and missing customer lists | G-01 | `P18-TSK-106` | P1 | Stage 3–4 lists |
 | B3.2 | Customer activity read | G-02 | `P18-TSK-107` | P1 | Dashboard, history |
 | B3.3 | Contract quality | G-14 | `P18-TSK-108` | P1 | Typed statuses |
@@ -124,6 +126,22 @@ Two seeded customers (for ownership-swap tests), one organisation registrant, a 
 3-decimal currency, and a fault-injection hook for "response lost after commit" (blueprint §17 scenario 5). Test profile
 only; never in production images. Model: the console's B2.1.
 
+## B2.4 — KYC checks are never run in production (G-16) *(found by Stage 2, 2026-11-19)*
+
+**Where:** `kyc` module - `VerificationRunService.runChecks` is the only transition out of `OPEN`, and nothing in
+production calls it (only tests); a provider callback can complete only checks already dispatched
+(`THREAT_MODEL.md` notes it). **Effect:** a customer's case stays `OPEN` however many documents they add; no customer
+can reach `APPROVED`, so nothing that needs a verified customer (wallets, money movement) can be used by anyone who
+onboards through the application. **What:** dispatch the checks when a case has what it needs (documents, consent) -
+an event handler or a schedule in the owning module, under the multi-instance rules - and let the simulated provider
+answer. The application already shows every status finapp reports and needs no change. **DoD:** `DOD-API`, `DOD-SEC`.
+
+## B2.5 — A read of the customer's own second factor (G-17) *(found by Stage 2)*
+
+No customer read says whether a factor is enrolled (`GET /v1/me` does not; enrolment answers only the act). The
+application therefore offers two-step verification without ever marking it on. **What:** `mfaEnrolled` (and, later,
+the factor kind) on `GET /v1/me`, or a `GET /v1/me/mfa` with no secret in it. Relates to G-11. **DoD:** `DOD-API`.
+
 ## B3.1 — Cursor pagination and missing customer lists (G-01)
 
 Implement `API_CONVENTIONS.md` §7 (`{items, nextCursor}`) on customer lists, and add list endpoints for withdrawals, FX trades,
@@ -161,4 +179,6 @@ A new capability; until it exists the application shows no support screen (D-H).
 
 - **G-05, G-06:** downloadable statements (PDF) and customer-visible receiving identifiers; Stage 3 works without them.
 - **G-09:** organisation members, mandates and "act as organisation" — a new `authorization` module per ADR-0031's split
-  trigger. Business banking beyond registration and KYB waits on it.
+  trigger. Business banking beyond registration and KYB waits on it. *Found by Stage 2:* a registrant can only name an
+  owner by the owner's party id, which nothing lets them look up; the owner has to read it off their own home page and
+  pass it on. Owner invitation belongs to this epic.

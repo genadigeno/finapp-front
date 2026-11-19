@@ -93,6 +93,51 @@ const byCode = defineMessages({
     id: 'problem.code.productNotOffered.next',
     defaultMessage: 'It is not offered to you at the moment. Nothing was changed.',
   },
+  // Stage 2 (identity and onboarding). Each is in finapp's ERROR_CONTRACT.md.
+  registrationRefusedTitle: {
+    id: 'problem.code.registrationRefused.title',
+    defaultMessage: 'We could not open your account',
+  },
+  registrationRefusedNext: {
+    id: 'problem.code.registrationRefused.next',
+    defaultMessage: 'Try a different login name. If you already have an account, sign in instead.',
+  },
+  consentRequiredTitle: { id: 'problem.code.consentRequired.title', defaultMessage: 'Your consent is needed first' },
+  consentRequiredNext: {
+    id: 'problem.code.consentRequired.next',
+    defaultMessage: 'Read and agree to the consent for checking your identity, then try again.',
+  },
+  reconsentTitle: { id: 'problem.code.reconsentRequired.title', defaultMessage: 'The text has changed' },
+  reconsentNext: {
+    id: 'problem.code.reconsentRequired.next',
+    defaultMessage: 'Read the updated text before you agree. Nothing was recorded.',
+  },
+  noOpenCaseTitle: { id: 'problem.code.noOpenCase.title', defaultMessage: 'There is no verification in progress' },
+  noOpenCaseNext: {
+    id: 'problem.code.noOpenCase.next',
+    defaultMessage: 'Start verifying your identity before you add documents.',
+  },
+  ownerNotEligibleTitle: { id: 'problem.code.ownerNotEligible.title', defaultMessage: 'We cannot add this person' },
+  ownerNotEligibleNext: {
+    id: 'problem.code.ownerNotEligible.next',
+    defaultMessage:
+      'Check the customer reference. The person must have a FinApp account and have started verifying their identity.',
+  },
+  ownerDeclaredTitle: { id: 'problem.code.ownerDeclared.title', defaultMessage: 'This person is already listed' },
+  ownerDeclaredNext: { id: 'problem.code.ownerDeclared.next', defaultMessage: 'Nothing was changed.' },
+  notAcceptingOwnersTitle: {
+    id: 'problem.code.notAcceptingOwners.title',
+    defaultMessage: 'Owners can no longer be added',
+  },
+  notAcceptingOwnersNext: {
+    id: 'problem.code.notAcceptingOwners.next',
+    defaultMessage: 'Your business is already being reviewed. Nothing was changed.',
+  },
+  stakeExceedsTitle: { id: 'problem.code.stakeExceeds.title', defaultMessage: 'Ownership adds up to more than 100%' },
+  stakeExceedsNext: {
+    id: 'problem.code.stakeExceeds.next',
+    defaultMessage: 'Check the shares already declared and enter a smaller one.',
+  },
 });
 
 /**
@@ -107,6 +152,15 @@ const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
   ['lending.ProductNotOffered', { title: byCode.productNotOfferedTitle, nextStep: byCode.productNotOfferedNext }],
   ['bnpl.ProductNotOffered', { title: byCode.productNotOfferedTitle, nextStep: byCode.productNotOfferedNext }],
   ['credit.ProductNotOffered', { title: byCode.productNotOfferedTitle, nextStep: byCode.productNotOfferedNext }],
+  ['party.RegistrationRefused', { title: byCode.registrationRefusedTitle, nextStep: byCode.registrationRefusedNext }],
+  ['consent.ConsentRequired', { title: byCode.consentRequiredTitle, nextStep: byCode.consentRequiredNext }],
+  ['consent.ReconsentRequired', { title: byCode.reconsentTitle, nextStep: byCode.reconsentNext }],
+  ['consent.UnknownTextVersion', { title: byCode.reconsentTitle, nextStep: byCode.reconsentNext }],
+  ['kyc.NoOpenCase', { title: byCode.noOpenCaseTitle, nextStep: byCode.noOpenCaseNext }],
+  ['kyc.OwnerNotEligible', { title: byCode.ownerNotEligibleTitle, nextStep: byCode.ownerNotEligibleNext }],
+  ['kyc.OwnerAlreadyDeclared', { title: byCode.ownerDeclaredTitle, nextStep: byCode.ownerDeclaredNext }],
+  ['kyc.CaseNotAcceptingOwners', { title: byCode.notAcceptingOwnersTitle, nextStep: byCode.notAcceptingOwnersNext }],
+  ['kyc.StakeExceedsWhole', { title: byCode.stakeExceedsTitle, nextStep: byCode.stakeExceedsNext }],
 ]);
 
 /** The customer's explanation of any failure. A non-ApiError is a defect of this application. */

@@ -8,7 +8,7 @@ import { ApiProvider } from '../platform/api/api-context.tsx';
 import { createApiClient } from '../platform/api/client.ts';
 import { AppIntlProvider } from '../platform/i18n/IntlProvider.tsx';
 import { createQueryClient } from '../platform/query/query-client.ts';
-import { openCrossTab } from '../platform/session/cross-tab.ts';
+import { openCrossTab, setCrossTabPoster } from '../platform/session/cross-tab.ts';
 import { endSession, sessionState, subscribeSession } from '../platform/session/session-store.ts';
 import { track } from '../platform/telemetry/telemetry.ts';
 import { createAppRouter } from './router.tsx';
@@ -45,6 +45,7 @@ export function App() {
       if (message.type === 'signed-out') endSession('elsewhere');
       else for (const root of message.roots) void queryClient.invalidateQueries({ queryKey: [root] });
     });
+    setCrossTabPoster(crossTab.post);
     // Leaving the session (any reason) drops every cached read: nothing of one session survives into the next.
     let wasSignedIn = sessionState().status === 'signed-in';
     const unsubscribe = subscribeSession(() => {
@@ -57,6 +58,7 @@ export function App() {
     });
     return () => {
       unsubscribe();
+      setCrossTabPoster(undefined);
       crossTab.close();
     };
   }, [queryClient]);

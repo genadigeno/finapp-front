@@ -158,3 +158,15 @@ export function basisPointsToPercent(basisPoints: string): string | undefined {
   const negative = sign === '-' && !/^0+$/.test(digits);
   return `${negative ? '-' : ''}${integer}.${padded.slice(-2)}`;
 }
+
+/**
+ * A percentage the customer typed ("25", "12.5", "0.01") as basis points ("2500", "1250", "1"), by string
+ * arithmetic only. At most two decimals (a basis point is 0.01%); undefined for anything else.
+ */
+export function percentToBasisPoints(percent: string): string | undefined {
+  const match = /^(\d{1,3})(?:[.,](\d{1,2}))?$/.exec(percent.trim());
+  if (match === null) return undefined;
+  const [, whole = '0', fraction = ''] = match;
+  const digits = `${whole}${fraction.padEnd(2, '0')}`.replace(/^0+(?=\d)/, '');
+  return digits;
+}

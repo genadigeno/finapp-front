@@ -25,3 +25,10 @@ recommendations:
 
 ADR-F04…F08 record the blueprint's engineering decisions (money, commands, standing, hardening, no shared package) that the
 approval carried with it.
+
+**D-I (the owner, 2026-11-19: "Start Stage 2").** Stage 2 (identity and onboarding) begins ahead of the Phase 18
+entry gate, as the console's M2-M11 did (console D-13...D-23): this repository builds the screens over the doors
+`finapp` already serves (sign-in, registration, MFA, sessions, consents, KYC, organisation and KYB), with the
+in-memory session carrier until `finapp` ships G-04. What only `finapp` can do stays in
+[`FINAPP_BACKEND_WORK.md`](FINAPP_BACKEND_WORK.md) (B1.1-B2.3); `finapp` is not changed from here. Screens whose
+backend is missing (password recovery and contact verification, G-03) are not built. -> `PHASE_18_PLAN.md` §4.2

@@ -4,9 +4,11 @@ The customer-facing web application of the FinApp programme (Phase 18): registra
 multi-currency wallets, money movement, credit and self-service for individuals and business registrants, on the
 customer surface of the `finapp` modular monolith.
 
-**State:** Stage 1 (foundation) is built: a gated, empty shell with the platform, design system and catalogue every
-later stage builds on. There are no customer journeys yet: sign-in and onboarding are Stage 2, and need `finapp`'s
-P0 work first (`docs/FINAPP_BACKEND_WORK.md`).
+**State:** Stage 1 (foundation) and Stage 2 (sign-in, registration, two-step verification, signed-in devices,
+consents, identity and business verification) are built over the doors finapp serves today, with the session in
+memory until finapp ships the cookie carrier. No customer can complete identity verification yet: finapp never runs
+its checks in production (G-16). Accounts and money movement are Stage 3 onward. What only finapp can do is in
+`docs/FINAPP_BACKEND_WORK.md`.
 
 ## Commands
 

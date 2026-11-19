@@ -264,3 +264,49 @@ body[data-finapp-scroll-locked] {
 .finapp-review__row[data-emphasis] dd {
   font-weight: 650;
 }
+
+/* ---- Entry rows (a card that is one link) ------------------------------------------------------- */
+
+.finapp-entry {
+  display: block;
+  border-radius: var(--mantine-radius-md);
+}
+
+.finapp-entry:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+.finapp-entry:hover .mantine-Card-root {
+  background: var(--mantine-color-default-hover);
+}
+
+.finapp-entry__row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.finapp-entry__text {
+  flex: 1;
+}
+
+/* A setup key or code the customer types elsewhere: grouped, selectable, never wrapped mid-group. */
+.finapp-secret {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-lg);
+  letter-spacing: 0.08em;
+  word-spacing: 0.3em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+/* A wide table scrolls sideways inside its own box, never the page (Table.ScrollContainer uses ScrollArea). */
+.finapp-table-scroll {
+  overflow-x: auto;
+}
+
+/* Consent texts are legal wording: keep the author's line breaks. */
+.finapp-consent-text {
+  white-space: pre-line;
+}

@@ -4,8 +4,27 @@
 //
 // These values are DEMONSTRATION props for a test page - never product data. The catalogue is a separate
 // build (vite.catalogue.config.ts) and never part of the application's bundle.
-import { Button, Card, Stack, Text, Title } from '@mantine/core';
-import { IconArrowsExchange, IconCreditCard, IconHome, IconShieldLock, IconWallet } from '@tabler/icons-react';
+import {
+  Button,
+  Card,
+  FileInput,
+  List,
+  PasswordInput,
+  Select,
+  Stack,
+  Table,
+  Text,
+  ThemeIcon,
+  Title,
+} from '@mantine/core';
+import {
+  IconArrowsExchange,
+  IconClock,
+  IconCreditCard,
+  IconHome,
+  IconShieldLock,
+  IconWallet,
+} from '@tabler/icons-react';
 import { useState } from 'react';
 import { ApiError } from '../src/platform/api/api-error.ts';
 import {
@@ -180,6 +199,55 @@ export function Catalogue() {
             Nothing was changed.
           </ResultPanel>
           <ResultPanel kind="unknown" title="We are checking whether this went through" />
+        </Section>
+
+        <Section title="Onboarding controls">
+          <PasswordInput label="Password" description="At least 8 characters." defaultValue="secret value" />
+          <Select
+            label="Document"
+            data={[
+              { value: 'PASSPORT', label: 'Passport' },
+              { value: 'PROOF_OF_ADDRESS', label: 'Proof of address' },
+            ]}
+            comboboxProps={{ withinPortal: false }}
+          />
+          <FileInput label="File" accept="image/jpeg,image/png,application/pdf" placeholder="Choose a file" clearable />
+          <List type="ordered">
+            <List.Item>Open your authenticator app.</List.Item>
+            <List.Item>Enter the setup key.</List.Item>
+          </List>
+          <Text className="finapp-secret">JBSW Y3DP EHPK 3PXP</Text>
+          <div className="finapp-table-scroll">
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Customer reference</Table.Th>
+                  <Table.Th>Share</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                <Table.Tr>
+                  <Table.Td className="finapp-mono">0190a3c1-aaaa-7222-8333-444455556666</Table.Td>
+                  <Table.Td>25.50%</Table.Td>
+                </Table.Tr>
+              </Table.Tbody>
+            </Table>
+          </div>
+          <a href="#identity" className="finapp-entry">
+            <Card withBorder radius="md" padding="md">
+              <div className="finapp-entry__row">
+                <ThemeIcon variant="light" color="blue" radius="xl" size="lg">
+                  <IconClock size={20} aria-hidden />
+                </ThemeIcon>
+                <Stack gap={2} className="finapp-entry__text">
+                  <Text fw={600}>Verify your identity</Text>
+                  <Text size="sm" c="dimmed">
+                    We are reviewing your details.
+                  </Text>
+                </Stack>
+              </div>
+            </Card>
+          </a>
         </Section>
 
         <Section title="Dialogs">

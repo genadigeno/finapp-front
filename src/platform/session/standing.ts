@@ -14,6 +14,8 @@ export type PartyKind = 'PERSON' | 'ORGANISATION' | 'UNKNOWN';
 export interface Standing {
   partyKind: PartyKind;
   displayName: string | undefined;
+  /** The customer's own reference: shared by an owner with a business that declares them (KYB). */
+  partyId: string | undefined;
 }
 
 export function toPartyKind(value: string | undefined): PartyKind {
@@ -35,7 +37,7 @@ export function useStanding() {
     enabled: session.status === 'signed-in',
     queryFn: async (): Promise<Standing> => {
       const { data } = await ok(api.GET('/v1/me'));
-      return { partyKind: toPartyKind(data.kind), displayName: data.displayName };
+      return { partyKind: toPartyKind(data.kind), displayName: data.displayName, partyId: data.partyId };
     },
   });
 }

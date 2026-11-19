@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { validReturnTo } from '../app/return-to.ts';
+import { validReturnTo } from './return-to.ts';
 import { ApiError, type ErrorCategory } from './api/api-error.ts';
 import { CATEGORY_EXPLANATIONS, catalogueCodes, explain } from './api/problem-catalogue.ts';
 import {
@@ -10,7 +10,7 @@ import {
   preferencesColorSchemeManager,
   writePreferences,
 } from './preferences.ts';
-import { memoryCarrier, useCarrierForTests } from './session/carrier.ts';
+import { memoryCarrier, setCarrierForTests } from './session/carrier.ts';
 import { parseCrossTabMessage } from './session/cross-tab.ts';
 import {
   acceptIssuedSession,
@@ -39,7 +39,7 @@ describe('browser storage holds one allow-listed key (ADR-F07 decision 4; bluepr
   });
 
   it('nothing else in the application touches storage after a session lifecycle', () => {
-    useCarrierForTests(memoryCarrier());
+    setCarrierForTests(memoryCarrier());
     acceptIssuedSession({ sessionToken: 'tok-secret', assurance: 'PASSWORD', expiresAt: '2026-11-19T12:30:00Z' });
     endSession('signed-out');
     expect(Object.keys(window.localStorage)).toEqual([]);
@@ -52,7 +52,7 @@ describe('the session store (ADR-0030; P18-TSK-004)', () => {
   afterEach(() => endSession('signed-out'));
 
   it('accepts an issue, extends on activity, and forgets on end', () => {
-    useCarrierForTests(memoryCarrier());
+    setCarrierForTests(memoryCarrier());
     acceptIssuedSession(
       { sessionToken: 't', assurance: 'MULTI_FACTOR', expiresAt: '2026-11-19T12:30:00Z' },
       Date.parse('2026-11-19T12:00:00Z'),
@@ -67,7 +67,7 @@ describe('the session store (ADR-0030; P18-TSK-004)', () => {
   });
 
   it('never stores the token in its state', () => {
-    useCarrierForTests(memoryCarrier());
+    setCarrierForTests(memoryCarrier());
     acceptIssuedSession({ sessionToken: 'tok-secret', assurance: 'PASSWORD', expiresAt: '2026-11-19T12:30:00Z' });
     expect(JSON.stringify(sessionState())).not.toContain('tok-secret');
   });

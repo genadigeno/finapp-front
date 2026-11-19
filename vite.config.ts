@@ -30,11 +30,12 @@ export default defineConfig({
     assetsInlineLimit: 0,
     rolldownOptions: {
       output: {
-        // Libraries in long-cached chunks of their own; each module's pages load on first visit.
+        // Libraries in long-cached chunks of their own; each module's pages load on first visit. Mantine is NOT
+        // grouped: one Mantine chunk would put every component any page uses (Select, FileInput, Table…) into
+        // the first load. Left to the bundler, a page-only component travels with its page (Stage 2 budget).
         codeSplitting: {
           groups: [
             { name: 'react', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/ },
-            { name: 'mantine', test: /node_modules[\\/]@mantine[\\/]/ },
             { name: 'tanstack', test: /node_modules[\\/]@tanstack[\\/]/ },
             { name: 'intl', test: /node_modules[\\/](react-intl|@formatjs|intl-messageformat)[\\/]/ },
             { name: 'icons', test: /node_modules[\\/]@tabler[\\/]/ },

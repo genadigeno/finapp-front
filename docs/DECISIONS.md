@@ -48,3 +48,9 @@ paying a shop) begins as Stage 4 did: frontend only, over the doors `finapp` ser
 Within it, two engineering choices the owner may revisit: the checkout code is typed in on the page (finapp has no
 hand-over that keeps it out of URLs, G-20), and the Credit entry is always in the main navigation (the navigation is
 static per route; the blueprint shows it only to customers with credit). -> `PHASE_18_PLAN.md` §4.5
+
+**D-N (the owner, 2026-11-19: "Start Stage 6").** Stage 6 (self-service: security centre, password, details,
+consents) begins as Stage 5 did: frontend only, over the doors `finapp` serves today, committed when complete.
+Notifications and support are not built - `finapp` provides neither (`P18-TSK-035` is conditional on it). The
+details page is reached from the security centre rather than a new navigation entry (seven already fill a phone's
+bar). -> `PHASE_18_PLAN.md` §4.6

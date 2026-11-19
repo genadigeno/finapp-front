@@ -37,6 +37,7 @@ nothing here: the application already answers every problem document by its `cod
 | B5.2 | Customer lists of credit checks and applications; a read of offered amendments | G-21 | `P18-TSK-118` | P2 | Following a check or application after leaving its page; accepting an amendment |
 | B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
 | B6.2 | Support and complaints; BNPL dispute read | G-13 | `P18-TSK-112` | P3 | Support screens |
+| B6.3 | Sign out every other session at once | G-22 | `P18-TSK-119` | P3 | An atomic "sign out all other devices" |
 | E1 | Downloadable statements; receiving identifiers | G-05, G-06 | — | P3 | Nice-to-have |
 | E2 | Organisation members, mandates, "act as organisation" | G-09 | epic | P3 | Business banking |
 
@@ -112,6 +113,11 @@ enumeration). No token in logs (`RESTRICTED-PII`).
 
 **Acceptance:** recovery and e-mail verification complete end to end on kind through the simulated adapter; responses identical
 for known and unknown identifiers. **DoD:** `DOD-SEC`. *(No owning phase today; the owner assigns one.)*
+
+*Confirmed by Stage 6:* recovery also needs its request identifier delivered - `POST /v1/recoveries` answers 202 with
+no body, and the `{id}` of `/v1/recoveries/{id}/completion` appears only in the internal `identity.RecoveryInitiated`
+event. Contact channels are e-mail only, have no read (no `GET /v1/me/channels`) and no removal. The application offers
+neither recovery nor contact addresses until this lands.
 
 ## B2.1 — Customer standing on `GET /v1/me` (G-08)
 
@@ -218,7 +224,15 @@ Require `Idempotency-Key` as on other customer commands. **DoD:** `DOD-API`.
 
 ## B6.1 — MFA factor removal and recovery codes (G-11)
 
-Remove or replace a factor under step-up; recovery codes issued once and stored hashed. **DoD:** `DOD-SEC`.
+Remove or replace a factor under step-up; recovery codes issued once and stored hashed. *Confirmed by Stage 6:* the MFA
+controller has only `POST /v1/me/mfa` and `POST /v1/me/mfa/confirmation`; recovery keeps the factor. **DoD:** `DOD-SEC`.
+
+## B6.3 — Sign out every other session at once (G-22) *(found by Stage 6)*
+
+There is no door that ends every session but the caller's; bulk revocation happens only as a side effect of a password
+change (others) or a recovery (all). The application ends each other session in turn (`DELETE /v1/sessions/{id}`),
+which is not atomic: a session started meanwhile survives. **What:** `DELETE /v1/sessions/others` (or equivalent),
+revoking in one transaction, audited. **DoD:** `DOD-SEC`.
 
 ## B6.2 — Support and complaints; BNPL dispute read (G-13)
 

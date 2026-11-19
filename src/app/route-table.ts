@@ -8,6 +8,7 @@ import { CREDIT_ROUTES } from '../modules/credit/routes.ts';
 import { FX_CROSSBORDER_ROUTES } from '../modules/fx-crossborder/routes.ts';
 import { MOVE_MONEY_ROUTES } from '../modules/move-money/routes.ts';
 import { ONBOARDING_ROUTES } from '../modules/onboarding/routes.ts';
+import { PROFILE_ROUTES } from '../modules/profile/routes.ts';
 import { SECURITY_ROUTES } from '../modules/security/routes.ts';
 import { setReturnablePaths } from '../platform/return-to.ts';
 import type { AppRoute } from '../platform/routing.ts';
@@ -39,6 +40,7 @@ export const ROUTES: readonly AppRoute[] = [
   ...CREDIT_ROUTES,
   ...ONBOARDING_ROUTES,
   ...SECURITY_ROUTES,
+  ...PROFILE_ROUTES,
 ];
 
 setReturnablePaths(ROUTES.filter((route) => route.returnable === true).map((route) => route.path));

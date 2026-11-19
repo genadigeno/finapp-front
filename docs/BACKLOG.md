@@ -115,14 +115,15 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 6 — Self-service
 
-| Task | Title | Depends on | Gaps | DoD |
-|---|---|---|---|---|
-| `P18-TSK-032` | Security centre: sessions, devices, sign out everywhere | Stage 2 | — | DOD-CUST |
-| `P18-TSK-033` | Password change; MFA management | 032 | G-11 | DOD-CUST |
-| `P18-TSK-034` | Consents centre and profile | Stage 2 | G-07 | DOD-CUST |
-| `P18-TSK-035` | Notifications and support — **only if** `finapp` provides them | — | G-03, G-13 | DOD-CUST |
-| `P18-TSK-111` *(backend)* | MFA factor removal and recovery codes | — | G-11 | finapp `DOD-SEC` |
-| `P18-TSK-112` *(backend)* | Support and complaints; BNPL dispute read | — | G-13 | finapp `DOD-API` |
+| Task | Title | Depends on | Gaps | DoD | Status |
+|---|---|---|---|---|---|
+| `P18-TSK-032` | Security centre: sessions, devices, sign out everywhere | Stage 2 | — | DOD-CUST | Built (D-N): centre with every self-service page; sign out all other devices, one session at a time (no bulk door, G-22) |
+| `P18-TSK-033` | Password change; MFA management | 032 | G-11 | DOD-CUST | Password change built (D-N): rotated session taken up at once, other devices signed out by finapp; removing a factor and recovery codes have no door (G-11, confirmed) |
+| `P18-TSK-034` | Consents centre and profile | Stage 2 | G-07 | DOD-CUST | Built (D-N): your details with the name change; consents reached from the centre (Stage 2 page); contact addresses not offered (G-03) |
+| `P18-TSK-035` | Notifications and support — **only if** `finapp` provides them | — | G-03, G-13 | DOD-CUST | Not built: finapp provides neither (confirmed at `5227f57e2`) |
+| `P18-TSK-111` *(backend)* | MFA factor removal and recovery codes | — | G-11 | finapp `DOD-SEC` | |
+| `P18-TSK-112` *(backend)* | Support and complaints; BNPL dispute read | — | G-13 | finapp `DOD-API` | |
+| `P18-TSK-119` *(backend)* | A door that signs out every other session at once | — | G-22 | finapp `DOD-SEC` | |
 
 ## Stage 7 — Production readiness
 

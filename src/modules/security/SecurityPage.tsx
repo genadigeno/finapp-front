@@ -1,8 +1,8 @@
-// The security centre (blueprint §6): where the customer protects their account. Stage 2 offers what finapp
-// serves today - two-step verification and signed-in devices. Password change, factor removal and recovery
-// codes are Stage 6 (P18-TSK-033; G-11).
+// The security centre (blueprint §6; P18-TSK-032): where the customer protects their account and finds their
+// details - two-step verification, signed-in devices, password, details and consents. Removing a second factor and
+// recovery codes have no door in finapp (G-11), so they are not offered.
 import { Card, Stack, Text, Title, UnstyledButton } from '@mantine/core';
-import { IconChevronRight, IconDevices, IconKey } from '@tabler/icons-react';
+import { IconChevronRight, IconChecklist, IconDevices, IconKey, IconLock, IconUser } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
@@ -18,6 +18,18 @@ const messages = defineMessages({
   devicesBody: {
     id: 'security.devices.body',
     defaultMessage: 'See where your account is signed in, and sign out any device.',
+  },
+  password: { id: 'security.password', defaultMessage: 'Password' },
+  passwordBody: { id: 'security.password.body', defaultMessage: 'Change the password you sign in with.' },
+  details: { id: 'security.details', defaultMessage: 'Your details' },
+  detailsBody: {
+    id: 'security.details.body',
+    defaultMessage: 'Your name, how you sign in and your customer reference.',
+  },
+  consents: { id: 'security.consents', defaultMessage: 'Your consents' },
+  consentsBody: {
+    id: 'security.consents.body',
+    defaultMessage: 'What you have agreed we may do with your data.',
   },
 });
 
@@ -55,6 +67,23 @@ export function SecurityPage() {
         title={<FormattedMessage {...messages.devices} />}
       >
         <FormattedMessage {...messages.devicesBody} />
+      </Entry>
+      <Entry
+        to="/security/password"
+        icon={<IconLock aria-hidden />}
+        title={<FormattedMessage {...messages.password} />}
+      >
+        <FormattedMessage {...messages.passwordBody} />
+      </Entry>
+      <Entry to="/profile" icon={<IconUser aria-hidden />} title={<FormattedMessage {...messages.details} />}>
+        <FormattedMessage {...messages.detailsBody} />
+      </Entry>
+      <Entry
+        to="/onboarding/consents"
+        icon={<IconChecklist aria-hidden />}
+        title={<FormattedMessage {...messages.consents} />}
+      >
+        <FormattedMessage {...messages.consentsBody} />
       </Entry>
     </Stack>
   );

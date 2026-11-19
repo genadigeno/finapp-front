@@ -16,6 +16,9 @@ export interface Standing {
   displayName: string | undefined;
   /** The customer's own reference: shared by an owner with a business that declares them (KYB). */
   partyId: string | undefined;
+  /** The name the customer signs in with. */
+  loginIdentifier: string | undefined;
+  registeredAt: string | undefined;
 }
 
 export function toPartyKind(value: string | undefined): PartyKind {
@@ -37,7 +40,13 @@ export function useStanding() {
     enabled: session.status === 'signed-in',
     queryFn: async (): Promise<Standing> => {
       const { data } = await ok(api.GET('/v1/me'));
-      return { partyKind: toPartyKind(data.kind), displayName: data.displayName, partyId: data.partyId };
+      return {
+        partyKind: toPartyKind(data.kind),
+        displayName: data.displayName,
+        partyId: data.partyId,
+        loginIdentifier: data.loginIdentifier,
+        registeredAt: data.registeredAt,
+      };
     },
   });
 }

@@ -33,4 +33,10 @@ export const SECURITY_ROUTES: AppRoute[] = [
     component: lazy(() => import('./SessionsPage.tsx').then((m) => ({ default: m.SessionsPage }))),
     returnable: true,
   },
+  {
+    path: '/security/password',
+    access: 'signed-in',
+    component: lazy(() => import('./PasswordPage.tsx').then((m) => ({ default: m.PasswordPage }))),
+    returnable: true,
+  },
 ];

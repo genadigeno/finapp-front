@@ -273,6 +273,30 @@ pages explain.
 shown; consumer-credit pre-contractual disclosure rules may require one. The offer shows the fixed borrowing rate, the
 illustrated schedule, total interest and total to repay.
 
+### 4.6 Stage 6 record (2026-11-19, D-N: the owner's "Start Stage 6")
+
+Built in this repository ahead of the entry gate; `finapp` unchanged. Read against `5227f57e2`: the credential,
+profile, contact-channel, recovery, session and MFA controllers and their identity services.
+
+| Task | Built | Evidence |
+|---|---|---|
+| `P18-TSK-032` | The security centre links two-step verification, signed-in devices, password, your details and your consents. Devices: "sign out all other devices" after confirmation ends each other session in turn (finapp has no bulk door, G-22; one already gone, 404, is not an error); this device stays signed in | `self-service.test.tsx` |
+| `P18-TSK-033` | Change your password: current password as proof, step-up first when the customer has a second factor (the same request is then sent again), length 8-256 checked before sending (finapp's only rule), passwords cleared from the page once sent, no idempotency key (the contract has none); finapp rotates the session - the new token is taken up before anything else is sent and never reaches page state - and signs out every other device. A wrong current password or a lockout gets one plain answer and does not sign the customer out. Removing a factor and recovery codes: no door (G-11) | `self-service.test.tsx` |
+| `P18-TSK-034` | Your details: name (or business name), sign-in name, customer type, customer since, customer reference; the name changed in place (1-200 characters, control and invisible characters refused as finapp refuses them); consents reached from the centre and the details page | `self-service.test.tsx` |
+| `P18-TSK-035` | Not built: finapp has no notification or support door for customers (G-03, G-13, confirmed) | — |
+
+Gates: `npm run verify` green (288 tests); `test:catalogue` 36 browser checks green; builds byte-identical; first load
+196 kB gzipped.
+
+**Found, recorded:**
+1. **finapp answers a wrong current password with `401 identity.AuthenticationFailed`.** The client counts every 401 as
+   unauthenticated; commands do not end the session on it (only reads do, through the query cache), and the password
+   page words this code itself, so a mistyped password never reads as "you have been signed out". A test holds it.
+2. **Password recovery cannot be offered**: neither the token nor the recovery request identifier reaches the customer
+   (G-03, extended). Contact addresses (e-mail only) cannot be verified for the same reason and are not offered.
+3. **Organisations hold no sign-in in finapp**: every signed-in customer is a person, so the business-name label on
+   the details page is defensive only.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -292,8 +316,9 @@ illustrated schedule, total interest and total to repay.
 | D-K | Start Stage 3 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 3" | §4.3 |
 | D-L | Start Stage 4 ahead of the entry gate, frontend only; commit each stage | 2026-11-19, "Start Stage 4, always commit changes" | §4.4 |
 | D-M | Start Stage 5 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 5" | §4.5 |
+| D-N | Start Stage 6 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 6" | §4.6 |
 
-Further decisions are numbered from D-N and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-O and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

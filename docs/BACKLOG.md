@@ -127,13 +127,13 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 7 — Production readiness
 
-| Task | Title | Depends on | DoD |
-|---|---|---|---|
-| `P18-TSK-036` | Threat-model update: customer-web boundary in `finapp`'s `THREAT_MODEL.md` | Stage 6 | 1.8 |
-| `P18-TSK-037` | Penetration test and ZAP baseline against staging | 102 | 1.8 |
-| `P18-TSK-038` | Accessibility audit (WCAG 2.2 AA), manual screen-reader passes | Stage 6 | DOD-CUST |
-| `P18-TSK-039` | Performance budgets (Lighthouse CI), runbook, DR behaviour | Stage 6 | 1.11 |
-| `P18-TSK-040` | Release checklist and exit review | 036–039 | all |
+| Task | Title | Depends on | DoD | Status |
+|---|---|---|---|---|
+| `P18-TSK-036` | Threat-model update: customer-web boundary in `finapp`'s `THREAT_MODEL.md` | Stage 6 | 1.8 | Drafted (D-O): `THREAT_MODEL_CUSTOMER_WEB.md`, twelve threats with controls and evidence; adoption into `finapp` is B0.1's |
+| `P18-TSK-037` | Penetration test and ZAP baseline against staging | 102 | 1.8 | Blocked: no staging deployment of the edge route (G-15); the procedure is in `RELEASE_CHECKLIST.md` §3 |
+| `P18-TSK-038` | Accessibility audit (WCAG 2.2 AA), manual screen-reader passes | Stage 6 | DOD-CUST | Automated part done (D-O): every page swept in the browser; manual screen-reader passes not done (`ACCESSIBILITY_AUDIT.md`) |
+| `P18-TSK-039` | Performance budgets (Lighthouse CI), runbook, DR behaviour | Stage 6 | 1.11 | Done (D-O) with budgets measured by Playwright on a throttled phone instead of Lighthouse CI; `RUNBOOK.md` |
+| `P18-TSK-040` | Release checklist and exit review | 036–039 | all | Done (D-O): `RELEASE_CHECKLIST.md` - not ready for customers |
 
 ## Epics outside Phase 18
 

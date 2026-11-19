@@ -17,6 +17,7 @@ import { basisPointsToPercent, percentToBasisPoints } from '../../design-system/
 import { ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { KYC_STATUS } from '../../design-system/status.ts';
 import { StatusChip } from '../../design-system/Values.tsx';
+import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { ApiError } from '../../platform/api/api-error.ts';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
@@ -314,7 +315,7 @@ export function BusinessPage() {
               <FormattedMessage {...messages.noOwners} />
             </Alert>
           ) : (
-            <div className="finapp-table-scroll">
+            <ScrollableTable label={intl.formatMessage(messages.owners)}>
               <Table>
                 <Table.Thead>
                   <Table.Tr>
@@ -360,7 +361,7 @@ export function BusinessPage() {
                   })}
                 </Table.Tbody>
               </Table>
-            </div>
+            </ScrollableTable>
           )}
           <DeclareOwner ownReference={standing.data?.partyId} />
         </>

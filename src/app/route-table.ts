@@ -10,6 +10,7 @@ import { MOVE_MONEY_ROUTES } from '../modules/move-money/routes.ts';
 import { ONBOARDING_ROUTES } from '../modules/onboarding/routes.ts';
 import { PROFILE_ROUTES } from '../modules/profile/routes.ts';
 import { SECURITY_ROUTES } from '../modules/security/routes.ts';
+import { WelcomePage } from './pages/WelcomePage.tsx';
 import { setReturnablePaths } from '../platform/return-to.ts';
 import type { AppRoute } from '../platform/routing.ts';
 
@@ -21,7 +22,9 @@ const APP_ROUTES: AppRoute[] = [
   {
     path: '/',
     access: 'public',
-    component: lazy(() => import('./pages/WelcomePage.tsx').then((m) => ({ default: m.WelcomePage }))),
+    // The start page is the first thing a new visitor sees: it travels with the entry (1 KB) rather than as a chunk
+    // fetched after the entry has run - one round trip less before the first paint (Stage 7, LCP budget).
+    component: WelcomePage,
   },
   {
     path: '/home',

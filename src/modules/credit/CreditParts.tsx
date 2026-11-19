@@ -7,6 +7,7 @@ import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-
 import { formatBusinessDate, formatInstant } from '../../design-system/dates.ts';
 import { formatMoney, fractionToPercent } from '../../design-system/money.ts';
 import { BusinessDate, Money } from '../../design-system/Values.tsx';
+import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { ApiError } from '../../platform/api/api-error.ts';
 
 const messages = defineMessages({
@@ -81,10 +82,18 @@ export interface IllustratedPeriod {
 }
 
 /** An illustrated repayment schedule: every row as finapp computed it. */
-export function ScheduleTable({ periods, currency }: { periods: readonly IllustratedPeriod[]; currency: string }) {
+export function ScheduleTable({
+  periods,
+  currency,
+  label,
+}: {
+  periods: readonly IllustratedPeriod[];
+  currency: string;
+  label: string;
+}) {
   const intl = useIntl();
   return (
-    <Table.ScrollContainer minWidth={420}>
+    <ScrollableTable label={label}>
       <Table>
         <Table.Thead>
           <Table.Tr>
@@ -111,7 +120,7 @@ export function ScheduleTable({ periods, currency }: { periods: readonly Illustr
           ))}
         </Table.Tbody>
       </Table>
-    </Table.ScrollContainer>
+    </ScrollableTable>
   );
 }
 

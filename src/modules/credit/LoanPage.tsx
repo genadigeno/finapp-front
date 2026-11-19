@@ -9,6 +9,7 @@ import { ConfirmDangerous } from '../../design-system/Dialogs.tsx';
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { INSTALMENT_STATUS, LOAN_STATUS } from '../../design-system/status.ts';
 import { BusinessDate, CorrelationReference, StatusChip } from '../../design-system/Values.tsx';
+import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
 import type { IdempotencyIntent } from '../../platform/api/idempotency.ts';
@@ -79,11 +80,14 @@ export function LoanPage() {
   const [chosenTab, setTab] = useState<string | null>(null);
   const [closing, setClosing] = useState(false);
   const loan = useLoan(loanId);
+  // Which tabs exist depends on the product: nothing below is read until the loan itself is (a credit line has no
+  // instalment schedule, an instalment loan no statements).
+  const known = loan.data !== undefined;
   const line = isLine(loan.data?.data.product);
   const tab = chosenTab ?? (line ? 'repayments' : 'schedule');
-  const schedule = useLoanSchedule(loanId, tab === 'schedule' && !line);
-  const repayments = useLoanRepayments(loanId, tab === 'repayments');
-  const statements = useLoanStatements(loanId, tab === 'statements' && line);
+  const schedule = useLoanSchedule(loanId, known && tab === 'schedule' && !line);
+  const repayments = useLoanRepayments(loanId, known && tab === 'repayments');
+  const statements = useLoanStatements(loanId, known && tab === 'statements' && line);
   const close = useCommand(
     async (intent: IdempotencyIntent<{ id: string }>) =>
       ok(api.POST('/v1/me/loans/{id}/closure', { params: { path: { id: intent.body.id }, header: intent.headers() } })),
@@ -197,7 +201,7 @@ export function LoanPage() {
             <EmptyState title={intl.formatMessage(messages.noSchedule)} />
           ) : (
             <Stack gap="xs">
-              <Table.ScrollContainer minWidth={360}>
+              <ScrollableTable label={intl.formatMessage(messages.schedule)}>
                 <Table>
                   <Table.Thead>
                     <Table.Tr>
@@ -222,7 +226,7 @@ export function LoanPage() {
                     ))}
                   </Table.Tbody>
                 </Table>
-              </Table.ScrollContainer>
+              </ScrollableTable>
               {schedule.data?.totalPayable === undefined ? null : (
                 <Text size="sm">
                   <FormattedMessage {...messages.totalPayable} />{' '}
@@ -270,7 +274,7 @@ export function LoanPage() {
           ) : (statements.data ?? []).length === 0 ? (
             <EmptyState title={intl.formatMessage(messages.noStatements)} />
           ) : (
-            <Table.ScrollContainer minWidth={420}>
+            <ScrollableTable label={intl.formatMessage(messages.statements)}>
               <Table>
                 <Table.Thead>
                   <Table.Tr>
@@ -301,7 +305,7 @@ export function LoanPage() {
                   ))}
                 </Table.Tbody>
               </Table>
-            </Table.ScrollContainer>
+            </ScrollableTable>
           )}
         </Tabs.Panel>
       </Tabs>

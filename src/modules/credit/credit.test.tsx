@@ -411,13 +411,16 @@ describe('loan servicing (P18-TSK-029)', () => {
 
   it('a suspended line offers no draw and says only that drawing is not possible', async () => {
     signInForTest();
-    renderAppAt('/credit/loans/ln-2', {
+    const { sent } = renderAppAt('/credit/loans/ln-2', {
       'GET /v1/me/loans/ln-2': json({ ...LINE, condition: { ...LINE.condition, drawsSuspended: true } }),
       'GET /v1/me/loans/ln-2/repayments': json({ repayments: [] }),
     });
     expect(await screen.findByText('You cannot draw from this credit line at the moment.')).toBeTruthy();
     expect(screen.queryByRole('link', { name: 'Draw money' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Close this credit line' })).toBeTruthy();
+    // A credit line has no instalment schedule: it is never asked for (found by the Stage 7 browser sweep).
+    await waitFor(() => expect(sent.some((s) => s.path.endsWith('/repayments'))).toBe(true));
+    expect(sent.some((s) => s.path.endsWith('/schedule'))).toBe(false);
   });
 });
 

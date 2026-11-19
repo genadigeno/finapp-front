@@ -315,11 +315,6 @@ body[data-finapp-scroll-locked] {
   user-select: all;
 }
 
-/* A wide table scrolls sideways inside its own box, never the page (Table.ScrollContainer uses ScrollArea). */
-.finapp-table-scroll {
-  overflow-x: auto;
-}
-
 /* Consent texts are legal wording: keep the author's line breaks. */
 .finapp-consent-text {
   white-space: pre-line;
@@ -363,4 +358,19 @@ body[data-finapp-scroll-locked] {
   overflow-wrap: anywhere;
   font-family: var(--mantine-font-family-monospace);
   font-size: var(--mantine-font-size-sm);
+}
+
+/* A table wider than the screen scrolls inside its own region, which the keyboard can reach (ScrollableTable). */
+.finapp-table-scroll {
+  overflow-x: auto;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.finapp-table-scroll > table {
+  min-width: 26rem;
+}
+
+.finapp-table-scroll:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
 }

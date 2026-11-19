@@ -1,26 +1,10 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { APP, CATALOGUE, collectViolations, cspViolations, seriousViolations } from './checks.ts';
 
 // P18-TSK-007 acceptance (blueprint §22 item 7): every design-system component, in both themes, is
 //   - accessible: axe reports no serious or critical violation (WCAG 2.2 AA rule set);
 //   - compatible with the production CSP and Trusted Types: the browser reports no violation.
 // Adapted from finapp-admin-panel/e2e/catalogue/catalogue.spec.ts (ADR-F08).
-
-const CATALOGUE = 'http://localhost:4181/catalogue/index.html';
-const APP = 'http://localhost:4180/';
-
-async function collectViolations(page: Page) {
-  // Installed before any script of ours runs, so no violation can be missed.
-  await page.addInitScript(() => {
-    const store: string[] = [];
-    (window as unknown as { __cspViolations: string[] }).__cspViolations = store;
-    document.addEventListener('securitypolicyviolation', (event) => {
-      store.push(
-        `${event.violatedDirective} blocked ${event.blockedURI || '(inline)'} at ${event.sourceFile}:${event.lineNumber}:${event.columnNumber} ${event.sample}`,
-      );
-    });
-  });
-}
 
 async function openCatalogue(page: Page, scheme: 'light' | 'dark') {
   await collectViolations(page);
@@ -29,18 +13,6 @@ async function openCatalogue(page: Page, scheme: 'light' | 'dark') {
   expect(csp).toContain("style-src 'self'");
   expect(csp).toContain("require-trusted-types-for 'script'");
   await expect(page.getByRole('heading', { name: 'Component catalogue' })).toBeVisible();
-}
-
-const cspViolations = (page: Page) =>
-  page.evaluate(() => (window as unknown as { __cspViolations: string[] }).__cspViolations);
-
-async function seriousViolations(page: Page) {
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-    .analyze();
-  return results.violations
-    .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    .map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
 }
 
 for (const scheme of ['light', 'dark'] as const) {

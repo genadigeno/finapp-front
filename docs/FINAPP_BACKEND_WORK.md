@@ -47,7 +47,8 @@ nothing here: the application already answers every problem document by its `cod
 
 `finapp`'s roadmap and `CURRENT_STATE.md` do not name Phase 18. When the owner sequences it (after Phases 16 and 17, keeping
 the one-phase-`IN_PROGRESS` rule), `finapp`'s records gain the phase and the backend tasks below, pointing to
-`finapp-front-end/docs/PHASE_18_PLAN.md`. No status changes before then.
+`finapp-front-end/docs/PHASE_18_PLAN.md`. No status changes before then. *Since Stage 7:* the customer-web boundary is
+drafted in `finapp-front-end/docs/THREAT_MODEL_CUSTOMER_WEB.md` for `finapp`'s `THREAT_MODEL.md` (`P18-TSK-036`).
 
 ## B0.2 — Adopt ADR-F02 in `finapp`'s register
 

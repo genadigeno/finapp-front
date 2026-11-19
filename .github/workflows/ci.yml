@@ -119,9 +119,10 @@ jobs:
           if-no-files-found: error
 
   catalogue:
-    # Every design-system component and the application's start page, built for production and served with
-    # the real headers: axe (WCAG 2.2 AA, no serious or critical) and the CSP with Trusted Types, in both
-    # themes, on a desktop and a phone viewport (P18-TSK-007).
+    # Every design-system component, the start page and - signed in against a scripted finapp - every page of the
+    # application, built for production and served with the real headers: axe (WCAG 2.2 AA, no serious or
+    # critical) and the CSP with Trusted Types, in both themes, on a desktop and a phone viewport (P18-TSK-007,
+    # -038); and the performance budgets on a throttled phone (P18-TSK-039).
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

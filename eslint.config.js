@@ -155,6 +155,8 @@ export default tseslint.config(
       'playwright-report/',
       'test-results/',
       'src/generated/',
+      // Tool worktrees and session files: another checkout of this repository, never this tree.
+      '.claude/',
     ],
   },
   js.configs.recommended,

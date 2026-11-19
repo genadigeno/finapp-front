@@ -7,6 +7,7 @@ import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { BNPL_AGREEMENT_STATUS } from '../../design-system/status.ts';
 import { BusinessDate, StatusChip } from '../../design-system/Values.tsx';
+import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { useBnplAgreement, useBnplRepayments, useBnplSchedule } from './api.ts';
 import { Facts, MaybeMoney, type Fact } from './CreditParts.tsx';
 import { planName, productName } from './labels.ts';
@@ -120,7 +121,7 @@ export function BnplAgreementPage() {
           ) : (schedule.data?.instalments ?? []).length === 0 ? (
             <EmptyState title={intl.formatMessage(messages.noSchedule)} />
           ) : (
-            <Table.ScrollContainer minWidth={420}>
+            <ScrollableTable label={intl.formatMessage(messages.schedule)}>
               <Table>
                 <Table.Thead>
                   <Table.Tr>
@@ -149,7 +150,7 @@ export function BnplAgreementPage() {
                   ))}
                 </Table.Tbody>
               </Table>
-            </Table.ScrollContainer>
+            </ScrollableTable>
           )}
         </Tabs.Panel>
         <Tabs.Panel value="repayments" pt="md">

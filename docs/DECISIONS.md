@@ -54,3 +54,10 @@ consents) begins as Stage 5 did: frontend only, over the doors `finapp` serves t
 Notifications and support are not built - `finapp` provides neither (`P18-TSK-035` is conditional on it). The
 details page is reached from the security centre rather than a new navigation entry (seven already fill a phone's
 bar). -> `PHASE_18_PLAN.md` §4.6
+
+**D-O (the owner, 2026-11-19: "Start Stage 7").** Stage 7 (production readiness) is done as far as this repository can
+take it: frontend only, `finapp` unchanged. The performance budgets are measured with the existing Playwright and
+Edge/Chromium tooling on a throttled phone profile rather than by adding Lighthouse CI (a new dependency and browser
+download, for the owner to approve if wanted). The threat model is drafted here for `finapp` to adopt. The ZAP
+baseline and penetration test wait for staging (G-15); the manual screen-reader passes wait for a person.
+-> `PHASE_18_PLAN.md` §4.7

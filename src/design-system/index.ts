@@ -26,6 +26,7 @@ export {
   type MoneyInputProps,
   type MoneyProps,
 } from './Values.tsx';
+export { ScrollableTable } from './ScrollableTable.tsx';
 export { ResultPanel, ReviewPanel, Wizard, type ResultKind, type ReviewRow } from './Workflow.tsx';
 export {
   basisPointsToPercent,

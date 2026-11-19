@@ -7,6 +7,7 @@ import { useState, type FormEvent } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { BusinessDate, Money, SignedMoney } from '../../design-system/Values.tsx';
+import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { useStatement, type StatementLine } from './api.ts';
 import { directionOf, lineName } from './labels.ts';
 import { calendarDate, checkPeriod, currentMonth, type PeriodProblem } from './period.ts';
@@ -137,7 +138,7 @@ export function StatementPage() {
               {section.lines.length === 0 ? (
                 <EmptyState title={intl.formatMessage(messages.empty)} />
               ) : (
-                <div className="finapp-table-scroll">
+                <ScrollableTable label={`${intl.formatMessage(messages.title)} ${section.currency}`}>
                   <Table>
                     <Table.Thead>
                       <Table.Tr>
@@ -158,7 +159,7 @@ export function StatementPage() {
                       ))}
                     </Table.Tbody>
                   </Table>
-                </div>
+                </ScrollableTable>
               )}
               {section.closing === undefined ? null : (
                 <Text size="sm" ta="right">

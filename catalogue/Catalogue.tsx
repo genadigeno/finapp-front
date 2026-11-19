@@ -64,6 +64,7 @@ import {
   Wizard,
   type NavItem,
   type ParsedMoneyInput,
+  ScrollableTable,
 } from '../src/design-system/index.ts';
 import { PocketSelect } from '../src/design-system/PocketSelect.tsx';
 
@@ -231,7 +232,7 @@ export function Catalogue() {
             <List.Item>Enter the setup key.</List.Item>
           </List>
           <Text className="finapp-secret">JBSW Y3DP EHPK 3PXP</Text>
-          <div className="finapp-table-scroll">
+          <ScrollableTable label="Owners and controllers">
             <Table>
               <Table.Thead>
                 <Table.Tr>
@@ -246,7 +247,7 @@ export function Catalogue() {
                 </Table.Tr>
               </Table.Tbody>
             </Table>
-          </div>
+          </ScrollableTable>
           <a href="#identity" className="finapp-entry">
             <Card withBorder radius="md" padding="md">
               <div className="finapp-entry__row">

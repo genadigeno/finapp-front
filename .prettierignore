@@ -10,3 +10,5 @@ sbom.cdx.json
 src/generated/
 contract/
 src/design-system/theme.generated.css
+# Tool worktrees and session files (another session's checkout of this repository) are not this tree.
+.claude/

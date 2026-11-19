@@ -313,7 +313,7 @@ export function OfferPage({ kind }: { kind: CreditKind }) {
           <Text size="sm" c="dimmed">
             <FormattedMessage {...messages.illustrative} />
           </Text>
-          <ScheduleTable periods={periods} currency={currency} />
+          <ScheduleTable periods={periods} currency={currency} label={intl.formatMessage(messages.schedule)} />
         </Stack>
       )}
       {!open ? (

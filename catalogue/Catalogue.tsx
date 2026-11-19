@@ -11,6 +11,7 @@ import {
   Group,
   List,
   PasswordInput,
+  Radio,
   Select,
   Stack,
   Table,
@@ -62,6 +63,7 @@ import {
   type NavItem,
   type ParsedMoneyInput,
 } from '../src/design-system/index.ts';
+import { PocketSelect } from '../src/design-system/PocketSelect.tsx';
 
 const NOW = Date.parse('2026-11-19T12:00:00Z');
 const CORRELATION = '0190a3c1-1111-7222-8333-444455556666';
@@ -256,6 +258,24 @@ export function Catalogue() {
               </div>
             </Card>
           </a>
+        </Section>
+
+        <Section title="Money movement controls">
+          <PocketSelect
+            label="Pay from"
+            pockets={[
+              { accountId: 'a1', currency: 'EUR', available: '1180.00' },
+              { accountId: 'a1', currency: 'JPY', available: '98000' },
+            ]}
+            value={null}
+            onChange={() => undefined}
+          />
+          <Radio.Group label="I know the amount I want to" defaultValue="FIXED_SOURCE">
+            <Group mt="xs">
+              <Radio value="FIXED_SOURCE" label="exchange" />
+              <Radio value="FIXED_DESTINATION" label="receive" />
+            </Group>
+          </Radio.Group>
         </Section>
 
         <Section title="Core banking controls">

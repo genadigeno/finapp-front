@@ -199,6 +199,41 @@ finapp holds (new **G-18**, P3 - the application keeps a copy of finapp's five);
 **Still true:** no customer can open a wallet through the application until finapp runs its KYC checks (G-16): opening
 needs an approved identity, and finapp answers `accounts.AccountOpeningRefused` until then, which the page explains.
 
+### 4.4 Stage 4 record (2026-11-19, D-L: the owner's "Start Stage 4, always commit changes")
+
+Built in this repository ahead of the entry gate; `finapp` unchanged. Read against `5227f57e2` controller by controller
+(beneficiaries, transfers, payment methods, payments, withdrawals, FX, cross-border).
+
+| Task | Built | Evidence |
+|---|---|---|
+| `P18-TSK-021` | Recipients: add by account reference (finapp has no search for another customer), remove after confirmation | `move-money.test.tsx` |
+| `P18-TSK-022` | Send to someone at FinApp: details -> review (one intent) -> result; finapp answers COMPLETED or FAILED at once; a risk check steps up, then the same request goes again under the same key; failures the customer can act on are explained, risk and limit refusals are generic | `move-money.test.tsx` |
+| `P18-TSK-023` | Cards and bank accounts (list, remove); add money with a saved method: open under a key and confirm; a card answers at once, a bank sends the customer to approve (https links only) and the status page follows the payment | `move-money.test.tsx` |
+| `P18-TSK-024` | Withdraw to a linked bank account (bank accounts only); the status page follows it; a hold reads as processing | `move-money.test.tsx` |
+| `P18-TSK-025` | Exchange: available pairs only, quote under a key, rate and margin (string arithmetic) shown, countdown on finapp's clock disables confirm at expiry, convert once; leaving a quote cancels it | `fx-crossborder.test.tsx` |
+| `P18-TSK-026` | Send abroad: corridors with fee and delivery estimate, overseas recipients with their state (never why), quote with fee and total debit first, payment under a key, status page with cancellation while it can be recalled | `fx-crossborder.test.tsx` |
+| `P18-TSK-027` | Each journey's result panel and the status pages of what is still in progress (bounded polling) | as above |
+
+Gates: `npm run verify` green (259 tests); `test:catalogue` 32 browser checks green; builds byte-identical; first load
+192 kB gzipped.
+
+**Shared pieces added:** wallet reads moved to `src/platform/customer/wallets.ts` (modules may not import each other);
+`PocketSelect`, `CommandOutcome`, `useReviewFlow`, bounded polling (`src/platform/query/polling.ts`); `useOnline` moved to
+the platform.
+
+**Found, fixed, recorded:**
+1. **Radios are 20 px**; each radio row (control and label, one target) is now at least 44 px.
+2. **The test transport shared `Response` objects across requests**; a cancelled request tore one down and later tests
+   read a network failure. Each scripted answer is now a factory (`src/testing/scripted-finapp.tsx`).
+3. **Two browsers running full-page axe side by side stalled** on this machine; the catalogue run uses one worker.
+4. **A held withdrawal now reads "Processing"** (it read "On hold"): no hint of review (INV-RSK-08).
+
+**What the customer cannot do yet** (handed to finapp): add a card (G-10 - no tokenisation path, and the tokenisation
+service is unset everywhere); link a bank account or add an overseas recipient (new **G-19** - no browser path to the
+providers' grants). Top-up confirmation and withdrawals answer `payments.ProviderUnavailable` wherever finapp's provider
+URLs are unset (every environment but the test overlay); the pages explain it. A recipient at FinApp is named only by
+account reference (G-09 territory).
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -216,8 +251,9 @@ needs an approved identity, and finapp answers `accounts.AccountOpeningRefused` 
 
 | D-J | A QR library for authenticator setup | **open** | §4.2 |
 | D-K | Start Stage 3 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 3" | §4.3 |
+| D-L | Start Stage 4 ahead of the entry gate, frontend only; commit each stage | 2026-11-19, "Start Stage 4, always commit changes" | §4.4 |
 
-Further decisions are numbered from D-L and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-M and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

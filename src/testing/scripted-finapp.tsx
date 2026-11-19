@@ -25,19 +25,31 @@ type Answer = Response | ((sent: Sent) => Response | Promise<Response>);
 /** `METHOD /path` → an answer, or a queue of answers consumed in order (the last one repeats). */
 export type Script = Record<string, Answer | Answer[]>;
 
-export const json = (body: unknown, status = 200) =>
-  new Response(body === undefined ? null : JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'X-Correlation-Id': '0190a3c1-1111-7222-8333-444455556666' },
-  });
+// Each helper returns a FACTORY: every request gets its own Response. A Response shared between requests (or
+// between tests) is cloned from a body that a cancelled request may already have torn down.
+export const json =
+  (body: unknown, status = 200) =>
+  () =>
+    new Response(body === undefined ? null : JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json', 'X-Correlation-Id': '0190a3c1-1111-7222-8333-444455556666' },
+    });
 
-export const empty = (status = 204) => new Response(null, { status });
+export const empty =
+  (status = 204) =>
+  () =>
+    new Response(null, { status });
 
-export const problem = (status: number, code: string, extra: Record<string, unknown> = {}) =>
-  new Response(JSON.stringify({ type: 'about:blank', title: code, status, code, ...extra }), {
-    status,
-    headers: { 'Content-Type': 'application/problem+json', 'X-Correlation-Id': '0190a3c1-2222-7222-8333-444455556666' },
-  });
+export const problem =
+  (status: number, code: string, extra: Record<string, unknown> = {}) =>
+  () =>
+    new Response(JSON.stringify({ type: 'about:blank', title: code, status, code, ...extra }), {
+      status,
+      headers: {
+        'Content-Type': 'application/problem+json',
+        'X-Correlation-Id': '0190a3c1-2222-7222-8333-444455556666',
+      },
+    });
 
 export function scriptedFetch(script: Script) {
   const sent: Sent[] = [];
@@ -57,12 +69,11 @@ export function scriptedFetch(script: Script) {
     sent.push(record);
     const queue = queues.get(`${request.method} ${url.pathname}`);
     if (queue === undefined || queue.length === 0) {
-      return problem(404, 'api.NotFound');
+      return problem(404, 'api.NotFound')();
     }
     const answer = queue.length > 1 ? queue.shift() : queue[0];
-    if (answer === undefined) return problem(404, 'api.NotFound');
-    const response = typeof answer === 'function' ? await answer(record) : answer;
-    return response.clone();
+    if (answer === undefined) return problem(404, 'api.NotFound')();
+    return typeof answer === 'function' ? answer(record) : answer.clone();
   };
   return { sent, fetch };
 }

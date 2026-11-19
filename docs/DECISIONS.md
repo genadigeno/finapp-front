@@ -37,3 +37,8 @@ backend is missing (password recovery and contact verification, G-03) are not bu
 begins as Stage 2 did: frontend only, over the doors `finapp` serves today, degrading honestly where lists and the
 activity read are missing (G-01, G-02). `finapp` is not changed from here. D-J (a QR library) stays open.
 -> `PHASE_18_PLAN.md` §4.3
+
+**D-L (the owner, 2026-11-19: "Start Stage 4, always commit changes").** Stage 4 (money movement: beneficiaries,
+internal transfers, payment methods and top-up, withdrawals, FX, cross-border, receipts) begins as Stage 3 did:
+frontend only, over the doors `finapp` serves today. Work is committed to this repository as each stage completes,
+without a separate request. -> `PHASE_18_PLAN.md` §4.4

@@ -32,6 +32,7 @@ nothing here: the application already answers every problem document by its `cod
 | B3.4 | A read of the currencies finapp holds | G-18 | `P18-TSK-115` | P3 | Offering only what finapp supports without a copy in the client |
 | B4.1 | Browser card tokenisation | G-10 | `P18-TSK-109` | P2 | Card top-up |
 | B4.2 | Idempotency on `POST /v1/beneficiaries` | G-12 | `P18-TSK-110` | P2 | Beneficiary creation |
+| B4.3 | A browser path to the providers' linking grants | G-19 | `P18-TSK-116` | **P1** | Linking a bank account; adding an overseas recipient |
 | B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
 | B6.2 | Support and complaints; BNPL dispute read | G-13 | `P18-TSK-112` | P3 | Support screens |
 | E1 | Downloadable statements; receiving identifiers | G-05, G-06 | — | P3 | Nice-to-have |
@@ -171,7 +172,21 @@ codes listed; the two webhook routes the contract omits. Non-breaking. **DoD:** 
 ## B4.1 — Browser card tokenisation (G-10)
 
 How a browser tokenises a card for the simulated PSP (hosted fields or a tokenisation endpoint) and the CSP consequence
-(`frame-src`); an ADR in paymentmethods. Until then, top-up by saved method only. **DoD:** `DOD-SEC`.
+(`frame-src`); an ADR in paymentmethods. Until then, top-up by saved method only. *Confirmed by Stage 4:* `POST
+/v1/me/payment-methods` takes a `clientToken` only, and the tokenisation URL is "absent in every environment until a real
+provider exists" - attaching answers `503 paymentmethods.TokenisationUnavailable`. **DoD:** `DOD-SEC`.
+
+## B4.3 — A browser path to the providers' linking grants (G-19) *(found by Stage 4)*
+
+`POST /v1/me/payment-methods/bank-accounts` takes a rail provider's single-use linking `grant`, and
+`POST /v1/me/cross-border/beneficiaries` a corridor provider's tokenisation `grant` - bank details go to the provider,
+never to finapp (ADR-0080 §3). Nothing in finapp tells a browser how to obtain either grant (a hosted page, a widget,
+a redirect with a return URL), so no customer can link a bank account or add an overseas recipient from the
+application. **What:** per provider, the browser flow that yields the grant - typically a redirect to the provider with
+a finapp-issued state and a return route on the public edge - and its CSP consequence (`form-action`, `frame-src`),
+by ADR. Relates to G-10 (cards). *Also found:* every provider URL (tokenisation, pay-in, push rail) is unset by
+default (`CONFIGURATION_REGISTER.md`), so top-up confirmation and withdrawals answer `503 payments.ProviderUnavailable`
+outside the test overlay; the application explains that answer. **DoD:** `DOD-SEC`.
 
 ## B4.2 — Idempotency on `POST /v1/beneficiaries` (G-12)
 

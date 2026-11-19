@@ -154,6 +154,188 @@ const byCode = defineMessages({
   },
   notActiveTitle: { id: 'problem.code.accountNotActive.title', defaultMessage: 'This account is not open' },
   notActiveNext: { id: 'problem.code.accountNotActive.next', defaultMessage: 'Nothing was changed.' },
+  // Stage 4 (money movement). Risk, limit and screening refusals say nothing about why (INV-RSK-08).
+  unknownSourceTitle: {
+    id: 'problem.code.unknownSource.title',
+    defaultMessage: 'We could not find the account to send from',
+  },
+  unknownSourceNext: {
+    id: 'problem.code.unknownSource.next',
+    defaultMessage: 'Choose one of your wallets and try again. Nothing was sent.',
+  },
+  unknownDestinationTitle: {
+    id: 'problem.code.unknownDestination.title',
+    defaultMessage: 'We could not find that account',
+  },
+  unknownDestinationNext: {
+    id: 'problem.code.unknownDestination.next',
+    defaultMessage: 'Check the account reference with the recipient. Nothing was sent.',
+  },
+  noWalletTitle: { id: 'problem.code.noWallet.title', defaultMessage: 'You have no wallet in this currency' },
+  noWalletNext: {
+    id: 'problem.code.noWallet.next',
+    defaultMessage: 'Add the currency to your wallet first. Nothing was charged.',
+  },
+  unknownInstrumentTitle: {
+    id: 'problem.code.unknownInstrument.title',
+    defaultMessage: 'This card or bank account cannot be used',
+  },
+  unknownInstrumentNext: {
+    id: 'problem.code.unknownInstrument.next',
+    defaultMessage: 'Choose another one. Nothing was charged.',
+  },
+  currencyMismatchTitle: {
+    id: 'problem.code.currencyMismatch.title',
+    defaultMessage: 'This card or bank account does not take this currency',
+  },
+  currencyMismatchNext: {
+    id: 'problem.code.currencyMismatch.next',
+    defaultMessage: 'Choose another currency or payment method. Nothing was charged.',
+  },
+  providerUnavailableTitle: {
+    id: 'problem.code.providerUnavailable.title',
+    defaultMessage: 'Payments are unavailable right now',
+  },
+  providerUnavailableNext: {
+    id: 'problem.code.providerUnavailable.next',
+    defaultMessage: 'Try again later. If you were paying, check its status before trying again.',
+  },
+  noEligibleRailTitle: { id: 'problem.code.noEligibleRail.title', defaultMessage: 'This cannot be sent right now' },
+  noEligibleRailNext: { id: 'problem.code.noEligibleRail.next', defaultMessage: 'Try again later. Nothing was sent.' },
+  notConfirmableTitle: {
+    id: 'problem.code.notConfirmable.title',
+    defaultMessage: 'This payment can no longer be confirmed',
+  },
+  notConfirmableNext: {
+    id: 'problem.code.notConfirmable.next',
+    defaultMessage: 'Check its status. Nothing more was charged.',
+  },
+  notCancellableTitle: {
+    id: 'problem.code.notCancellable.title',
+    defaultMessage: 'This payment can no longer be cancelled',
+  },
+  notCancellableNext: { id: 'problem.code.notCancellable.next', defaultMessage: 'Check its status.' },
+  withdrawalUnfundedTitle: {
+    id: 'problem.code.withdrawalUnfunded.title',
+    defaultMessage: 'There is not enough money available',
+  },
+  withdrawalUnfundedNext: {
+    id: 'problem.code.withdrawalUnfunded.next',
+    defaultMessage: 'Choose a smaller amount. Nothing was sent.',
+  },
+  withdrawalCurrencyTitle: {
+    id: 'problem.code.withdrawalCurrency.title',
+    defaultMessage: 'Your bank account does not take this currency',
+  },
+  withdrawalCurrencyNext: {
+    id: 'problem.code.withdrawalCurrency.next',
+    defaultMessage: 'Choose another currency. Nothing was sent.',
+  },
+  fxNotEligibleTitle: {
+    id: 'problem.code.fxNotEligible.title',
+    defaultMessage: 'Currency exchange is not available to you',
+  },
+  fxNotEligibleNext: { id: 'problem.code.fxNotEligible.next', defaultMessage: 'Nothing was exchanged.' },
+  pairNotOfferedTitle: {
+    id: 'problem.code.pairNotOffered.title',
+    defaultMessage: 'We do not exchange between these currencies',
+  },
+  pairNotOfferedNext: { id: 'problem.code.pairNotOffered.next', defaultMessage: 'Choose other currencies.' },
+  amountOutOfRangeTitle: {
+    id: 'problem.code.amountOutOfRange.title',
+    defaultMessage: 'This amount is outside what we can exchange',
+  },
+  amountOutOfRangeNext: {
+    id: 'problem.code.amountOutOfRange.next',
+    defaultMessage: 'Choose an amount within the limits shown.',
+  },
+  pairSuspendedTitle: { id: 'problem.code.pairSuspended.title', defaultMessage: 'This exchange is paused' },
+  pairSuspendedNext: {
+    id: 'problem.code.pairSuspended.next',
+    defaultMessage: 'Try again later. Nothing was exchanged.',
+  },
+  rateUnavailableTitle: {
+    id: 'problem.code.rateUnavailable.title',
+    defaultMessage: 'We cannot give you a rate right now',
+  },
+  rateUnavailableNext: { id: 'problem.code.rateUnavailable.next', defaultMessage: 'Try again in a moment.' },
+  tooManyQuotesTitle: { id: 'problem.code.tooManyQuotes.title', defaultMessage: 'You have too many open quotes' },
+  tooManyQuotesNext: {
+    id: 'problem.code.tooManyQuotes.next',
+    defaultMessage: 'Wait for one to expire, or use one, then ask again.',
+  },
+  quoteNotFoundTitle: { id: 'problem.code.quoteNotFound.title', defaultMessage: 'We could not find this quote' },
+  quoteNotFoundNext: { id: 'problem.code.quoteNotFound.next', defaultMessage: 'Get a new quote.' },
+  quoteAcceptedTitle: { id: 'problem.code.quoteAccepted.title', defaultMessage: 'This quote has already been used' },
+  quoteAcceptedNext: {
+    id: 'problem.code.quoteAccepted.next',
+    defaultMessage: 'Check your accounts before doing anything else.',
+  },
+  quoteNotAcceptableTitle: {
+    id: 'problem.code.quoteNotAcceptable.title',
+    defaultMessage: 'This quote can no longer be used',
+  },
+  quoteNotAcceptableNext: {
+    id: 'problem.code.quoteNotAcceptable.next',
+    defaultMessage: 'Get a new quote. Nothing was exchanged.',
+  },
+  sourceWalletMissingTitle: {
+    id: 'problem.code.sourceWalletMissing.title',
+    defaultMessage: 'You have no wallet in the currency you pay from',
+  },
+  sourceWalletMissingNext: {
+    id: 'problem.code.sourceWalletMissing.next',
+    defaultMessage: 'Add that currency first. Nothing was exchanged.',
+  },
+  walletNotPostableTitle: {
+    id: 'problem.code.walletNotPostable.title',
+    defaultMessage: 'Your wallet cannot be used right now',
+  },
+  walletNotPostableNext: { id: 'problem.code.walletNotPostable.next', defaultMessage: 'Nothing was moved.' },
+  fxFundsTitle: { id: 'problem.code.fxFunds.title', defaultMessage: 'There is not enough money available' },
+  fxFundsNext: { id: 'problem.code.fxFunds.next', defaultMessage: 'Choose a smaller amount. Nothing was moved.' },
+  notPayableTitle: { id: 'problem.code.notPayable.title', defaultMessage: 'This recipient cannot be paid right now' },
+  notPayableNext: { id: 'problem.code.notPayable.next', defaultMessage: 'Nothing was sent.' },
+  corridorNotOfferedTitle: {
+    id: 'problem.code.corridorNotOffered.title',
+    defaultMessage: 'We do not send to this country in this currency',
+  },
+  corridorNotOfferedNext: { id: 'problem.code.corridorNotOffered.next', defaultMessage: 'Nothing was sent.' },
+  corridorLimitTitle: {
+    id: 'problem.code.corridorLimit.title',
+    defaultMessage: 'This amount is more than we can send in one payment',
+  },
+  corridorLimitNext: { id: 'problem.code.corridorLimit.next', defaultMessage: 'Choose a smaller amount.' },
+  screeningRequiredTitle: {
+    id: 'problem.code.screeningRequired.title',
+    defaultMessage: 'This quote can no longer be used',
+  },
+  screeningRequiredNext: {
+    id: 'problem.code.screeningRequired.next',
+    defaultMessage: 'Get a new quote. Nothing was sent.',
+  },
+  corridorUnavailableTitle: {
+    id: 'problem.code.corridorUnavailable.title',
+    defaultMessage: 'Sending to this country is unavailable right now',
+  },
+  corridorUnavailableNext: {
+    id: 'problem.code.corridorUnavailable.next',
+    defaultMessage: 'Try again later. Nothing was sent.',
+  },
+  xbRefusedTitle: { id: 'problem.code.xbRefused.title', defaultMessage: 'This payment could not be sent' },
+  xbRefusedNext: { id: 'problem.code.xbRefused.next', defaultMessage: 'Nothing was taken from your wallet.' },
+  xbLimitTitle: { id: 'problem.code.xbLimit.title', defaultMessage: 'This payment could not be sent' },
+  xbLimitNext: { id: 'problem.code.xbLimit.next', defaultMessage: 'Nothing was taken from your wallet.' },
+  xbNotCancellableTitle: {
+    id: 'problem.code.xbNotCancellable.title',
+    defaultMessage: 'This payment can no longer be cancelled',
+  },
+  xbNotCancellableNext: { id: 'problem.code.xbNotCancellable.next', defaultMessage: 'It will arrive as planned.' },
+  screeningUnavailableTitle: {
+    id: 'problem.code.screeningUnavailable.title',
+    defaultMessage: 'We cannot quote this payment right now',
+  },
+  screeningUnavailableNext: { id: 'problem.code.screeningUnavailable.next', defaultMessage: 'Try again in a moment.' },
   stakeExceedsNext: {
     id: 'problem.code.stakeExceeds.next',
     defaultMessage: 'Check the shares already declared and enter a smaller one.',
@@ -188,6 +370,53 @@ const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
   ],
   ['accounts.AccountNotEmpty', { title: byCode.notEmptyTitle, nextStep: byCode.notEmptyNext }],
   ['accounts.AccountNotActive', { title: byCode.notActiveTitle, nextStep: byCode.notActiveNext }],
+  ['transfers.UnknownSource', { title: byCode.unknownSourceTitle, nextStep: byCode.unknownSourceNext }],
+  ['transfers.UnknownDestination', { title: byCode.unknownDestinationTitle, nextStep: byCode.unknownDestinationNext }],
+  ['payments.NoWallet', { title: byCode.noWalletTitle, nextStep: byCode.noWalletNext }],
+  ['payments.UnknownInstrument', { title: byCode.unknownInstrumentTitle, nextStep: byCode.unknownInstrumentNext }],
+  ['payments.CurrencyMismatch', { title: byCode.currencyMismatchTitle, nextStep: byCode.currencyMismatchNext }],
+  [
+    'payments.ProviderUnavailable',
+    { title: byCode.providerUnavailableTitle, nextStep: byCode.providerUnavailableNext },
+  ],
+  ['payments.NoEligibleRail', { title: byCode.noEligibleRailTitle, nextStep: byCode.noEligibleRailNext }],
+  ['payments.NotConfirmable', { title: byCode.notConfirmableTitle, nextStep: byCode.notConfirmableNext }],
+  ['payments.NotCancellable', { title: byCode.notCancellableTitle, nextStep: byCode.notCancellableNext }],
+  ['payments.WithdrawalUnfunded', { title: byCode.withdrawalUnfundedTitle, nextStep: byCode.withdrawalUnfundedNext }],
+  [
+    'payments.WithdrawalCurrencyMismatched',
+    { title: byCode.withdrawalCurrencyTitle, nextStep: byCode.withdrawalCurrencyNext },
+  ],
+  ['fx.CustomerNotEligible', { title: byCode.fxNotEligibleTitle, nextStep: byCode.fxNotEligibleNext }],
+  ['fx.PairNotOffered', { title: byCode.pairNotOfferedTitle, nextStep: byCode.pairNotOfferedNext }],
+  ['fx.AmountOutOfRange', { title: byCode.amountOutOfRangeTitle, nextStep: byCode.amountOutOfRangeNext }],
+  ['fx.PairSuspended', { title: byCode.pairSuspendedTitle, nextStep: byCode.pairSuspendedNext }],
+  ['fx.RateUnavailable', { title: byCode.rateUnavailableTitle, nextStep: byCode.rateUnavailableNext }],
+  ['fx.TooManyOpenQuotes', { title: byCode.tooManyQuotesTitle, nextStep: byCode.tooManyQuotesNext }],
+  ['fx.QuoteNotFound', { title: byCode.quoteNotFoundTitle, nextStep: byCode.quoteNotFoundNext }],
+  ['fx.QuoteAlreadyAccepted', { title: byCode.quoteAcceptedTitle, nextStep: byCode.quoteAcceptedNext }],
+  ['fx.QuoteNotAcceptable', { title: byCode.quoteNotAcceptableTitle, nextStep: byCode.quoteNotAcceptableNext }],
+  ['fx.SourceWalletMissing', { title: byCode.sourceWalletMissingTitle, nextStep: byCode.sourceWalletMissingNext }],
+  ['fx.WalletNotPostable', { title: byCode.walletNotPostableTitle, nextStep: byCode.walletNotPostableNext }],
+  ['fx.InsufficientFunds', { title: byCode.fxFundsTitle, nextStep: byCode.fxFundsNext }],
+  ['crossborder.BeneficiaryNotPayable', { title: byCode.notPayableTitle, nextStep: byCode.notPayableNext }],
+  [
+    'crossborder.CorridorNotOffered',
+    { title: byCode.corridorNotOfferedTitle, nextStep: byCode.corridorNotOfferedNext },
+  ],
+  ['crossborder.AmountExceedsCorridorLimit', { title: byCode.corridorLimitTitle, nextStep: byCode.corridorLimitNext }],
+  ['crossborder.ScreeningRequired', { title: byCode.screeningRequiredTitle, nextStep: byCode.screeningRequiredNext }],
+  [
+    'crossborder.CorridorUnavailable',
+    { title: byCode.corridorUnavailableTitle, nextStep: byCode.corridorUnavailableNext },
+  ],
+  ['crossborder.RiskRefused', { title: byCode.xbRefusedTitle, nextStep: byCode.xbRefusedNext }],
+  ['crossborder.LimitRefused', { title: byCode.xbLimitTitle, nextStep: byCode.xbLimitNext }],
+  ['crossborder.NotCancellable', { title: byCode.xbNotCancellableTitle, nextStep: byCode.xbNotCancellableNext }],
+  [
+    'crossborder.ScreeningUnavailable',
+    { title: byCode.screeningUnavailableTitle, nextStep: byCode.screeningUnavailableNext },
+  ],
 ]);
 
 /** The customer's explanation of any failure. A non-ApiError is a defect of this application. */

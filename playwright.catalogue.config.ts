@@ -11,6 +11,9 @@ const channel = process.env['PW_CHANNEL'];
 export default defineConfig({
   testDir: './e2e/catalogue',
   fullyParallel: false,
+  // One browser at a time: two Edge instances running full-page axe side by side stalled on this machine (Stage 4,
+  // dark theme, 90 s timeouts); each project passes alone in under a minute.
+  workers: 1,
   forbidOnly: !!process.env['CI'],
   retries: 0,
   // A cold first load plus a full axe analysis can exceed Playwright's defaults on a loaded machine.

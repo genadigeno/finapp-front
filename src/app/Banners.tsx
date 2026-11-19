@@ -2,10 +2,10 @@
 import { Alert, Text } from '@mantine/core';
 import { IconWifiOff } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSyncExternalStore } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { SessionExpiring } from '../design-system/States.tsx';
 import { useNow } from '../design-system/use-now.ts';
+import { useOnline } from '../platform/online.ts';
 import { standingQueryKey, useSession } from '../platform/session/standing.ts';
 
 const messages = defineMessages({
@@ -32,24 +32,6 @@ export function SessionExpiryWarning() {
       remainingMs={remaining}
       onStay={() => void client.refetchQueries({ queryKey: standingQueryKey })}
     />
-  );
-}
-
-function subscribeOnline(listener: () => void): () => void {
-  window.addEventListener('online', listener);
-  window.addEventListener('offline', listener);
-  return () => {
-    window.removeEventListener('online', listener);
-    window.removeEventListener('offline', listener);
-  };
-}
-
-/** True while the browser reports a connection. Command screens disable their submit when false. */
-export function useOnline(): boolean {
-  return useSyncExternalStore(
-    subscribeOnline,
-    () => navigator.onLine,
-    () => true,
   );
 }
 

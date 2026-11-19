@@ -89,17 +89,18 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 4 — Money movement
 
-| Task | Title | Depends on | Gaps | DoD |
-|---|---|---|---|---|
-| `P18-TSK-021` | Beneficiaries | Stage 3 | G-12 | DOD-CUST |
-| `P18-TSK-022` | Internal transfers | 021 | — | DOD-CUST |
-| `P18-TSK-023` | Payment methods and top-up | Stage 3 | G-10 (card) | DOD-CUST |
-| `P18-TSK-024` | Withdrawals | 023 | G-01 | DOD-CUST |
-| `P18-TSK-025` | FX conversion | Stage 3 | G-01 | DOD-CUST |
-| `P18-TSK-026` | Cross-border payments | 021 | G-01 | DOD-CUST |
-| `P18-TSK-027` | Receipts and outcome pages | 022–026 | — | DOD-CUST |
-| `P18-TSK-109` *(backend)* | Browser card tokenisation for the simulated PSP | — | G-10 | finapp `DOD-SEC`, ADR |
-| `P18-TSK-110` *(backend)* | Idempotency on `POST /v1/beneficiaries` | — | G-12 | finapp `DOD-API` |
+| Task | Title | Depends on | Gaps | DoD | Status |
+|---|---|---|---|---|---|
+| `P18-TSK-021` | Beneficiaries | Stage 3 | G-12 | DOD-CUST | Built (D-L): add by account reference, remove; no idempotency on add (G-12) |
+| `P18-TSK-022` | Internal transfers | 021 | — | DOD-CUST | Built (D-L): synchronous result, step-up then same key; risk refusals generic |
+| `P18-TSK-023` | Payment methods and top-up | Stage 3 | G-10 (card) | DOD-CUST | Built (D-L): list and remove methods, top-up with saved method; adding a method not possible (G-10, G-19) |
+| `P18-TSK-024` | Withdrawals | 023 | G-01 | DOD-CUST | Built (D-L): bank accounts only; status page; held reads as processing |
+| `P18-TSK-025` | FX conversion | Stage 3 | G-01 | DOD-CUST | Built (D-L): quote, countdown, margin disclosed, convert once |
+| `P18-TSK-026` | Cross-border payments | 021 | G-01 | DOD-CUST | Built (D-L): corridors, recipients, quote with fee and total, payment status, cancellation; adding a recipient not possible (G-19) |
+| `P18-TSK-027` | Receipts and outcome pages | 022–026 | — | DOD-CUST | Built (D-L) as each journey's result and status pages |
+| `P18-TSK-109` *(backend)* | Browser card tokenisation for the simulated PSP | — | G-10 | finapp `DOD-SEC`, ADR | |
+| `P18-TSK-110` *(backend)* | Idempotency on `POST /v1/beneficiaries` | — | G-12 | finapp `DOD-API` | |
+| `P18-TSK-116` *(backend)* | A browser path to the providers' linking grants (bank accounts, overseas recipients) | — | G-19 | finapp `DOD-SEC`, ADR | |
 
 ## Stage 5 — Credit
 

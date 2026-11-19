@@ -322,3 +322,9 @@ body[data-finapp-scroll-locked] {
   text-align: right;
   white-space: nowrap;
 }
+
+/* A radio's target is the control and its label together: the row is at least 44 px tall. */
+.mantine-Radio-body {
+  align-items: center;
+  min-height: var(--finapp-touch-target);
+}

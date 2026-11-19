@@ -92,10 +92,11 @@ test('touch targets are at least 44 px', async ({ page }) => {
   await openCatalogue(page, 'light');
   const small = await page.evaluate(() =>
     [...document.querySelectorAll('main button, main input')]
-      // An input inside Mantine's bordered box (a password field) is tapped through that box: measure the box.
+      // An input inside Mantine's bordered box (a password field) is tapped through that box, and a radio through its
+      // row with its label: measure what the customer taps.
       .map((element) => ({
         element,
-        box: (element.closest('.mantine-Input-input') ?? element).getBoundingClientRect(),
+        box: (element.closest('.mantine-Input-input, .mantine-Radio-body') ?? element).getBoundingClientRect(),
       }))
       .filter(({ box }) => box.width > 0 && box.height > 0 && box.height < 43.5)
       .map(
@@ -174,6 +175,17 @@ test('the core banking controls switch tabs without a CSP violation', async ({ p
   await section.getByRole('tab', { name: 'Top-ups and purchases' }).click();
   await expect(section.getByText('+€100.00')).toBeVisible();
   await section.getByLabel('From').fill('2026-10-01');
+  expect(await seriousViolations(page)).toEqual([]);
+  expect(await cspViolations(page)).toEqual([]);
+});
+
+test('the money movement controls open without an accessibility or CSP violation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openCatalogue(page, 'light');
+  const section = page.getByRole('region', { name: 'Money movement controls' });
+  await section.getByLabel('Pay from', { exact: true }).first().click();
+  await page.getByRole('option', { name: /JPY/ }).click();
+  await section.getByRole('radio', { name: 'receive' }).check();
   expect(await seriousViolations(page)).toEqual([]);
   expect(await cspViolations(page)).toEqual([]);
 });

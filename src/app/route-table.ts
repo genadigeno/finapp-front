@@ -4,6 +4,8 @@ import { IconHome } from '@tabler/icons-react';
 import { lazy } from 'react';
 import { defineMessages } from 'react-intl';
 import { ACCOUNTS_ROUTES } from '../modules/accounts/routes.ts';
+import { FX_CROSSBORDER_ROUTES } from '../modules/fx-crossborder/routes.ts';
+import { MOVE_MONEY_ROUTES } from '../modules/move-money/routes.ts';
 import { ONBOARDING_ROUTES } from '../modules/onboarding/routes.ts';
 import { SECURITY_ROUTES } from '../modules/security/routes.ts';
 import { setReturnablePaths } from '../platform/return-to.ts';
@@ -31,6 +33,8 @@ const APP_ROUTES: AppRoute[] = [
 export const ROUTES: readonly AppRoute[] = [
   ...APP_ROUTES,
   ...ACCOUNTS_ROUTES,
+  ...MOVE_MONEY_ROUTES,
+  ...FX_CROSSBORDER_ROUTES,
   ...ONBOARDING_ROUTES,
   ...SECURITY_ROUTES,
 ];

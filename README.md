@@ -5,9 +5,9 @@ multi-currency wallets, money movement, credit and self-service for individuals 
 customer surface of the `finapp` modular monolith.
 
 **State:** Stage 1 (foundation) and Stage 2 (sign-in, registration, two-step verification, signed-in devices,
-consents, identity and business verification) and Stage 3 (accounts, balances, statements, activity) are built over the doors finapp serves today, with the session in
+consents, identity and business verification), Stage 3 (accounts, balances, statements, activity) and Stage 4 (sending, top-up, withdrawal, exchange, sending abroad) are built over the doors finapp serves today, with the session in
 memory until finapp ships the cookie carrier. No customer can complete identity verification yet: finapp never runs
-its checks in production (G-16). Money movement is Stage 4 onward. What only finapp can do is in
+its checks in production (G-16). Credit is Stage 5 onward. What only finapp can do is in
 `docs/FINAPP_BACKEND_WORK.md`.
 
 ## Commands

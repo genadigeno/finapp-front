@@ -27,7 +27,6 @@ const m = defineMessages({
   cancelled: { id: 'status.cancelled', defaultMessage: 'Cancelled' },
   sentToBank: { id: 'status.sentToBank', defaultMessage: 'Sent to your bank' },
   confirming: { id: 'status.confirming', defaultMessage: 'Being confirmed' },
-  onHold: { id: 'status.onHold', defaultMessage: 'On hold' },
   quoted: { id: 'status.quoted', defaultMessage: 'Quote ready' },
   accepted: { id: 'status.accepted', defaultMessage: 'Accepted' },
   exchanged: { id: 'status.exchanged', defaultMessage: 'Exchanged' },
@@ -75,8 +74,9 @@ export const WITHDRAWAL_STATUS = {
   FAILED: p('critical', m.failed, true),
   // The rail did not say; finapp is finding out. Never shown as failure.
   UNKNOWN: p('caution', m.confirming, false),
-  // No reason is ever shown (INV-RSK-08).
-  HELD: p('caution', m.onHold, false),
+  // A risk hold looks like any withdrawal in progress: no reason, no deadline, no hint of review (INV-RSK-08;
+  // finapp ERROR_CONTRACT.md withdrawals).
+  HELD: p('info', m.processing, false),
 } as const satisfies Record<WithdrawalStatus, StatusPresentation>;
 
 export type FxQuoteStatus = 'ISSUED' | 'ACCEPTED' | 'EXECUTED' | 'ABANDONED' | 'EXPIRED' | 'CANCELLED';
@@ -89,13 +89,14 @@ export const FX_QUOTE_STATUS = {
   CANCELLED: p('neutral', m.cancelled, true),
 } as const satisfies Record<FxQuoteStatus, StatusPresentation>;
 
-export type CrossBorderStatus = 'PROCESSING' | 'SENT' | 'DELIVERED' | 'RETURNED' | 'FAILED';
+export type CrossBorderStatus = 'PROCESSING' | 'SENT' | 'DELIVERED' | 'RETURNED' | 'FAILED' | 'CANCELLED';
 export const CROSS_BORDER_STATUS = {
   PROCESSING: p('info', m.processing, false),
   SENT: p('info', m.sent, false),
   DELIVERED: p('positive', m.delivered, true),
   RETURNED: p('caution', m.returned, true),
   FAILED: p('critical', m.failed, true),
+  CANCELLED: p('neutral', m.cancelled, true),
 } as const satisfies Record<CrossBorderStatus, StatusPresentation>;
 
 export type KycStatus = 'OPEN' | 'IN_PROGRESS' | 'PENDING_DECISION' | 'APPROVED' | 'REJECTED';

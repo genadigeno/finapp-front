@@ -234,6 +234,45 @@ providers' grants). Top-up confirmation and withdrawals answer `payments.Provide
 URLs are unset (every environment but the test overlay); the pages explain it. A recipient at FinApp is named only by
 account reference (G-09 territory).
 
+### 4.5 Stage 5 record (2026-11-19, D-M: the owner's "Start Stage 5")
+
+Built in this repository ahead of the entry gate; `finapp` unchanged. Read against `5227f57e2` controller by controller
+(credit decision requests and profile, loan applications, offers and loans, BNPL applications, offers, agreements and
+disputes, checkout confirmation and BNPL options) and against `ERROR_CONTRACT.md`.
+
+| Task | Built | Evidence |
+|---|---|---|
+| `P18-TSK-028` | Credit home: loans and credit lines, pay-later plans, current answers and when finapp last looked at the credit history; check what you could borrow (loan or line, optional declared income and outgoings) under a key, answered later (202) on its own page with bounded polling; an approval shows what finapp approved, a decline only finapp's customer reasons; cancellation while finapp is still gathering; missing consent leads to the consents page | `credit.test.tsx` |
+| `P18-TSK-029` | Apply (payout and repayment through the wallet, repayment day); the application page follows it to an offer and allows withdrawal; the offer shows every figure finapp computed (rate as a percentage by string arithmetic, illustrated schedule, total interest, total to repay, minimum payment for a line) and the agreement text in a keyboard-scrollable region, and is accepted only after "I have read" with the terms hash echoed; `TermsChanged` re-reads the offer, clears the tick and needs a new acceptance under a new key; decline after confirmation. The loan page: what is owed by component, overdue days (never a bucket), schedule, repayments, statements for a line; repay or pay extra (prepayment) from the wallet; pay off from a quote (a stale quote is asked for again, never paid); draw from a line up to its available limit (no draw while suspended, no reason); close a line | `credit.test.tsx` |
+| `P18-TSK-030` | The pay-later plan: purchase, owed, instalments with paid and still due, repayments; repay; pay off from a quote; report a problem with the purchase (category, amount, reason up to 1,000 characters), shown with its reference, paused payments and the shop's deadline, and withdrawable from the same page | `credit.test.tsx` |
+| `P18-TSK-031` | Pay a shop: the checkout code typed in and held in memory only (never a URL, storage or telemetry); pay from the wallet or a saved card or bank account with no idempotency key (finapp continues the same payment), the amount shown from finapp's answer; a bank payment offers its https approval link; "check again" re-confirms; pay later lists the shop's plans with their illustration and applies under a key, then follows the application to its offer | `credit.test.tsx` |
+
+Gates: `npm run verify` green (280 tests); `test:catalogue` 36 browser checks green; builds byte-identical; first load
+196 kB gzipped (entry 117 KiB).
+
+**Shared pieces added:** the payment-methods read moved to `src/platform/customer/payment-methods.ts` and
+`fractionToPercent` to `src/design-system/money.ts` (modules may not import each other); status maps for credit checks,
+their outcome, applications, offers, instalments, pay-later plans, disputes and checkout; wording for 32 credit, pay-later
+and checkout codes, each in finapp's `ERROR_CONTRACT.md`.
+
+**Found, fixed, recorded:**
+1. **Seven entries overflowed the phone navigation by 59 px** (Pixel 7). Each entry now takes an equal share and a
+   two-word label wraps; a new browser check holds the bar to the screen and every entry to 44 px. The catalogue's
+   navigation now has the application's seven entries.
+2. **A written-off loan read "Closed by us"**, as if settled. It now reads "Written off - still owed" (caution): finapp
+   stops collecting but the balance is owed.
+3. **Checkboxes are 20 px**; the checkbox row is now a 44 px target, as radios are, and the touch-target check measures it.
+
+**What the customer cannot do yet** (handed to finapp): arrive from a shop without typing the code, or see the amount
+before paying (new **G-20**); return to a check or application after leaving its page, or see an amendment offered to
+them (new **G-21**; amendments are not built); read a dispute later (G-13, confirmed). In production every application
+answers `ProductNotOffered` (no active lending or BNPL terms; terms are activated as data under four eyes), which the
+pages explain.
+
+**For legal and compliance review** (not asserted by the repository): finapp sends no APR (its decision L8), so none is
+shown; consumer-credit pre-contractual disclosure rules may require one. The offer shows the fixed borrowing rate, the
+illustrated schedule, total interest and total to repay.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -252,8 +291,9 @@ account reference (G-09 territory).
 | D-J | A QR library for authenticator setup | **open** | §4.2 |
 | D-K | Start Stage 3 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 3" | §4.3 |
 | D-L | Start Stage 4 ahead of the entry gate, frontend only; commit each stage | 2026-11-19, "Start Stage 4, always commit changes" | §4.4 |
+| D-M | Start Stage 5 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 5" | §4.5 |
 
-Further decisions are numbered from D-M and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-N and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

@@ -33,6 +33,8 @@ nothing here: the application already answers every problem document by its `cod
 | B4.1 | Browser card tokenisation | G-10 | `P18-TSK-109` | P2 | Card top-up |
 | B4.2 | Idempotency on `POST /v1/beneficiaries` | G-12 | `P18-TSK-110` | P2 | Beneficiary creation |
 | B4.3 | A browser path to the providers' linking grants | G-19 | `P18-TSK-116` | **P1** | Linking a bank account; adding an overseas recipient |
+| B5.1 | Checkout hand-over from a shop; the shopper's view of the purchase before paying | G-20 | `P18-TSK-117` | **P1** | Paying a shop without typing a code; seeing the amount before paying |
+| B5.2 | Customer lists of credit checks and applications; a read of offered amendments | G-21 | `P18-TSK-118` | P2 | Following a check or application after leaving its page; accepting an amendment |
 | B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
 | B6.2 | Support and complaints; BNPL dispute read | G-13 | `P18-TSK-112` | P3 | Support screens |
 | E1 | Downloadable statements; receiving identifiers | G-05, G-06 | — | P3 | Nice-to-have |
@@ -188,6 +190,28 @@ by ADR. Relates to G-10 (cards). *Also found:* every provider URL (tokenisation,
 default (`CONFIGURATION_REGISTER.md`), so top-up confirmation and withdrawals answer `503 payments.ProviderUnavailable`
 outside the test overlay; the application explains that answer. **DoD:** `DOD-SEC`.
 
+## B5.1 — Checkout hand-over and the shopper's view of the purchase (G-20) *(found by Stage 5)*
+
+A shopper reaches finapp's checkout with the `sessionToken` the shop received from `POST /v1/checkout/sessions`. It is a
+bearer secret that must travel only in a request body, never in a URL (`CredentialReachesNoEmittedSinkTest`), and
+finapp defines no hand-over from the shop's site to the customer application and no return to the shop (ADR-0053 has
+none). The application therefore asks the customer to type the code in. Nor can the shopper read the session before
+paying - `GET /v1/checkout/sessions/{id}` is the merchant's - so the amount and description are shown only in the
+confirmation's answer; the pay-later options show the plan's illustration. **What:** by ADR, a hand-over that keeps
+the token out of URLs (for example a short-lived, single-use hand-over reference the shop exchanges server to server,
+or a form POST to a public-edge route that stores the token in the session), a shopper read of the session by token
+(amount, currency, line summary, shop name, expiry) before paying, and a return URL registered per merchant.
+**DoD:** `DOD-API`, `DOD-SEC`.
+
+## B5.2 — Customer lists of credit checks and applications; offered amendments (G-21) *(found by Stage 5)*
+
+There is no `GET` list for `/v1/me/credit/decision-requests`, `/v1/me/loan-applications` or
+`/v1/me/bnpl-applications`: a customer who leaves a check or application's page has no way back to it (the credit
+profile lists decisions only once decided). An offered loan amendment (`GET /v1/me/loans/{id}/amendments/{aid}`) can be
+read only by its identifier, which nothing gives the customer (the notifier is G-03), so amendments are not offered in
+the application. **What:** bounded, newest-first lists of the customer's own checks and applications with their
+status; the loan read (or a list) names amendments awaiting the customer. **DoD:** `DOD-API`.
+
 ## B4.2 — Idempotency on `POST /v1/beneficiaries` (G-12)
 
 Require `Idempotency-Key` as on other customer commands. **DoD:** `DOD-API`.
@@ -198,7 +222,9 @@ Remove or replace a factor under step-up; recovery codes issued once and stored 
 
 ## B6.2 — Support and complaints; BNPL dispute read (G-13)
 
-A new capability; until it exists the application shows no support screen (D-H). **DoD:** `DOD-API`.
+A new capability; until it exists the application shows no support screen (D-H). *Confirmed by Stage 5:* the only
+dispute reads are under `/v1/merchant/` and `/v1/operator/`; a customer sees a dispute only in the answer to opening
+or withdrawing it, which is where the application shows it. **DoD:** `DOD-API`.
 
 ## E1, E2 — Epics
 

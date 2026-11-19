@@ -44,7 +44,26 @@ const m = defineMessages({
   active: { id: 'status.active', defaultMessage: 'Active' },
   closing: { id: 'status.closing', defaultMessage: 'Closing' },
   closed: { id: 'status.closed', defaultMessage: 'Closed' },
-  writtenOff: { id: 'status.writtenOff', defaultMessage: 'Closed by us' },
+  writtenOff: { id: 'status.writtenOff', defaultMessage: 'Written off - still owed' },
+  received: { id: 'status.received', defaultMessage: 'Received' },
+  checking: { id: 'status.checking', defaultMessage: 'Being checked' },
+  decided: { id: 'status.decided', defaultMessage: 'Decided' },
+  lapsed: { id: 'status.lapsed', defaultMessage: 'Closed without a decision' },
+  approved: { id: 'status.approved', defaultMessage: 'Approved' },
+  notApproved: { id: 'status.notApproved', defaultMessage: 'Not approved' },
+  offerReady: { id: 'status.offerReady', defaultMessage: 'Offer ready' },
+  withdrawn: { id: 'status.withdrawn', defaultMessage: 'Withdrawn' },
+  waitingForYou: { id: 'status.waitingForYou', defaultMessage: 'Waiting for your answer' },
+  declined: { id: 'status.declined', defaultMessage: 'Declined' },
+  upcoming: { id: 'status.upcoming', defaultMessage: 'Upcoming' },
+  due: { id: 'status.due', defaultMessage: 'Due' },
+  partlyPaid: { id: 'status.partlyPaid', defaultMessage: 'Partly paid' },
+  paid: { id: 'status.paid', defaultMessage: 'Paid' },
+  awaitingPayment: { id: 'status.awaitingPayment', defaultMessage: 'Waiting for payment' },
+  open: { id: 'status.open', defaultMessage: 'Open' },
+  sellerResponded: { id: 'status.sellerResponded', defaultMessage: 'The seller has responded' },
+  refunded: { id: 'status.refunded', defaultMessage: 'Refunded' },
+  noRefund: { id: 'status.noRefund', defaultMessage: 'Closed without a refund' },
   unknown: { id: 'status.unknown', defaultMessage: 'In progress - check back' },
 });
 
@@ -115,8 +134,87 @@ export const LOAN_STATUS = {
   CLOSING: p('info', m.closing, false),
   CLOSED: p('neutral', m.closed, true),
   CANCELLED: p('neutral', m.cancelled, true),
-  WRITTEN_OFF: p('neutral', m.writtenOff, true),
+  // finapp stops collecting, but the balance is still owed: never shown as settled.
+  WRITTEN_OFF: p('caution', m.writtenOff, true),
 } as const satisfies Record<LoanStatus, StatusPresentation>;
+
+// Stage 5 (credit). Each enum as finapp's credit, lending, bnpl and checkout modules define it at 5227f57e2.
+
+export type CreditRequestStatus =
+  'SUBMITTED' | 'COLLECTING' | 'READY' | 'EVALUATED' | 'IN_REVIEW' | 'DECIDED' | 'CANCELLED' | 'EXPIRED' | 'ABANDONED';
+export const CREDIT_REQUEST_STATUS = {
+  SUBMITTED: p('info', m.received, false),
+  COLLECTING: p('info', m.checking, false),
+  READY: p('info', m.checking, false),
+  EVALUATED: p('info', m.checking, false),
+  // A person is looking at it. No reason is given (INV-CRD-02, INV-RSK-08).
+  IN_REVIEW: p('info', m.underReview, false),
+  DECIDED: p('neutral', m.decided, true),
+  CANCELLED: p('neutral', m.cancelled, true),
+  EXPIRED: p('neutral', m.lapsed, true),
+  ABANDONED: p('neutral', m.lapsed, true),
+} as const satisfies Record<CreditRequestStatus, StatusPresentation>;
+
+export type CreditOutcome = 'APPROVED' | 'DECLINED';
+export const CREDIT_OUTCOME = {
+  APPROVED: p('positive', m.approved, true),
+  DECLINED: p('neutral', m.notApproved, true),
+} as const satisfies Record<CreditOutcome, StatusPresentation>;
+
+/** Loan and pay-later applications share one lifecycle. */
+export type ApplicationStatus =
+  'SUBMITTED' | 'AWAITING_DECISION' | 'OFFERED' | 'DECLINED' | 'CLOSED_UNDECIDED' | 'WITHDRAWN';
+export const APPLICATION_STATUS = {
+  SUBMITTED: p('info', m.received, false),
+  AWAITING_DECISION: p('info', m.awaitingDecision, false),
+  OFFERED: p('positive', m.offerReady, true),
+  DECLINED: p('neutral', m.notApproved, true),
+  CLOSED_UNDECIDED: p('neutral', m.lapsed, true),
+  WITHDRAWN: p('neutral', m.withdrawn, true),
+} as const satisfies Record<ApplicationStatus, StatusPresentation>;
+
+export type OfferStatus = 'OFFERED' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED';
+export const OFFER_STATUS = {
+  OFFERED: p('caution', m.waitingForYou, false),
+  ACCEPTED: p('positive', m.accepted, true),
+  DECLINED: p('neutral', m.declined, true),
+  EXPIRED: p('neutral', m.expired, true),
+} as const satisfies Record<OfferStatus, StatusPresentation>;
+
+export type InstalmentStatus = 'UNBILLED' | 'DUE' | 'PARTIALLY_PAID' | 'PAID';
+export const INSTALMENT_STATUS = {
+  UNBILLED: p('neutral', m.upcoming, false),
+  DUE: p('caution', m.due, false),
+  PARTIALLY_PAID: p('caution', m.partlyPaid, false),
+  PAID: p('positive', m.paid, true),
+} as const satisfies Record<InstalmentStatus, StatusPresentation>;
+
+export type BnplAgreementStatus = 'ACTIVE' | 'CLOSED' | 'WRITTEN_OFF';
+export const BNPL_AGREEMENT_STATUS = {
+  ACTIVE: p('positive', m.active, false),
+  CLOSED: p('neutral', m.closed, true),
+  WRITTEN_OFF: p('caution', m.writtenOff, true),
+} as const satisfies Record<BnplAgreementStatus, StatusPresentation>;
+
+export type DisputeStatus = 'OPEN' | 'MERCHANT_RESPONDED' | 'RESOLVED_REFUND' | 'RESOLVED_UPHELD' | 'WITHDRAWN';
+export const DISPUTE_STATUS = {
+  OPEN: p('info', m.open, false),
+  MERCHANT_RESPONDED: p('info', m.sellerResponded, false),
+  RESOLVED_REFUND: p('positive', m.refunded, true),
+  RESOLVED_UPHELD: p('neutral', m.noRefund, true),
+  WITHDRAWN: p('neutral', m.withdrawn, true),
+} as const satisfies Record<DisputeStatus, StatusPresentation>;
+
+export type CheckoutStatus = 'OPEN' | 'PAYMENT_PENDING' | 'COMPLETED' | 'COMPLETED_LATE' | 'EXPIRED' | 'ABANDONED';
+export const CHECKOUT_STATUS = {
+  OPEN: p('info', m.awaitingPayment, false),
+  // A declined payment also stays here until the session expires: never shown as failure or success.
+  PAYMENT_PENDING: p('info', m.processing, false),
+  COMPLETED: p('positive', m.paid, true),
+  COMPLETED_LATE: p('positive', m.paid, true),
+  EXPIRED: p('neutral', m.expired, true),
+  ABANDONED: p('neutral', m.cancelled, true),
+} as const satisfies Record<CheckoutStatus, StatusPresentation>;
 
 export type StatusMap = Readonly<Record<string, StatusPresentation>>;
 

@@ -340,6 +340,194 @@ const byCode = defineMessages({
     id: 'problem.code.stakeExceeds.next',
     defaultMessage: 'Check the shares already declared and enter a smaller one.',
   },
+  // Stage 5 (credit, pay later, checkout). Each code is in finapp's ERROR_CONTRACT.md at 5227f57e2.
+  applicantNotEligibleTitle: {
+    id: 'problem.code.applicantNotEligible.title',
+    defaultMessage: 'You cannot apply for credit yet',
+  },
+  applicantNotEligibleNext: {
+    id: 'problem.code.applicantNotEligible.next',
+    defaultMessage: 'Finish verifying your identity first. Nothing was sent.',
+  },
+  creditAmountTitle: { id: 'problem.code.creditAmount.title', defaultMessage: 'This amount is outside what we lend' },
+  creditAmountNext: {
+    id: 'problem.code.creditAmount.next',
+    defaultMessage: 'Choose a different amount. Nothing was sent.',
+  },
+  bnplAmountTitle: {
+    id: 'problem.code.bnplAmount.title',
+    defaultMessage: 'Pay later is not available for this amount',
+  },
+  bnplAmountNext: { id: 'problem.code.bnplAmount.next', defaultMessage: 'Choose another way to pay.' },
+  decisionOpenTitle: { id: 'problem.code.decisionOpen.title', defaultMessage: 'You already have a check in progress' },
+  decisionOpenNext: {
+    id: 'problem.code.decisionOpen.next',
+    defaultMessage: 'Wait for its answer, or cancel it, before you start another.',
+  },
+  requestNotCancellableTitle: {
+    id: 'problem.code.requestNotCancellable.title',
+    defaultMessage: 'This check can no longer be cancelled',
+  },
+  requestNotCancellableNext: {
+    id: 'problem.code.requestNotCancellable.next',
+    defaultMessage: 'Its answer is on its way.',
+  },
+  applicationOpenTitle: {
+    id: 'problem.code.applicationOpen.title',
+    defaultMessage: 'You already have an application in progress',
+  },
+  applicationOpenNext: {
+    id: 'problem.code.applicationOpen.next',
+    defaultMessage: 'Wait for its answer, or withdraw it, before you apply again.',
+  },
+  notWithdrawableTitle: {
+    id: 'problem.code.notWithdrawable.title',
+    defaultMessage: 'This application can no longer be withdrawn',
+  },
+  notWithdrawableNext: { id: 'problem.code.notWithdrawable.next', defaultMessage: 'It already has an answer.' },
+  offerNotAcceptableTitle: {
+    id: 'problem.code.offerNotAcceptable.title',
+    defaultMessage: 'This offer can no longer be accepted',
+  },
+  offerNotAcceptableNext: {
+    id: 'problem.code.offerNotAcceptable.next',
+    defaultMessage: 'It has expired or was already answered. Nothing was accepted.',
+  },
+  payoutInvalidTitle: { id: 'problem.code.payoutInvalid.title', defaultMessage: 'We cannot pay the loan out there' },
+  payoutInvalidNext: {
+    id: 'problem.code.payoutInvalid.next',
+    defaultMessage: 'Choose another destination. Nothing was accepted.',
+  },
+  capitalUnavailableTitle: { id: 'problem.code.capitalUnavailable.title', defaultMessage: 'We cannot lend right now' },
+  capitalUnavailableNext: {
+    id: 'problem.code.capitalUnavailable.next',
+    defaultMessage: 'Try again later. Nothing was changed.',
+  },
+  notRepayableTitle: { id: 'problem.code.notRepayable.title', defaultMessage: 'This cannot take a payment now' },
+  notRepayableNext: { id: 'problem.code.notRepayable.next', defaultMessage: 'Nothing was taken from your wallet.' },
+  creditFundsTitle: {
+    id: 'problem.code.creditFunds.title',
+    defaultMessage: 'There is not enough money in your wallet',
+  },
+  creditFundsNext: {
+    id: 'problem.code.creditFunds.next',
+    defaultMessage: 'Add money, then try again. Nothing was taken.',
+  },
+  arrearsFirstTitle: { id: 'problem.code.arrearsFirst.title', defaultMessage: 'Pay what is overdue first' },
+  arrearsFirstNext: {
+    id: 'problem.code.arrearsFirst.next',
+    defaultMessage: 'Make a regular repayment of the overdue amount, then pay extra.',
+  },
+  prepaymentTooLargeTitle: {
+    id: 'problem.code.prepaymentTooLarge.title',
+    defaultMessage: 'This is more than you still owe',
+  },
+  prepaymentTooLargeNext: {
+    id: 'problem.code.prepaymentTooLarge.next',
+    defaultMessage: 'Choose a smaller amount, or pay the loan off in full.',
+  },
+  limitExceededTitle: {
+    id: 'problem.code.limitExceeded.title',
+    defaultMessage: 'This is more than your available limit',
+  },
+  limitExceededNext: {
+    id: 'problem.code.limitExceeded.next',
+    defaultMessage: 'Choose an amount up to your available limit.',
+  },
+  notDrawableTitle: {
+    id: 'problem.code.notDrawable.title',
+    defaultMessage: 'You cannot draw from this credit line at the moment',
+  },
+  notDrawableNext: { id: 'problem.code.notDrawable.next', defaultMessage: 'Nothing was paid out.' },
+  creditWalletTitle: {
+    id: 'problem.code.creditWallet.title',
+    defaultMessage: 'Your wallet cannot take this right now',
+  },
+  creditWalletNext: {
+    id: 'problem.code.creditWallet.next',
+    defaultMessage: 'Check your accounts. Nothing was changed.',
+  },
+  notClosableTitle: { id: 'problem.code.notClosable.title', defaultMessage: 'This credit line cannot be closed yet' },
+  notClosableNext: { id: 'problem.code.notClosable.next', defaultMessage: 'Nothing was changed.' },
+  alreadyClosedTitle: { id: 'problem.code.alreadyClosed.title', defaultMessage: 'This is already closed' },
+  alreadyClosedNext: { id: 'problem.code.alreadyClosed.next', defaultMessage: 'Nothing was changed.' },
+  payoffStaleTitle: { id: 'problem.code.payoffStale.title', defaultMessage: 'This payoff amount is out of date' },
+  payoffStaleNext: {
+    id: 'problem.code.payoffStale.next',
+    defaultMessage: 'Get a new payoff amount. Nothing was taken.',
+  },
+  bnplNotOfferedTitle: {
+    id: 'problem.code.bnplNotOffered.title',
+    defaultMessage: 'Pay later is not available for this purchase',
+  },
+  bnplNotOfferedNext: { id: 'problem.code.bnplNotOffered.next', defaultMessage: 'Choose another way to pay.' },
+  sessionNotPayableTitle: {
+    id: 'problem.code.sessionNotPayable.title',
+    defaultMessage: 'This purchase can no longer be paid',
+  },
+  sessionNotPayableNext: {
+    id: 'problem.code.sessionNotPayable.next',
+    defaultMessage: 'Return to the shop and start again. Nothing was taken.',
+  },
+  disputeOpenTitle: {
+    id: 'problem.code.disputeOpen.title',
+    defaultMessage: 'You already have an open dispute for this purchase',
+  },
+  disputeOpenNext: { id: 'problem.code.disputeOpen.next', defaultMessage: 'Wait for it to be resolved.' },
+  disputeCoolingOffTitle: {
+    id: 'problem.code.disputeCoolingOff.title',
+    defaultMessage: 'You cannot open another dispute yet',
+  },
+  disputeCoolingOffNext: {
+    id: 'problem.code.disputeCoolingOff.next',
+    defaultMessage: 'You can raise one again 30 days after you withdrew the last.',
+  },
+  fullyRefundedTitle: {
+    id: 'problem.code.fullyRefunded.title',
+    defaultMessage: 'This purchase has already been refunded',
+  },
+  fullyRefundedNext: { id: 'problem.code.fullyRefunded.next', defaultMessage: 'There is nothing left to dispute.' },
+  refundTooLargeTitle: { id: 'problem.code.refundTooLarge.title', defaultMessage: 'This is more than the purchase' },
+  refundTooLargeNext: {
+    id: 'problem.code.refundTooLarge.next',
+    defaultMessage: 'Enter an amount up to what the purchase cost.',
+  },
+  disputeNotPossibleTitle: {
+    id: 'problem.code.disputeNotPossible.title',
+    defaultMessage: 'This dispute cannot be opened here',
+  },
+  disputeNotPossibleNext: {
+    id: 'problem.code.disputeNotPossible.next',
+    defaultMessage: 'Contact us and quote the reference.',
+  },
+  disputeNotActionableTitle: {
+    id: 'problem.code.disputeNotActionable.title',
+    defaultMessage: 'This dispute can no longer be withdrawn',
+  },
+  disputeNotActionableNext: {
+    id: 'problem.code.disputeNotActionable.next',
+    defaultMessage: 'It is already being resolved.',
+  },
+  checkoutExpiredTitle: { id: 'problem.code.checkoutExpired.title', defaultMessage: 'This checkout has expired' },
+  checkoutExpiredNext: {
+    id: 'problem.code.checkoutExpired.next',
+    defaultMessage: 'Return to the shop and start again. Nothing was taken.',
+  },
+  checkoutNotConfirmableTitle: {
+    id: 'problem.code.checkoutNotConfirmable.title',
+    defaultMessage: 'This checkout can no longer be paid',
+  },
+  checkoutNotConfirmableNext: {
+    id: 'problem.code.checkoutNotConfirmable.next',
+    defaultMessage: 'It may already be paid. Check with the shop before you pay again.',
+  },
+  notTradingTitle: { id: 'problem.code.notTrading.title', defaultMessage: 'This shop cannot take payments right now' },
+  notTradingNext: { id: 'problem.code.notTrading.next', defaultMessage: 'Nothing was taken.' },
+  saleBelowFeeTitle: { id: 'problem.code.saleBelowFee.title', defaultMessage: 'This purchase cannot be paid here' },
+  saleBelowFeeNext: {
+    id: 'problem.code.saleBelowFee.next',
+    defaultMessage: 'Nothing was taken. Pay the shop another way.',
+  },
 });
 
 /**
@@ -417,6 +605,62 @@ const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
     'crossborder.ScreeningUnavailable',
     { title: byCode.screeningUnavailableTitle, nextStep: byCode.screeningUnavailableNext },
   ],
+  [
+    'credit.ApplicantNotEligible',
+    { title: byCode.applicantNotEligibleTitle, nextStep: byCode.applicantNotEligibleNext },
+  ],
+  ['credit.AmountOutOfRange', { title: byCode.creditAmountTitle, nextStep: byCode.creditAmountNext }],
+  ['lending.AmountOutOfRange', { title: byCode.creditAmountTitle, nextStep: byCode.creditAmountNext }],
+  ['bnpl.AmountOutOfRange', { title: byCode.bnplAmountTitle, nextStep: byCode.bnplAmountNext }],
+  ['credit.DecisionRequestOpen', { title: byCode.decisionOpenTitle, nextStep: byCode.decisionOpenNext }],
+  [
+    'credit.RequestNotCancellable',
+    { title: byCode.requestNotCancellableTitle, nextStep: byCode.requestNotCancellableNext },
+  ],
+  ['lending.ApplicationOpen', { title: byCode.applicationOpenTitle, nextStep: byCode.applicationOpenNext }],
+  ['bnpl.ApplicationOpen', { title: byCode.applicationOpenTitle, nextStep: byCode.applicationOpenNext }],
+  ['lending.ApplicationNotWithdrawable', { title: byCode.notWithdrawableTitle, nextStep: byCode.notWithdrawableNext }],
+  ['bnpl.ApplicationNotWithdrawable', { title: byCode.notWithdrawableTitle, nextStep: byCode.notWithdrawableNext }],
+  ['lending.OfferNotAcceptable', { title: byCode.offerNotAcceptableTitle, nextStep: byCode.offerNotAcceptableNext }],
+  ['bnpl.OfferNotAcceptable', { title: byCode.offerNotAcceptableTitle, nextStep: byCode.offerNotAcceptableNext }],
+  ['lending.PayoutDestinationInvalid', { title: byCode.payoutInvalidTitle, nextStep: byCode.payoutInvalidNext }],
+  ['lending.CapitalUnavailable', { title: byCode.capitalUnavailableTitle, nextStep: byCode.capitalUnavailableNext }],
+  ['bnpl.CapitalUnavailable', { title: byCode.capitalUnavailableTitle, nextStep: byCode.capitalUnavailableNext }],
+  ['lending.LoanNotRepayable', { title: byCode.notRepayableTitle, nextStep: byCode.notRepayableNext }],
+  ['bnpl.ObligationClosed', { title: byCode.notRepayableTitle, nextStep: byCode.notRepayableNext }],
+  ['lending.InsufficientFunds', { title: byCode.creditFundsTitle, nextStep: byCode.creditFundsNext }],
+  ['bnpl.InsufficientFunds', { title: byCode.creditFundsTitle, nextStep: byCode.creditFundsNext }],
+  ['lending.ArrearsFirst', { title: byCode.arrearsFirstTitle, nextStep: byCode.arrearsFirstNext }],
+  [
+    'lending.PrepaymentExceedsPrincipal',
+    { title: byCode.prepaymentTooLargeTitle, nextStep: byCode.prepaymentTooLargeNext },
+  ],
+  ['lending.LimitExceeded', { title: byCode.limitExceededTitle, nextStep: byCode.limitExceededNext }],
+  ['lending.DrawsSuspended', { title: byCode.notDrawableTitle, nextStep: byCode.notDrawableNext }],
+  ['lending.LineNotDrawable', { title: byCode.notDrawableTitle, nextStep: byCode.notDrawableNext }],
+  ['lending.WalletUnavailable', { title: byCode.creditWalletTitle, nextStep: byCode.creditWalletNext }],
+  ['bnpl.WalletUnavailable', { title: byCode.creditWalletTitle, nextStep: byCode.creditWalletNext }],
+  ['lending.LineNotClosable', { title: byCode.notClosableTitle, nextStep: byCode.notClosableNext }],
+  ['lending.LoanClosed', { title: byCode.alreadyClosedTitle, nextStep: byCode.alreadyClosedNext }],
+  ['lending.PayoffQuoteStale', { title: byCode.payoffStaleTitle, nextStep: byCode.payoffStaleNext }],
+  ['bnpl.PayoffQuoteStale', { title: byCode.payoffStaleTitle, nextStep: byCode.payoffStaleNext }],
+  ['bnpl.SessionNotEligible', { title: byCode.bnplNotOfferedTitle, nextStep: byCode.bnplNotOfferedNext }],
+  ['bnpl.MerchantNotEnabled', { title: byCode.bnplNotOfferedTitle, nextStep: byCode.bnplNotOfferedNext }],
+  ['bnpl.SessionNotPayable', { title: byCode.sessionNotPayableTitle, nextStep: byCode.sessionNotPayableNext }],
+  ['bnpl.DisputeOpen', { title: byCode.disputeOpenTitle, nextStep: byCode.disputeOpenNext }],
+  ['bnpl.DisputeCoolingOff', { title: byCode.disputeCoolingOffTitle, nextStep: byCode.disputeCoolingOffNext }],
+  ['bnpl.PurchaseFullyRefunded', { title: byCode.fullyRefundedTitle, nextStep: byCode.fullyRefundedNext }],
+  ['bnpl.RefundExceedsPurchase', { title: byCode.refundTooLargeTitle, nextStep: byCode.refundTooLargeNext }],
+  ['bnpl.RefundNotPostable', { title: byCode.disputeNotPossibleTitle, nextStep: byCode.disputeNotPossibleNext }],
+  ['bnpl.ObligationWrittenOff', { title: byCode.disputeNotPossibleTitle, nextStep: byCode.disputeNotPossibleNext }],
+  ['bnpl.DisputeNotActionable', { title: byCode.disputeNotActionableTitle, nextStep: byCode.disputeNotActionableNext }],
+  ['checkout.SessionExpired', { title: byCode.checkoutExpiredTitle, nextStep: byCode.checkoutExpiredNext }],
+  [
+    'checkout.NotConfirmable',
+    { title: byCode.checkoutNotConfirmableTitle, nextStep: byCode.checkoutNotConfirmableNext },
+  ],
+  ['checkout.NotTrading', { title: byCode.notTradingTitle, nextStep: byCode.notTradingNext }],
+  ['checkout.SaleBelowFee', { title: byCode.saleBelowFeeTitle, nextStep: byCode.saleBelowFeeNext }],
 ]);
 
 /** The customer's explanation of any failure. A non-ApiError is a defect of this application. */

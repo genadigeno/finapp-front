@@ -177,16 +177,29 @@ body[data-finapp-scroll-locked] {
     z-index: 100;
     justify-content: space-around;
     height: var(--finapp-bottom-nav-height);
+    gap: 0;
     padding: 0 0.25rem;
     background: var(--mantine-color-body);
     border-top: 1px solid var(--mantine-color-default-border);
   }
 
+  /* Every entry takes an equal share of the width; a two-word label wraps onto two lines ("Move / money"). Seven
+     entries fit a 360 px screen. */
+  .finapp-shell[data-has-nav] .finapp-shell__nav > * {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .finapp-shell[data-has-nav] .finapp-shell__link {
+    flex: 1;
     flex-direction: column;
+    justify-content: center;
     gap: 0.125rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.125rem;
     font-size: var(--mantine-font-size-xs);
+    line-height: 1.15;
+    text-align: center;
   }
 
   .finapp-shell[data-has-nav] .finapp-shell__main {
@@ -323,8 +336,31 @@ body[data-finapp-scroll-locked] {
   white-space: nowrap;
 }
 
-/* A radio's target is the control and its label together: the row is at least 44 px tall. */
-.mantine-Radio-body {
+/* A radio's or checkbox's target is the control and its label together: the row is at least 44 px tall. */
+.mantine-Radio-body,
+.mantine-Checkbox-body {
   align-items: center;
   min-height: var(--finapp-touch-target);
+}
+
+/* An agreement's text exactly as finapp sent it: plain, wrapped, scrollable, and focusable for the keyboard. */
+.finapp-document {
+  max-height: 20rem;
+  overflow: auto;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-sm);
+  padding: var(--mantine-spacing-sm);
+}
+
+.finapp-document:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+.finapp-document pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-sm);
 }

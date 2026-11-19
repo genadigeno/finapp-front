@@ -92,11 +92,13 @@ test('touch targets are at least 44 px', async ({ page }) => {
   await openCatalogue(page, 'light');
   const small = await page.evaluate(() =>
     [...document.querySelectorAll('main button, main input')]
-      // An input inside Mantine's bordered box (a password field) is tapped through that box, and a radio through its
-      // row with its label: measure what the customer taps.
+      // An input inside Mantine's bordered box (a password field) is tapped through that box, and a radio or checkbox
+      // through its row with its label: measure what the customer taps.
       .map((element) => ({
         element,
-        box: (element.closest('.mantine-Input-input, .mantine-Radio-body') ?? element).getBoundingClientRect(),
+        box: (
+          element.closest('.mantine-Input-input, .mantine-Radio-body, .mantine-Checkbox-body') ?? element
+        ).getBoundingClientRect(),
       }))
       .filter(({ box }) => box.width > 0 && box.height > 0 && box.height < 43.5)
       .map(
@@ -104,6 +106,20 @@ test('touch targets are at least 44 px', async ({ page }) => {
       ),
   );
   expect(small).toEqual([]);
+});
+
+test('the main navigation fits the screen, every entry a 44 px target', async ({ page }) => {
+  // The catalogue's navigation has as many entries as the application's (seven since Stage 5).
+  await openCatalogue(page, 'light');
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  const fit = await nav.evaluate((element) => ({
+    overflow: element.scrollWidth - element.clientWidth,
+    page: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    small: [...element.querySelectorAll('a')]
+      .map((link) => link.getBoundingClientRect())
+      .filter((box) => box.height < 43.5 || box.width < 43.5).length,
+  }));
+  expect(fit).toEqual({ overflow: 0, page: 0, small: 0 });
 });
 
 test.describe('the application build', () => {
@@ -164,6 +180,20 @@ test('the onboarding controls open without a CSP violation', async ({ page }) =>
     .getByRole('button', { name: /Show password|Toggle password visibility/i })
     .first()
     .click();
+  expect(await seriousViolations(page)).toEqual([]);
+  expect(await cspViolations(page)).toEqual([]);
+});
+
+test('the credit controls work by keyboard without an accessibility or CSP violation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openCatalogue(page, 'dark');
+  const section = page.getByRole('region', { name: 'Credit controls' });
+  const agreement = section.getByRole('region', { name: 'Credit agreement' });
+  await agreement.focus();
+  await page.keyboard.press('PageDown');
+  await section.getByRole('checkbox', { name: 'I have read the agreement and the figures above' }).check();
+  await section.getByRole('radio', { name: 'Something else' }).check();
+  await section.getByLabel('Tell us what happened').fill('The parcel never arrived.');
   expect(await seriousViolations(page)).toEqual([]);
   expect(await cspViolations(page)).toEqual([]);
 });

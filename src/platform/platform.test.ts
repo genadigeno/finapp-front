@@ -139,7 +139,7 @@ describe('every failure has customer words (blueprint §11.1)', () => {
       method: 'POST',
       route: '/v1/x',
       status: 409,
-      code: 'lending.LoanClosed',
+      code: 'lending.ProposalPending',
     });
     expect(explain(other)).toBe(CATEGORY_EXPLANATIONS.refused);
     expect(explain(new Error('boom'))).toBe(CATEGORY_EXPLANATIONS.defect);

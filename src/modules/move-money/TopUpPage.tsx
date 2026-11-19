@@ -19,7 +19,7 @@ import type { IdempotencyIntent } from '../../platform/api/idempotency.ts';
 import { useReviewFlow } from '../../platform/api/use-review-flow.ts';
 import { ACCOUNTS_ROOT, usePockets } from '../../platform/customer/wallets.ts';
 import { useOnline } from '../../platform/online.ts';
-import { usePaymentMethods } from './api.ts';
+import { usePaymentMethods } from '../../platform/customer/payment-methods.ts';
 import { methodKind, topUpFailure } from './labels.ts';
 
 const messages = defineMessages({

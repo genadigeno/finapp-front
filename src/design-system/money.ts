@@ -170,3 +170,17 @@ export function percentToBasisPoints(percent: string): string | undefined {
   const digits = `${whole}${fraction.padEnd(2, '0')}`.replace(/^0+(?=\d)/, '');
   return digits;
 }
+
+/**
+ * A fraction as a percentage, by moving the decimal point - no arithmetic on floats ("0.004500" -> "0.45").
+ * Trailing zeros beyond two decimals are dropped; undefined for anything that is not a plain decimal.
+ */
+export function fractionToPercent(fraction: string): string | undefined {
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(fraction.trim());
+  if (match === null) return undefined;
+  const [, whole = '0', decimals = ''] = match;
+  const padded = decimals.padEnd(2, '0');
+  const integer = `${whole}${padded.slice(0, 2)}`.replace(/^0+(?=\d)/, '');
+  const rest = padded.slice(2).replace(/0+$/, '');
+  return `${integer}.${rest.padEnd(2, '0')}`;
+}

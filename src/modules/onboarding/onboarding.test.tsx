@@ -307,6 +307,6 @@ describe('the onboarding checklist reflects finapp, not the browser (P18-TSK-016
       within(nav)
         .getAllByRole('link')
         .map((a) => a.textContent),
-    ).toEqual(['Home', 'Accounts', 'Move money', 'Activity', 'Business', 'Security']);
+    ).toEqual(['Home', 'Accounts', 'Move money', 'Credit', 'Activity', 'Business', 'Security']);
   });
 });

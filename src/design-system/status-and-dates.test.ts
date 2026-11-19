@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { formatBusinessDate, formatInstant } from './dates.ts';
 import {
+  APPLICATION_STATUS,
+  BNPL_AGREEMENT_STATUS,
+  CHECKOUT_STATUS,
+  CREDIT_OUTCOME,
+  CREDIT_REQUEST_STATUS,
   CROSS_BORDER_STATUS,
+  DISPUTE_STATUS,
+  INSTALMENT_STATUS,
+  OFFER_STATUS,
   FX_QUOTE_STATUS,
   KYC_STATUS,
   LOAN_STATUS,
@@ -21,6 +29,14 @@ describe('status maps (blueprint §7)', () => {
     CROSS_BORDER_STATUS,
     KYC_STATUS,
     LOAN_STATUS,
+    CREDIT_REQUEST_STATUS,
+    CREDIT_OUTCOME,
+    APPLICATION_STATUS,
+    OFFER_STATUS,
+    INSTALMENT_STATUS,
+    BNPL_AGREEMENT_STATUS,
+    DISPUTE_STATUS,
+    CHECKOUT_STATUS,
   };
 
   it('an unknown value is "in progress - check back", never an error and never success', () => {
@@ -36,11 +52,16 @@ describe('status maps (blueprint §7)', () => {
     for (const map of Object.values(maps)) {
       for (const presentation of Object.values(map)) {
         if (presentation.tone === 'positive' && !presentation.terminal) {
-          // Only an ACTIVE loan is positive and ongoing: it is a state, not an outcome.
-          expect(presentation).toBe(LOAN_STATUS.ACTIVE);
+          // Only an ACTIVE loan or pay-later agreement is positive and ongoing: a state, not an outcome.
+          expect([LOAN_STATUS.ACTIVE, BNPL_AGREEMENT_STATUS.ACTIVE]).toContain(presentation);
         }
       }
     }
+  });
+
+  it('a written-off balance is still owed: never shown as settled', () => {
+    expect(LOAN_STATUS.WRITTEN_OFF.tone).toBe('caution');
+    expect(BNPL_AGREEMENT_STATUS.WRITTEN_OFF.tone).toBe('caution');
   });
 
   it('a withdrawal whose outcome finapp is still finding out is caution, not failure (ADR-F05)', () => {

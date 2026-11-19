@@ -104,12 +104,14 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 5 — Credit
 
-| Task | Title | Depends on | Gaps | DoD |
-|---|---|---|---|---|
-| `P18-TSK-028` | Credit profile and decisions | Stage 4 | — | DOD-CUST |
-| `P18-TSK-029` | Instalment and revolving loans: apply, accept (terms hash), draw, repay, payoff | 028 | — | DOD-CUST |
-| `P18-TSK-030` | BNPL servicing | 028 | G-13 (dispute read) | DOD-CUST |
-| `P18-TSK-031` | Checkout confirmation (merchant redirect) | 030 | redirect contract | DOD-CUST |
+| Task | Title | Depends on | Gaps | DoD | Status |
+|---|---|---|---|---|---|
+| `P18-TSK-028` | Credit profile and decisions | Stage 4 | — | DOD-CUST | Built (D-M): credit home, credit check under a key, its page with cancellation; checks in progress not listed (G-21) |
+| `P18-TSK-029` | Instalment and revolving loans: apply, accept (terms hash), draw, repay, payoff | 028 | — | DOD-CUST | Built (D-M): apply, application page, offer with document and terms hash, loan page, repay, prepay, payoff from a quote, draw, close a line; amendments not built (G-21) |
+| `P18-TSK-030` | BNPL servicing | 028 | G-13 (dispute read) | DOD-CUST | Built (D-M): plan page, repay, payoff, dispute opened and withdrawn from the same page (G-13 confirmed) |
+| `P18-TSK-031` | Checkout confirmation (merchant redirect) | 030 | redirect contract | DOD-CUST | Built (D-M) with the checkout code typed in: pay from wallet or a saved method, or apply to pay later; no hand-over from a shop (G-20) |
+| `P18-TSK-117` *(backend)* | Checkout hand-over from a shop and the shopper's view of the purchase before paying | — | G-20 | finapp `DOD-API`, `DOD-SEC`, ADR | |
+| `P18-TSK-118` *(backend)* | Customer lists of credit checks and applications in progress; a read of offered loan amendments | — | G-21 | finapp `DOD-API` | |
 
 ## Stage 6 — Self-service
 

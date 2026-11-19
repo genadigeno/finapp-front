@@ -7,6 +7,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   FileInput,
   Group,
   List,
@@ -17,6 +18,7 @@ import {
   Table,
   Tabs,
   Text,
+  Textarea,
   TextInput,
   ThemeIcon,
   Title,
@@ -73,6 +75,8 @@ const NAVIGATION: NavItem[] = [
   { label: 'Accounts', href: '#accounts', icon: IconWallet },
   { label: 'Move money', href: '#move', icon: IconArrowsExchange },
   { label: 'Credit', href: '#credit', icon: IconCreditCard },
+  { label: 'Activity', href: '#activity', icon: IconClock },
+  { label: 'Business', href: '#business', icon: IconWallet },
   { label: 'Security', href: '#security', icon: IconShieldLock },
 ];
 
@@ -276,6 +280,29 @@ export function Catalogue() {
               <Radio value="FIXED_DESTINATION" label="receive" />
             </Group>
           </Radio.Group>
+        </Section>
+
+        <Section title="Credit controls">
+          <section className="finapp-document" tabIndex={0} aria-label="Credit agreement">
+            <pre>
+              {[
+                'PERSONAL LOAN AGREEMENT (demonstration text)',
+                '1. Amount of credit: EUR 3,000.00',
+                '2. Duration: 12 months',
+                '3. Borrowing rate: 7.90% a year, fixed',
+                '4. Total amount payable: EUR 3,130.04',
+                ...Array.from({ length: 24 }, (_, i) => `${i + 5}. Demonstration clause ${i + 5}.`),
+              ].join('\n')}
+            </pre>
+          </section>
+          <Checkbox label="I have read the agreement and the figures above" />
+          <Radio.Group label="What went wrong?">
+            <Stack mt="xs" gap={4}>
+              <Radio value="NOT_RECEIVED" label="I did not receive it" />
+              <Radio value="OTHER" label="Something else" />
+            </Stack>
+          </Radio.Group>
+          <Textarea label="Tell us what happened" maxLength={1000} autosize minRows={3} />
         </Section>
 
         <Section title="Core banking controls">

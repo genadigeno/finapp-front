@@ -33,19 +33,8 @@ export function entityName(entityType: string | undefined): MessageDescriptor | 
   return entityType === 'INDIVIDUAL' ? m.individual : entityType === 'BUSINESS' ? m.business : undefined;
 }
 
-/**
- * A fraction as a percentage, by moving the decimal point - no arithmetic on floats ("0.004500" -> "0.45").
- * Trailing zeros beyond two decimals are dropped; undefined for anything that is not a plain decimal.
- */
-export function fractionToPercent(fraction: string): string | undefined {
-  const match = /^(\d+)(?:\.(\d+))?$/.exec(fraction.trim());
-  if (match === null) return undefined;
-  const [, whole = '0', decimals = ''] = match;
-  const padded = decimals.padEnd(2, '0');
-  const integer = `${whole}${padded.slice(0, 2)}`.replace(/^0+(?=\d)/, '');
-  const rest = padded.slice(2).replace(/0+$/, '');
-  return `${integer}.${rest.padEnd(2, '0')}`;
-}
+// Moved to the design system in Stage 5 (credit shows rates too).
+export { fractionToPercent } from '../../design-system/money.ts';
 
 /** Whole hours as days and hours, for a delivery estimate ("about 2 days"). */
 export function deliveryEstimate(hours: number | undefined): { days: number } | { hours: number } | undefined {

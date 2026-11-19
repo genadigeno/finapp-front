@@ -42,3 +42,9 @@ activity read are missing (G-01, G-02). `finapp` is not changed from here. D-J (
 internal transfers, payment methods and top-up, withdrawals, FX, cross-border, receipts) begins as Stage 3 did:
 frontend only, over the doors `finapp` serves today. Work is committed to this repository as each stage completes,
 without a separate request. -> `PHASE_18_PLAN.md` §4.4
+
+**D-M (the owner, 2026-11-19: "Start Stage 5").** Stage 5 (credit: credit checks, loans and credit lines, pay later,
+paying a shop) begins as Stage 4 did: frontend only, over the doors `finapp` serves today, committed when complete.
+Within it, two engineering choices the owner may revisit: the checkout code is typed in on the page (finapp has no
+hand-over that keeps it out of URLs, G-20), and the Credit entry is always in the main navigation (the navigation is
+static per route; the blueprint shows it only to customers with credit). -> `PHASE_18_PLAN.md` §4.5

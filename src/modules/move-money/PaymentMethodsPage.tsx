@@ -11,7 +11,11 @@ import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/St
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
-import { PAYMENT_METHODS_ROOT, usePaymentMethods, type PaymentMethod } from './api.ts';
+import {
+  PAYMENT_METHODS_ROOT,
+  usePaymentMethods,
+  type PaymentMethod,
+} from '../../platform/customer/payment-methods.ts';
 import { methodKind, payeeCheckWords } from './labels.ts';
 
 const messages = defineMessages({

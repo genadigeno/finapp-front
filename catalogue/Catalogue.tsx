@@ -8,12 +8,15 @@ import {
   Button,
   Card,
   FileInput,
+  Group,
   List,
   PasswordInput,
   Select,
   Stack,
   Table,
+  Tabs,
   Text,
+  TextInput,
   ThemeIcon,
   Title,
 } from '@mantine/core';
@@ -44,6 +47,7 @@ import {
   MoneyInput,
   parseMoneyInput,
   Rate,
+  SignedMoney,
   ResultPanel,
   ReviewPanel,
   SessionExpiring,
@@ -116,6 +120,10 @@ export function Catalogue() {
           </Text>
           <Text>
             Rate: <Rate rate="1.08234" source="EUR" destination="USD" />
+          </Text>
+          <Text>
+            Movements: <SignedMoney amount="250.00" currency="EUR" direction="in" /> ·{' '}
+            <SignedMoney amount="42.10" currency="EUR" direction="out" />
           </Text>
           <BalanceTriplet
             currency="EUR"
@@ -248,6 +256,29 @@ export function Catalogue() {
               </div>
             </Card>
           </a>
+        </Section>
+
+        <Section title="Core banking controls">
+          <Group align="flex-end" wrap="wrap">
+            <TextInput type="date" label="From" defaultValue="2026-11-01" />
+            <TextInput type="date" label="To" defaultValue="2026-11-19" />
+          </Group>
+          <Tabs defaultValue="sent">
+            <Tabs.List>
+              <Tabs.Tab value="sent">Transfers sent</Tabs.Tab>
+              <Tabs.Tab value="topups">Top-ups and purchases</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="sent" pt="md">
+              <Text>
+                <SignedMoney amount="20.00" currency="EUR" direction="out" />
+              </Text>
+            </Tabs.Panel>
+            <Tabs.Panel value="topups" pt="md">
+              <Text>
+                <SignedMoney amount="100.00" currency="EUR" direction="in" />
+              </Text>
+            </Tabs.Panel>
+          </Tabs>
         </Section>
 
         <Section title="Dialogs">

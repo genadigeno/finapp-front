@@ -1,7 +1,7 @@
 // The application frame (blueprint §6): a header with the brand and, when signed in, the customer's goals
 // as navigation - a top bar on wide screens, a bottom bar on phones - and the page in a readable column.
 // Static CSS only: Mantine's AppShell writes its layout through an inline <style>, which the CSP refuses.
-import { ActionIcon, Group, Tooltip, UnstyledButton } from '@mantine/core';
+import { ActionIcon, Group, UnstyledButton } from '@mantine/core';
 import { IconMoon, IconSun, type Icon } from '@tabler/icons-react';
 import { useMantineColorScheme } from '@mantine/core';
 import type { ReactNode } from 'react';
@@ -74,16 +74,17 @@ export function CustomerShell({
           </nav>
         )}
         <Group gap="xs" wrap="nowrap" className="finapp-shell__account">
-          <Tooltip label={themeLabel}>
-            <ActionIcon
-              variant="subtle"
-              size="xl"
-              aria-label={themeLabel}
-              onClick={() => setColorScheme(dark ? 'light' : 'dark')}
-            >
-              {dark ? <IconSun size={20} aria-hidden /> : <IconMoon size={20} aria-hidden />}
-            </ActionIcon>
-          </Tooltip>
+          {/* A native title, not Mantine's Tooltip: the Tooltip brings its positioning library into the
+              first load of every page (Stage 3 budget), and the button already has its accessible name. */}
+          <ActionIcon
+            variant="subtle"
+            size="xl"
+            aria-label={themeLabel}
+            title={themeLabel}
+            onClick={() => setColorScheme(dark ? 'light' : 'dark')}
+          >
+            {dark ? <IconSun size={20} aria-hidden /> : <IconMoon size={20} aria-hidden />}
+          </ActionIcon>
           {account}
         </Group>
       </header>

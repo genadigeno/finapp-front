@@ -169,6 +169,36 @@ needs container images this machine does not have; pulling them is the owner's c
 **Open decision D-J (owner):** a QR code for authenticator setup needs a QR library (MIT options exist) - a new shipped
 dependency. Until decided, the setup key is typed or opened by link.
 
+### 4.3 Stage 3 record (2026-11-19, D-K: the owner's "Start Stage 3")
+
+Built in this repository ahead of the entry gate; `finapp` unchanged. Read against `5227f57e2` controller by controller
+(accounts, balances, statement, transfers, payments).
+
+| Task | Built | Evidence |
+|---|---|---|
+| `P18-TSK-017` | Home shows each live account's available balance per currency, with when it was read, once the customer holds an account; onboarding stays first otherwise | `accounts.test.tsx` |
+| `P18-TSK-018` | Accounts list; opening a wallet under an idempotency key, offered only when no wallet is live (finapp allows one, and a second "open" returns the first unchanged); a wallet's balances per currency (available, settled, on hold - never summed); adding a currency (only finapp's five, minus those held); closing after confirmation | `accounts.test.tsx` |
+| `P18-TSK-019` | Statement for a chosen period (business dates, checked for order and the future before asking): per currency, finapp's opening, every line in finapp's order with its direction in words and sign, reversals as their own lines, finapp's closing | `accounts.test.tsx`, `period.test.ts` |
+| `P18-TSK-020` | Activity: transfers sent and top-ups/purchases, each list whole and in finapp's order, saying that received money is on the statement; no refusal reason shown | `accounts.test.tsx` |
+
+Gates: `npm run verify` green (235 tests); `test:catalogue` 30 browser checks green; builds byte-identical; first load
+187 kB gzipped.
+
+**Found, fixed, recorded:**
+1. **The theme toggle's Tooltip** put its positioning library into every page's first load; a native `title` replaces
+   it (first load 196 -> 187 kB gzipped).
+2. **The entry cap** (`scripts/lib/bundle-scan.mjs`) rises 96 -> 128 KiB: the step-up dialog's positioning and scroll
+   code, now also used by the pages' selects, moved from a separate first-load chunk into the entry - the same bytes,
+   one file fewer. The gzip first-load budget stays binding.
+3. **Mantine's tabs are 37 px tall**; raised to the 44 px target with the other controls.
+
+**What the customer cannot see yet** (handed to finapp): one feed of everything that moved (G-02 - transfers received
+appear only on the statement); paged lists (G-01); withdrawal, FX and cross-border lists; a read of the currencies
+finapp holds (new **G-18**, P3 - the application keeps a copy of finapp's five); PDF statements (G-05).
+
+**Still true:** no customer can open a wallet through the application until finapp runs its KYC checks (G-16): opening
+needs an approved identity, and finapp answers `accounts.AccountOpeningRefused` until then, which the page explains.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -184,7 +214,10 @@ dependency. Until decided, the setup key is typed or opened by link.
 
 | D-I | Start Stage 2 ahead of the entry gate, frontend only; finapp work stays handed off | 2026-11-19, "Start Stage 2" | §4.2 |
 
-Further decisions are numbered from D-J and recorded in [`DECISIONS.md`](DECISIONS.md).
+| D-J | A QR library for authenticator setup | **open** | §4.2 |
+| D-K | Start Stage 3 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 3" | §4.3 |
+
+Further decisions are numbered from D-L and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

@@ -134,6 +134,26 @@ const byCode = defineMessages({
     defaultMessage: 'Your business is already being reviewed. Nothing was changed.',
   },
   stakeExceedsTitle: { id: 'problem.code.stakeExceeds.title', defaultMessage: 'Ownership adds up to more than 100%' },
+  accountRefusedTitle: {
+    id: 'problem.code.accountOpeningRefused.title',
+    defaultMessage: 'You cannot open an account yet',
+  },
+  accountRefusedNext: {
+    id: 'problem.code.accountOpeningRefused.next',
+    defaultMessage: 'Your identity must be verified first. Nothing was changed.',
+  },
+  unsupportedCurrencyTitle: {
+    id: 'problem.code.unsupportedCurrency.title',
+    defaultMessage: 'We do not hold this currency',
+  },
+  unsupportedCurrencyNext: { id: 'problem.code.unsupportedCurrency.next', defaultMessage: 'Choose another currency.' },
+  notEmptyTitle: { id: 'problem.code.accountNotEmpty.title', defaultMessage: 'This account cannot be closed yet' },
+  notEmptyNext: {
+    id: 'problem.code.accountNotEmpty.next',
+    defaultMessage: 'Move all money out and wait for payments in progress to finish, then try again.',
+  },
+  notActiveTitle: { id: 'problem.code.accountNotActive.title', defaultMessage: 'This account is not open' },
+  notActiveNext: { id: 'problem.code.accountNotActive.next', defaultMessage: 'Nothing was changed.' },
   stakeExceedsNext: {
     id: 'problem.code.stakeExceeds.next',
     defaultMessage: 'Check the shares already declared and enter a smaller one.',
@@ -161,6 +181,13 @@ const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
   ['kyc.OwnerAlreadyDeclared', { title: byCode.ownerDeclaredTitle, nextStep: byCode.ownerDeclaredNext }],
   ['kyc.CaseNotAcceptingOwners', { title: byCode.notAcceptingOwnersTitle, nextStep: byCode.notAcceptingOwnersNext }],
   ['kyc.StakeExceedsWhole', { title: byCode.stakeExceedsTitle, nextStep: byCode.stakeExceedsNext }],
+  ['accounts.AccountOpeningRefused', { title: byCode.accountRefusedTitle, nextStep: byCode.accountRefusedNext }],
+  [
+    'accounts.UnsupportedCurrency',
+    { title: byCode.unsupportedCurrencyTitle, nextStep: byCode.unsupportedCurrencyNext },
+  ],
+  ['accounts.AccountNotEmpty', { title: byCode.notEmptyTitle, nextStep: byCode.notEmptyNext }],
+  ['accounts.AccountNotActive', { title: byCode.notActiveTitle, nextStep: byCode.notActiveNext }],
 ]);
 
 /** The customer's explanation of any failure. A non-ApiError is a defect of this application. */

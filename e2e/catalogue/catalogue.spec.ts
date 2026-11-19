@@ -166,3 +166,14 @@ test('the onboarding controls open without a CSP violation', async ({ page }) =>
   expect(await seriousViolations(page)).toEqual([]);
   expect(await cspViolations(page)).toEqual([]);
 });
+
+test('the core banking controls switch tabs without a CSP violation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openCatalogue(page, 'dark');
+  const section = page.getByRole('region', { name: 'Core banking controls' });
+  await section.getByRole('tab', { name: 'Top-ups and purchases' }).click();
+  await expect(section.getByText('+€100.00')).toBeVisible();
+  await section.getByLabel('From').fill('2026-10-01');
+  expect(await seriousViolations(page)).toEqual([]);
+  expect(await cspViolations(page)).toEqual([]);
+});

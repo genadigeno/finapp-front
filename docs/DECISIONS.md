@@ -32,3 +32,8 @@ entry gate, as the console's M2-M11 did (console D-13...D-23): this repository b
 in-memory session carrier until `finapp` ships G-04. What only `finapp` can do stays in
 [`FINAPP_BACKEND_WORK.md`](FINAPP_BACKEND_WORK.md) (B1.1-B2.3); `finapp` is not changed from here. Screens whose
 backend is missing (password recovery and contact verification, G-03) are not built. -> `PHASE_18_PLAN.md` §4.2
+
+**D-K (the owner, 2026-11-19: "Start Stage 3").** Stage 3 (core banking: wallets, balances, statements, history)
+begins as Stage 2 did: frontend only, over the doors `finapp` serves today, degrading honestly where lists and the
+activity read are missing (G-01, G-02). `finapp` is not changed from here. D-J (a QR library) stays open.
+-> `PHASE_18_PLAN.md` §4.3

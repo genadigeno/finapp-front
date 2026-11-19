@@ -1,5 +1,5 @@
 // The signed-in home page: a greeting, the customer's own reference, and the onboarding checklist
-// (P18-TSK-016). Balances and activity join in Stage 3 (P18-TSK-017).
+// (P18-TSK-016), and - once the customer holds an account - their money (P18-TSK-017).
 import { Stack, Text, Title } from '@mantine/core';
 import { lazy, Suspense } from 'react';
 import { defineMessage, defineMessages, FormattedMessage } from 'react-intl';
@@ -9,6 +9,10 @@ import { useStanding } from '../../platform/session/standing.ts';
 // The checklist is the onboarding module's; loaded with the page, not in the entry chunk.
 const OnboardingChecklist = lazy(() =>
   import('../../modules/onboarding/OnboardingChecklist.tsx').then((m) => ({ default: m.OnboardingChecklist })),
+);
+
+const AccountsSummary = lazy(() =>
+  import('../../modules/accounts/AccountsSummary.tsx').then((m) => ({ default: m.AccountsSummary })),
 );
 
 const messages = defineMessages({
@@ -45,6 +49,7 @@ export function HomePage() {
         ) : null}
       </Stack>
       <Suspense fallback={<LoadingState />}>
+        <AccountsSummary />
         <OnboardingChecklist />
       </Suspense>
       {partyId === undefined ? null : (

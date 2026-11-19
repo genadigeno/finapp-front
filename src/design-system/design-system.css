@@ -3,6 +3,7 @@
 /* Touch targets of at least 44 px (blueprint §7; WCAG 2.5.8 asks 24, the customer standard is 44). */
 .mantine-Button-root,
 .mantine-ActionIcon-root,
+.mantine-Tabs-tab,
 .mantine-Input-input {
   min-height: var(--finapp-touch-target);
 }
@@ -309,4 +310,15 @@ body[data-finapp-scroll-locked] {
 /* Consent texts are legal wording: keep the author's line breaks. */
 .finapp-consent-text {
   white-space: pre-line;
+}
+
+/* A movement's direction is said in words (visually hidden) and by its sign; the colour only repeats it. */
+.finapp-money[data-direction='in'] {
+  color: var(--mantine-color-teal-text);
+}
+
+/* Amount columns line up on the right, figures tabular. */
+.finapp-cell-amount {
+  text-align: right;
+  white-space: nowrap;
 }

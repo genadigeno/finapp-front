@@ -238,3 +238,37 @@ export function Countdown({ expiresAt, onExpire, now = () => serverNow() }: Coun
     </span>
   );
 }
+
+const directionMessages = defineMessages({
+  in: { id: 'money.direction.in', defaultMessage: 'Money in' },
+  out: { id: 'money.direction.out', defaultMessage: 'Money out' },
+});
+
+/**
+ * A movement: the amount finapp sent (unsigned) and its direction. Money in shows "+", money out "−", and the
+ * direction is also said in words - never colour or sign alone (WCAG 1.4.1). The sign is written onto the
+ * string; nothing is computed.
+ */
+export function SignedMoney({
+  amount,
+  currency,
+  direction,
+}: {
+  amount: string;
+  currency: string;
+  direction: 'in' | 'out';
+}) {
+  const intl = useIntl();
+  const unsigned = amount.trim().replace(/^[+-]/, '');
+  const formatted = formatMoney(direction === 'out' ? `-${unsigned}` : unsigned, currency, intl.locale);
+  if (!formatted.valid) {
+    return <span className="finapp-invalid">{intl.formatMessage(unreadableMessage, { raw: formatted.raw })}</span>;
+  }
+  const text = direction === 'in' && !formatted.text.startsWith('+') ? `+${formatted.text}` : formatted.text;
+  return (
+    <span className="finapp-money" data-direction={direction}>
+      <span className="finapp-visually-hidden">{intl.formatMessage(directionMessages[direction])}: </span>
+      {text}
+    </span>
+  );
+}

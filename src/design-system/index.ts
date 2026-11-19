@@ -18,6 +18,7 @@ export {
   Money,
   MoneyInput,
   Rate,
+  SignedMoney,
   StatusChip,
   Timestamp,
   type BalanceTripletProps,

@@ -286,6 +286,7 @@ describe('the onboarding checklist reflects finapp, not the browser (P18-TSK-016
       'GET /v1/me/kyc': json({ status: 'APPROVED' }),
       'GET /v1/me/kyb': json({ status: 'IN_PROGRESS', owners: [] }),
       'GET /v1/me/consents': json([KYC_CONSENT(true)]),
+      'GET /v1/me/accounts': json([]),
     });
     await waitFor(() => expect(screen.getByText('Verified')).toBeTruthy());
     expect(screen.getByText('Under review')).toBeTruthy();
@@ -299,12 +300,13 @@ describe('the onboarding checklist reflects finapp, not the browser (P18-TSK-016
       'GET /v1/me/kyc': problem(404, 'api.NotFound'),
       'GET /v1/me/kyb': problem(404, 'api.NotFound'),
       'GET /v1/me/consents': json([]),
+      'GET /v1/me/accounts': json([]),
     });
     const nav = await screen.findByRole('navigation', { name: 'Main' });
     expect(
       within(nav)
         .getAllByRole('link')
         .map((a) => a.textContent),
-    ).toEqual(['Home', 'Business', 'Security']);
+    ).toEqual(['Home', 'Accounts', 'Activity', 'Business', 'Security']);
   });
 });

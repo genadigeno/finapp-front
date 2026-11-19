@@ -76,15 +76,16 @@ in `FINAPP_BACKEND_WORK.md`.
 
 ## Stage 3 — Core banking
 
-| Task | Title | Depends on | Gaps | DoD |
-|---|---|---|---|---|
-| `P18-TSK-017` | Dashboard | Stage 2 | G-02 | DOD-CUST |
-| `P18-TSK-018` | Wallets: open, add currency, close; balances | Stage 2 | G-06 (optional) | DOD-CUST |
-| `P18-TSK-019` | Statements | 018 | G-05 (optional) | DOD-CUST |
-| `P18-TSK-020` | Transfer and payment history | 018 | G-01, G-02 | DOD-CUST |
-| `P18-TSK-106` *(backend)* | Cursor pagination and missing customer lists | — | G-01 | finapp `DOD-API` |
-| `P18-TSK-107` *(backend)* | Customer activity read | — | G-02 | finapp `DOD-API`, `DOD-FIN` |
-| `P18-TSK-108` *(backend)* | Contract quality: `securitySchemes`, enums, per-operation problem codes | — | G-14 | finapp `DOD-API` |
+| Task | Title | Depends on | Gaps | DoD | Status |
+|---|---|---|---|---|---|
+| `P18-TSK-017` | Dashboard | Stage 2 | G-02 | DOD-CUST | Built (D-K) on Home: available balance per account and currency; no activity feed (G-02) |
+| `P18-TSK-018` | Wallets: open, add currency, close; balances | Stage 2 | G-06 (optional) | DOD-CUST | Built (D-K): one live wallet; open, add currency, close |
+| `P18-TSK-019` | Statements | 018 | G-05 (optional) | DOD-CUST | Built (D-K): whole period, no paging; no PDF (G-05) |
+| `P18-TSK-020` | Transfer and payment history | 018 | G-01, G-02 | DOD-CUST | Built (D-K): transfers sent and top-ups as finapp lists them (G-01, G-02) |
+| `P18-TSK-106` *(backend)* | Cursor pagination and missing customer lists | — | G-01 | finapp `DOD-API` | |
+| `P18-TSK-107` *(backend)* | Customer activity read | — | G-02 | finapp `DOD-API`, `DOD-FIN` | |
+| `P18-TSK-108` *(backend)* | Contract quality: `securitySchemes`, enums, per-operation problem codes | — | G-14 | finapp `DOD-API` | |
+| `P18-TSK-115` *(backend)* | A read of the currencies finapp holds | — | G-18 | finapp `DOD-API` | |
 
 ## Stage 4 — Money movement
 

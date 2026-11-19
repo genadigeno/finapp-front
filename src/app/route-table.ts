@@ -3,6 +3,7 @@
 import { IconHome } from '@tabler/icons-react';
 import { lazy } from 'react';
 import { defineMessages } from 'react-intl';
+import { ACCOUNTS_ROUTES } from '../modules/accounts/routes.ts';
 import { ONBOARDING_ROUTES } from '../modules/onboarding/routes.ts';
 import { SECURITY_ROUTES } from '../modules/security/routes.ts';
 import { setReturnablePaths } from '../platform/return-to.ts';
@@ -27,6 +28,11 @@ const APP_ROUTES: AppRoute[] = [
   },
 ];
 
-export const ROUTES: readonly AppRoute[] = [...APP_ROUTES, ...ONBOARDING_ROUTES, ...SECURITY_ROUTES];
+export const ROUTES: readonly AppRoute[] = [
+  ...APP_ROUTES,
+  ...ACCOUNTS_ROUTES,
+  ...ONBOARDING_ROUTES,
+  ...SECURITY_ROUTES,
+];
 
 setReturnablePaths(ROUTES.filter((route) => route.returnable === true).map((route) => route.path));

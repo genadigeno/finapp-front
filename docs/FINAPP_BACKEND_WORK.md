@@ -29,6 +29,7 @@ nothing here: the application already answers every problem document by its `cod
 | B3.1 | Cursor pagination and missing customer lists | G-01 | `P18-TSK-106` | P1 | Stage 3–4 lists |
 | B3.2 | Customer activity read | G-02 | `P18-TSK-107` | P1 | Dashboard, history |
 | B3.3 | Contract quality | G-14 | `P18-TSK-108` | P1 | Typed statuses |
+| B3.4 | A read of the currencies finapp holds | G-18 | `P18-TSK-115` | P3 | Offering only what finapp supports without a copy in the client |
 | B4.1 | Browser card tokenisation | G-10 | `P18-TSK-109` | P2 | Card top-up |
 | B4.2 | Idempotency on `POST /v1/beneficiaries` | G-12 | `P18-TSK-110` | P2 | Beneficiary creation |
 | B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
@@ -150,8 +151,17 @@ cross-border payments and credit applications. Each in its owning module. **DoD:
 ## B3.2 — Customer activity read (G-02)
 
 A per-wallet activity read (transfers, payments, withdrawals, FX, cross-border, loan movements) with references to the
-originating operation, likely derived from ledger statements; owner decided by an ADR (ledger or accounts). **DoD:**
+originating operation, likely derived from ledger statements; owner decided by an ADR (ledger or accounts).
+*Found by Stage 3:* `GET /v1/transfers` lists only transfers the customer **sent** (incoming money appears only as
+CREDIT lines on the statement) and carries no account ids; statement lines carry the operation id as `reference` but
+no description or counterparty; no list exists for withdrawals, FX conversions or cross-border payments. **DoD:**
 `DOD-API`, `DOD-FIN`.
+
+## B3.4 — A read of the currencies finapp holds (G-18) *(found by Stage 3)*
+
+finapp holds money in EUR, GBP, USD, JPY and BHD (`ledger` `SupportedCurrencies`) and offers no read of them; the
+application keeps a copy (`src/modules/accounts/labels.ts`) and `accounts.UnsupportedCurrency` remains the authority.
+**What:** `GET /v1/currencies` (or the list on an existing reference read) with each code and its scale. **DoD:** `DOD-API`.
 
 ## B3.3 — Contract quality (G-14)
 

@@ -9,6 +9,8 @@ const m = defineMessages({
   removed: { id: 'xb.recipient.removed', defaultMessage: 'Removed' },
   individual: { id: 'xb.entity.individual', defaultMessage: 'Person' },
   business: { id: 'xb.entity.business', defaultMessage: 'Business' },
+  booked: { id: 'fx.trade.booked', defaultMessage: 'Exchanged' },
+  reversed: { id: 'fx.trade.reversed', defaultMessage: 'Reversed' },
 });
 
 const p = (tone: StatusPresentation['tone'], label: MessageDescriptor, terminal: boolean): StatusPresentation => ({
@@ -28,6 +30,26 @@ export const RECIPIENT_STATUS = {
   UNAVAILABLE: p('neutral', m.unavailable, false),
   REVOKED: p('neutral', m.removed, true),
 } as const satisfies Record<RecipientStatus, StatusPresentation>;
+
+/**
+ * A booked exchange (`FxTradeView.status`). An operator may reverse one later (D-R WP-2). Any other value is shown
+ * through presentStatus's "in progress" fallback, never as exchanged.
+ */
+export type FxTradeStatus = 'BOOKED' | 'REVERSED';
+export const FX_TRADE_STATUS = {
+  BOOKED: p('positive', m.booked, false),
+  REVERSED: p('caution', m.reversed, true),
+} as const satisfies Record<FxTradeStatus, StatusPresentation>;
+
+/** A region code in the customer's language; the code itself when the browser does not know it. */
+export function countryName(code: string | undefined, locale: string): string {
+  if (code === undefined) return '';
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
 
 export function entityName(entityType: string | undefined): MessageDescriptor | undefined {
   return entityType === 'INDIVIDUAL' ? m.individual : entityType === 'BUSINESS' ? m.business : undefined;

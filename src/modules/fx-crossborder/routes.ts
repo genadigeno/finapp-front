@@ -10,6 +10,11 @@ export const FX_CROSSBORDER_ROUTES: AppRoute[] = [
     returnable: true,
   },
   {
+    path: '/exchange/conversions/$tradeId',
+    access: 'signed-in',
+    component: lazy(() => import('./ConversionReceiptPage.tsx').then((m) => ({ default: m.ConversionReceiptPage }))),
+  },
+  {
     path: '/send-abroad',
     access: 'signed-in',
     component: lazy(() => import('./SendAbroadPage.tsx').then((m) => ({ default: m.SendAbroadPage }))),

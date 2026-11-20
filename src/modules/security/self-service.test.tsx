@@ -50,6 +50,77 @@ describe('security centre (P18-TSK-032)', () => {
     ]);
     expect(sessionState().status).toBe('signed-in');
   });
+
+  it('never says all are signed out when the fresh read still shows another device, and offers to go again', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    const { sent } = renderAppAt('/security/devices', {
+      'GET /v1/sessions': [
+        json([
+          { id: 's-1', current: true, device: 'Firefox' },
+          { id: 's-2', current: false, device: 'Phone' },
+        ]),
+        // A device signed in while the loop ran.
+        json([
+          { id: 's-1', current: true, device: 'Firefox' },
+          { id: 's-4', current: false, device: 'Laptop' },
+        ]),
+      ],
+      'DELETE /v1/sessions/s-2': empty(),
+      'DELETE /v1/sessions/s-4': empty(),
+    });
+    await user.click(await screen.findByRole('button', { name: 'Sign out all other devices' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Sign out all other devices?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Sign out all other devices' }));
+    expect(await screen.findByText('A device signed in while we were signing the others out.')).toBeTruthy();
+    expect(screen.queryByText('All other devices are signed out.')).toBeNull();
+    expect(await screen.findByText('Laptop')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Sign out the other devices again' })).toBeTruthy();
+    expect(sent.filter((s) => s.method === 'DELETE').map((s) => s.path)).toEqual(['/v1/sessions/s-2']);
+    expect(sent.filter((s) => s.method === 'GET' && s.path === '/v1/sessions').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('stops the loop at a 401 and never retries it', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    const { sent } = renderAppAt('/security/devices', {
+      'GET /v1/sessions': json([
+        { id: 's-1', current: true, device: 'Firefox' },
+        { id: 's-2', current: false, device: 'Phone' },
+        { id: 's-3', current: false, device: 'Tablet' },
+      ]),
+      'DELETE /v1/sessions/s-2': problem(401, 'api.Unauthenticated'),
+      'DELETE /v1/sessions/s-3': empty(),
+    });
+    await user.click(await screen.findByRole('button', { name: 'Sign out all other devices' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Sign out all other devices?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Sign out all other devices' }));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Sign out all other devices?' })).toBeNull());
+    expect(sent.filter((s) => s.method === 'DELETE').map((s) => s.path)).toEqual(['/v1/sessions/s-2']);
+    expect(screen.queryByText('All other devices are signed out.')).toBeNull();
+  });
+
+  it('shows when each session ends, and points to a password change for a suspected compromise', async () => {
+    signInForTest();
+    renderAppAt('/security/devices', {
+      'GET /v1/sessions': json([
+        {
+          id: 's-1',
+          current: true,
+          device: '<b>Firefox</b>',
+          idleExpiresAt: '2026-11-21T12:30:00Z',
+          absoluteExpiresAt: '2026-11-22T12:00:00Z',
+        },
+      ]),
+    });
+    expect(await screen.findByText(/^Ends after inactivity at /)).toBeTruthy();
+    expect(screen.getByText(/^Ends at the latest /)).toBeTruthy();
+    // Device text is plain text, never markup.
+    expect(screen.getByText('<b>Firefox</b>')).toBeTruthy();
+    const link = screen.getByRole('link', { name: 'Change password' });
+    expect(link.getAttribute('href')).toBe('/security/password');
+    expect(screen.getByText(/signs out every other device in one step/)).toBeTruthy();
+  });
 });
 
 describe('password change (P18-TSK-033)', () => {

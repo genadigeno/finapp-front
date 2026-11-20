@@ -5,8 +5,11 @@
 //   2. The customer types a code from the app; finapp confirms it (POST /v1/me/mfa/confirmation).
 // Confirming does not raise this session's assurance: the next sensitive act asks for a fresh code.
 //
-// finapp offers no read of whether a factor is enrolled (gap G-11), so this page cannot say "on" or "off" -
+// finapp offers no read of whether a factor is enrolled (gap G-17), so this page cannot say "on" or "off" -
 // it says what happened on this visit, and nothing it does not know.
+//
+// finapp's `periodSeconds` is how often the app's codes change. Most apps assume 30, so it is shown beside the
+// manual key only when it is something else (the link carries it for the app). Like the key, it is never logged.
 //
 // There is no QR code: a QR library is a new dependency for the owner to approve (D-J). The key is shown
 // grouped for typing, and on a phone the link opens the authenticator app directly.
@@ -54,6 +57,11 @@ const messages = defineMessages({
   },
 });
 
+const periodMessage = defineMessage<{ seconds: number }>({
+  id: 'mfa.period',
+  defaultMessage: 'Codes change every {seconds} seconds. If your app asks, choose this.',
+});
+
 const codeFormatMessage = defineMessage<{ digits: number }>({
   id: 'mfa.codeFormat',
   defaultMessage: 'Enter the {digits} digits shown in your app.',
@@ -63,6 +71,7 @@ interface Enrolment {
   provisioningUri: string;
   secret: string;
   digits: number;
+  periodSeconds: number | undefined;
 }
 
 /** The base32 secret from an otpauth URI, or undefined if the URI is not one. */
@@ -101,10 +110,10 @@ export function MfaPage() {
     setEnrolment(undefined);
     const result = await start.submit({});
     if (result?.status !== 'succeeded') return;
-    const { provisioningUri, digits } = result.data;
+    const { provisioningUri, digits, periodSeconds } = result.data;
     const secret = provisioningUri === undefined ? undefined : secretOf(provisioningUri);
     if (provisioningUri === undefined || secret === undefined) return;
-    setEnrolment({ provisioningUri, secret, digits: digits ?? 6 });
+    setEnrolment({ provisioningUri, secret, digits: digits ?? 6, periodSeconds });
   };
 
   const submitCode = async (event: FormEvent) => {
@@ -181,6 +190,9 @@ export function MfaPage() {
                 <Text className="finapp-secret" aria-label={intl.formatMessage(messages.key)}>
                   {groupKey(enrolment.secret)}
                 </Text>
+                {enrolment.periodSeconds === undefined || enrolment.periodSeconds === 30 ? null : (
+                  <Text size="sm">{intl.formatMessage(periodMessage, { seconds: enrolment.periodSeconds })}</Text>
+                )}
                 <Text size="sm" c="dimmed">
                   <FormattedMessage {...messages.keyOnce} />
                 </Text>

@@ -721,3 +721,11 @@ html:has(.finapp-shell) {
     transition: none;
   }
 }
+
+/* The authenticator QR code: dark on white in both schemes, a white margin around it, never wider than the screen. */
+.finapp-qr {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--mantine-color-default-border);
+}

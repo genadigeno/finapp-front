@@ -21,6 +21,7 @@ import { ErrorExplained } from '../../design-system/States.tsx';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
+import { QrCode } from './QrCode.tsx';
 
 const messages = defineMessages({
   title: { id: 'mfa.title', defaultMessage: 'Two-step verification' },
@@ -36,7 +37,12 @@ const messages = defineMessages({
   },
   start: { id: 'mfa.start', defaultMessage: 'Set up an authenticator app' },
   step1: { id: 'mfa.step1', defaultMessage: 'Open your authenticator app and add an account.' },
-  step2: { id: 'mfa.step2', defaultMessage: 'Enter this setup key, or on this phone use the link below.' },
+  step2: {
+    id: 'mfa.step2',
+    defaultMessage:
+      'Scan this code with the app. If you cannot, enter the setup key, or on this phone use the link below.',
+  },
+  qr: { id: 'mfa.qr', defaultMessage: 'QR code for your authenticator app' },
   step3: { id: 'mfa.step3', defaultMessage: 'Type the code your app now shows.' },
   key: { id: 'mfa.key', defaultMessage: 'Setup key' },
   keyOnce: {
@@ -183,6 +189,7 @@ export function MfaPage() {
                   <FormattedMessage {...messages.step3} />
                 </List.Item>
               </List>
+              <QrCode value={enrolment.provisioningUri} label={intl.formatMessage(messages.qr)} />
               <Stack gap={4}>
                 <Text size="sm" fw={600}>
                   <FormattedMessage {...messages.key} />

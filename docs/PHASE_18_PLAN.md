@@ -417,6 +417,9 @@ stylesheet goes from 43.0 to 22.1 KB gzipped (288.9 to 142.6 KB raw); a componen
 transfer receipt no longer shows two lines called "Reference" ("Your reference" and, on every outcome page, "Support
 reference").
 
+**Then ("go ahead with WP-10"):** WP-10 - the authenticator setup shows a scannable QR code (D-J decided: `uqr` 0.1.3,
+MIT, no dependencies), drawn as one SVG path, dark on white in both schemes; the setup key and the link stay beside it.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -432,7 +435,7 @@ reference").
 
 | D-I | Start Stage 2 ahead of the entry gate, frontend only; finapp work stays handed off | 2026-11-19, "Start Stage 2" | §4.2 |
 
-| D-J | A QR library for authenticator setup | **open** | §4.2 |
+| D-J | A QR library for authenticator setup: `uqr` 0.1.3 (MIT, no dependencies) | 2026-11-21, "go ahead with WP-10" | §4.2, §4.9 |
 | D-K | Start Stage 3 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 3" | §4.3 |
 | D-L | Start Stage 4 ahead of the entry gate, frontend only; commit each stage | 2026-11-19, "Start Stage 4, always commit changes" | §4.4 |
 | D-M | Start Stage 5 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 5" | §4.5 |

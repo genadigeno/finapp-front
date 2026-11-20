@@ -82,3 +82,9 @@ customer-facing operation changed except `AmendmentView`). Built: the four work 
 use end to end. Not built: the merchant portal - finapp authenticates merchants by machine API key only, which must
 never reach a browser (new gap G-23) - and everything the map lists under "Waits on finapp". Two new gaps: G-23, G-24.
 -> `PHASE_18_PLAN.md` §4.9
+
+**D-J decided (the owner, 2026-11-21: "go ahead with WP-10").** The authenticator setup shows a QR code. The library is
+`uqr` 0.1.3: MIT, no dependencies, pinned exactly, in the licence policy. It only encodes - the application draws the
+code itself as one SVG path (no injected markup, no inline style, so the CSP and Trusted Types hold), and it travels
+only with the two-step page. The otpauth link stays in memory as before; nothing is fetched, stored or logged.
+-> `PHASE_18_PLAN.md` §4.9

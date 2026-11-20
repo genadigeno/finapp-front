@@ -12,8 +12,11 @@ import { Money, StatusChip, Timestamp } from '../../design-system/Values.tsx';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
 import { ACCOUNTS_ROOT } from './api.ts';
+import { isNonZero } from './labels.ts';
 
 const messages = defineMessages({
+  refundPending: { id: 'activity.refundPending', defaultMessage: 'Refund on its way' },
+  refunded: { id: 'activity.refunded', defaultMessage: 'Refunded' },
   title: { id: 'activity.title', defaultMessage: 'Activity' },
   transfers: { id: 'activity.transfers', defaultMessage: 'Transfers sent' },
   payments: { id: 'activity.payments', defaultMessage: 'Top-ups and purchases' },
@@ -26,6 +29,7 @@ const messages = defineMessages({
   },
   statement: { id: 'activity.statement', defaultMessage: 'Go to your accounts' },
   reference: { id: 'activity.reference', defaultMessage: 'Reference' },
+  details: { id: 'activity.details', defaultMessage: 'View receipt' },
 });
 
 interface Movement {
@@ -36,6 +40,9 @@ interface Movement {
   createdAt: string | undefined;
   reference: string | undefined;
   reversedAt: string | undefined;
+  /** A payment's refunds, exactly as finapp reports them; nothing is derived from them. */
+  refunded: string | undefined;
+  refundPending: string | undefined;
 }
 
 function useTransfers() {
@@ -56,6 +63,8 @@ function useTransfers() {
                 createdAt: t.createdAt,
                 reference: t.reference,
                 reversedAt: t.reversedAt,
+                refunded: undefined,
+                refundPending: undefined,
               },
             ],
       );
@@ -81,6 +90,8 @@ function usePayments() {
                 createdAt: p.createdAt,
                 reference: undefined,
                 reversedAt: undefined,
+                refunded: p.refunded,
+                refundPending: p.refundPending,
               },
             ],
       );
@@ -92,10 +103,13 @@ function MovementList({
   query,
   statusMap,
   empty,
+  receipts = false,
 }: {
   query: ReturnType<typeof useTransfers>;
   statusMap: typeof TRANSFER_STATUS | typeof PAYMENT_INTENT_STATUS;
   empty: string;
+  /** Each movement links to its receipt (transfers only). */
+  receipts?: boolean;
 }) {
   if (query.isPending) return <LoadingState />;
   if (query.isError) return <ErrorExplained error={query.error} onRetry={() => void query.refetch()} />;
@@ -117,6 +131,23 @@ function MovementList({
                 </Text>
               )}
               {movement.status === undefined ? null : <StatusChip value={movement.status} map={statusMap} />}
+              {isNonZero(movement.refunded) ? (
+                <Text size="sm">
+                  <FormattedMessage {...messages.refunded} />{' '}
+                  <Money amount={movement.refunded} currency={movement.currency} />
+                </Text>
+              ) : null}
+              {isNonZero(movement.refundPending) ? (
+                <Text size="sm">
+                  <FormattedMessage {...messages.refundPending} />{' '}
+                  <Money amount={movement.refundPending} currency={movement.currency} />
+                </Text>
+              ) : null}
+              {receipts ? (
+                <Link to="/activity/transfers/$transferId" params={{ transferId: movement.id }}>
+                  <FormattedMessage {...messages.details} />
+                </Link>
+              ) : null}
             </Stack>
             <Money amount={movement.amount} currency={movement.currency} size="lg" />
           </Group>
@@ -151,6 +182,7 @@ export function ActivityPage() {
             query={transfers}
             statusMap={TRANSFER_STATUS}
             empty={intl.formatMessage(messages.noTransfers)}
+            receipts
           />
         </Tabs.Panel>
         <Tabs.Panel value="payments" pt="md">

@@ -12,7 +12,55 @@ const m = defineMessages({
   posting: { id: 'statement.type.posting', defaultMessage: 'Transaction' },
   reversal: { id: 'statement.type.reversal', defaultMessage: 'Reversal' },
   adjustment: { id: 'statement.type.adjustment', defaultMessage: 'Account adjustment' },
+  // finapp's transfer FailureReason, in words the customer can act on (the receipt's copy of the send words).
+  failureFunds: {
+    id: 'transfer.failure.funds',
+    defaultMessage: 'There was not enough money available in the wallet.',
+  },
+  failureCurrency: {
+    id: 'transfer.failure.currency',
+    defaultMessage: 'The recipient could not receive this currency.',
+  },
+  failureSelf: { id: 'transfer.failure.self', defaultMessage: 'Money cannot be sent to the account it comes from.' },
+  failurePostable: {
+    id: 'transfer.failure.postable',
+    defaultMessage: 'One of the accounts could not send or receive money at the time.',
+  },
+  failureGeneric: {
+    id: 'transfer.failure.generic',
+    defaultMessage: 'This transfer could not be completed. Nothing was taken from your wallet.',
+  },
 });
+
+/** Whether an account is restricted from sending (finapp ADR-0153). finapp gives no reason, and none is shown. */
+export function isSuspended(status: string | undefined): boolean {
+  return status === 'SUSPENDED';
+}
+
+/**
+ * Whether finapp reported an amount other than zero. The decimal string is read as text - a zero is written only
+ * with zeros - so nothing is converted to a number (ADR-F04).
+ */
+export function isNonZero(amount: string | undefined): amount is string {
+  return amount !== undefined && /[1-9]/.test(amount);
+}
+
+/** finapp's failure reasons a customer can act on; every other reason - risk, limits - is generic (INV-RSK-08). */
+export function transferFailureWords(reason: string | undefined): MessageDescriptor {
+  switch (reason) {
+    case 'INSUFFICIENT_FUNDS':
+      return m.failureFunds;
+    case 'CURRENCY_MISMATCH':
+      return m.failureCurrency;
+    case 'SELF_TRANSFER':
+      return m.failureSelf;
+    case 'SOURCE_NOT_POSTABLE':
+    case 'DESTINATION_NOT_POSTABLE':
+      return m.failurePostable;
+    default:
+      return m.failureGeneric;
+  }
+}
 
 export function productName(productType: string | undefined): MessageDescriptor {
   return productType === 'WALLET' ? m.wallet : m.otherProduct;
@@ -24,7 +72,10 @@ const p = (tone: StatusPresentation['tone'], label: MessageDescriptor, terminal:
   terminal,
 });
 
-/** finapp's CustomerAccountStatus. Opening creates ACTIVE; nothing produces PENDING or SUSPENDED yet. */
+/**
+ * finapp's CustomerAccountStatus. Opening creates ACTIVE; an operator restriction produces SUSPENDED (finapp
+ * ADR-0153): the account cannot send money, money it receives still arrives. Nothing produces PENDING yet.
+ */
 export type AccountStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'CLOSED';
 export const ACCOUNT_STATUS = {
   PENDING: p('info', m.pending, false),

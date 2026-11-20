@@ -140,6 +140,32 @@ describe('sending money (P18-TSK-022; ADR-F05)', () => {
     await user.click(screen.getByRole('button', { name: 'Send now' }));
     expect(await screen.findByText('The money was not sent')).toBeTruthy();
     expect(screen.queryByText(/risk|limit|refused/i)).toBeNull();
+    // A failed transfer still has its receipt, by the id in finapp's answer.
+    expect(screen.getByRole('link', { name: 'View receipt' }).getAttribute('href')).toBe('/activity/transfers/t-1');
+  });
+
+  it('a completed transfer links to its receipt, which re-reads finapp instead of the send answer', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    const { sent, router } = renderAppAt('/move/send', {
+      ...WALLET,
+      'GET /v1/beneficiaries': json([RECIPIENT]),
+      'POST /v1/transfers': json({ id: 't-9', status: 'COMPLETED', amount: '25.50', currency: 'EUR' }, 201),
+      'GET /v1/transfers/t-9': json({
+        id: 't-9',
+        status: 'REVERSED',
+        amount: '25.50',
+        currency: 'EUR',
+        reversedAt: '2026-11-19T15:30:00Z',
+      }),
+    });
+    await fillAndReview(user);
+    await user.click(screen.getByRole('button', { name: 'Send now' }));
+    expect(await screen.findByText('Money sent')).toBeTruthy();
+    await user.click(screen.getByRole('link', { name: 'View receipt' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/activity/transfers/t-9'));
+    expect(await screen.findByText('Reversed')).toBeTruthy();
+    expect(sent.filter((s) => s.method === 'GET' && s.path === '/v1/transfers/t-9')).toHaveLength(1);
   });
 
   it('a lost answer is never a failure: the same request goes again under the same key (scenario 5)', async () => {
@@ -224,6 +250,38 @@ describe('top-up (P18-TSK-023)', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/move/top-ups/pi-2'));
     const link = await screen.findByRole('link', { name: 'Approve the payment at your bank' });
     expect(link.getAttribute('href')).toBe('https://bank.example/approve/abc');
+  });
+
+  it('shows refunds exactly as finapp reports them, and nothing for zero', async () => {
+    signInForTest();
+    renderAppAt('/move/top-ups/pi-3', {
+      'GET /v1/payments/pi-3': json({
+        id: 'pi-3',
+        status: 'SUCCEEDED',
+        amount: '100.00',
+        currency: 'EUR',
+        refunded: '25.00',
+        refundPending: '0.00',
+      }),
+    });
+    expect((await screen.findByText(/^Refunded/)).textContent).toBe('Refunded €25.00');
+    expect(screen.queryByText(/Refund on its way/)).toBeNull();
+    expect(screen.queryByText('€75.00')).toBeNull();
+  });
+
+  it('a refund still on its way is said to be', async () => {
+    signInForTest();
+    renderAppAt('/move/top-ups/pi-4', {
+      'GET /v1/payments/pi-4': json({
+        id: 'pi-4',
+        status: 'SUCCEEDED',
+        amount: '100.00',
+        currency: 'EUR',
+        refundPending: '40.00',
+      }),
+    });
+    expect((await screen.findByText(/^Refund on its way/)).textContent).toBe('Refund on its way €40.00');
+    expect(screen.queryByText(/^Refunded/)).toBeNull();
   });
 
   it('only an https approval link is ever followed', () => {

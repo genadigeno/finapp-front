@@ -55,8 +55,8 @@ export function LoadingState({ rows = 3, label }: { rows?: number; label?: strin
 
 export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <Stack align="center" gap={6} py="xl">
-      <IconMoodEmpty size={32} aria-hidden />
+    <Stack align="center" gap={6} py="xl" className="finapp-empty">
+      <IconMoodEmpty size={28} aria-hidden />
       <Title order={3}>{title}</Title>
       {children === undefined ? null : <Text c="dimmed">{children}</Text>}
     </Stack>
@@ -160,7 +160,7 @@ export function SessionExpiring({ remainingMs, onStay }: { remainingMs: number; 
   const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
   return (
     <Alert
-      color="blue"
+      color="navy"
       variant="light"
       icon={<IconClockHour4 aria-hidden />}
       title={intl.formatMessage(messages.expiringTitle)}

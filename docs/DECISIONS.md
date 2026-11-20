@@ -61,3 +61,10 @@ Edge/Chromium tooling on a throttled phone profile rather than by adding Lightho
 download, for the owner to approve if wanted). The threat model is drafted here for `finapp` to adopt. The ZAP
 baseline and penetration test wait for staging (G-15); the manual screen-reader passes wait for a person.
 -> `PHASE_18_PLAN.md` §4.7
+
+**D-P (the owner, 2026-11-20: "make front end app more beautiful for users, keep finance and accounting, and fintech
+theme and dont use annoying styles, formatting and colors. cover all pages").** A visual refresh of the whole
+application through the design system - theme, generated theme stylesheet and global stylesheet - plus the start,
+sign-in and registration layouts. A muted navy and slate palette, cards on a soft canvas, ledger tables; no new
+dependency, no web font, no animation beyond Mantine's own, no change to wording, behaviour or requests. Colour
+keeps its one job: status. -> `PHASE_18_PLAN.md` §4.8

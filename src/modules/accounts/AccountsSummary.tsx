@@ -30,7 +30,7 @@ function AccountMoney({ account }: { account: Account }) {
       renderRoot={(props) => <Link {...props} to="/accounts/$accountId" params={{ accountId: account.id }} />}
       className="finapp-entry"
     >
-      <Card withBorder radius="md" padding="md">
+      <Card withBorder radius="lg" padding="lg" className="finapp-balance-card">
         <div className="finapp-entry__row">
           <Stack gap={4} className="finapp-entry__text">
             <Text fw={600}>{intl.formatMessage(productName(account.productType))}</Text>

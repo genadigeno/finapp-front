@@ -24,6 +24,10 @@ export const cspViolations = (page: Page) =>
   page.evaluate(() => (window as unknown as { __cspViolations: string[] }).__cspViolations);
 
 export async function seriousViolations(page: Page) {
+  // axe judges each control as it is on screen: one the last scroll left half under the sticky header counts as too
+  // small to tap (target-size), though a customer just scrolls it out. Judged from the top of the page, nothing is
+  // under the header, so the verdict does not depend on where a click happened to scroll (Stage 8 visual refresh).
+  await page.evaluate(() => window.scrollTo(0, 0));
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();

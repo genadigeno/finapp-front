@@ -4,7 +4,7 @@
 //
 // Every refusal of the registration itself is one uniform answer (`party.RegistrationRefused`): finapp
 // never says whether a login name is taken, and neither does this page.
-import { Anchor, Button, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Card, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -124,76 +124,80 @@ export function RegisterPage() {
 
   if (signInFailed) {
     return (
-      <Stack gap="md" maw={480}>
-        <Title order={1}>
-          <FormattedMessage {...messages.title} />
-        </Title>
-        <Text>
-          <FormattedMessage {...messages.signInAfter} />
-        </Text>
-        <Button component={Link} to="/sign-in">
-          <FormattedMessage {...messages.signIn} />
-        </Button>
-      </Stack>
+      <Card withBorder radius="lg" padding="xl" className="finapp-auth">
+        <Stack gap="md">
+          <Title order={1}>
+            <FormattedMessage {...messages.title} />
+          </Title>
+          <Text>
+            <FormattedMessage {...messages.signInAfter} />
+          </Text>
+          <Button component={Link} to="/sign-in">
+            <FormattedMessage {...messages.signIn} />
+          </Button>
+        </Stack>
+      </Card>
     );
   }
 
   return (
-    <Stack gap="lg" maw={480}>
-      <Title order={1}>
-        <FormattedMessage {...messages.title} />
-      </Title>
-      <Text>
-        <FormattedMessage {...messages.lead} />
-      </Text>
-      {failure?.status === 'unknown' ? (
-        // Sending the same request again is safe: finapp replays the first outcome for the same key.
-        <UnknownOutcome correlationId={failure.error.correlationId} onSendSame={() => void onSubmit()} />
-      ) : failure !== undefined ? (
-        <ErrorExplained error={failure.error} />
-      ) : null}
-      <form onSubmit={(event) => void onSubmit(event)} noValidate>
-        <Stack>
-          <TextInput
-            label={intl.formatMessage(messages.displayName)}
-            description={intl.formatMessage(messages.displayNameHint)}
-            autoComplete="name"
-            error={form.formState.errors.displayName?.message}
-            {...form.register('displayName')}
-          />
-          <TextInput
-            label={intl.formatMessage(messages.login)}
-            description={intl.formatMessage(messages.loginHint)}
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            error={form.formState.errors.loginIdentifier?.message}
-            {...form.register('loginIdentifier')}
-          />
-          <PasswordInput
-            label={intl.formatMessage(messages.password)}
-            description={intl.formatMessage(messages.passwordHint)}
-            autoComplete="new-password"
-            error={form.formState.errors.password?.message}
-            {...form.register('password')}
-          />
-          <PasswordInput
-            label={intl.formatMessage(messages.confirm)}
-            autoComplete="new-password"
-            error={form.formState.errors.confirm?.message}
-            {...form.register('confirm')}
-          />
-          <Button type="submit" loading={register.state.status === 'sending' || form.formState.isSubmitting}>
-            <FormattedMessage {...messages.submit} />
-          </Button>
-        </Stack>
-      </form>
-      <Text>
-        <FormattedMessage {...messages.haveAccount} />{' '}
-        <Anchor component={Link} to="/sign-in">
-          <FormattedMessage {...messages.signIn} />
-        </Anchor>
-      </Text>
-    </Stack>
+    <Card withBorder radius="lg" padding="xl" className="finapp-auth">
+      <Stack gap="lg">
+        <Title order={1}>
+          <FormattedMessage {...messages.title} />
+        </Title>
+        <Text>
+          <FormattedMessage {...messages.lead} />
+        </Text>
+        {failure?.status === 'unknown' ? (
+          // Sending the same request again is safe: finapp replays the first outcome for the same key.
+          <UnknownOutcome correlationId={failure.error.correlationId} onSendSame={() => void onSubmit()} />
+        ) : failure !== undefined ? (
+          <ErrorExplained error={failure.error} />
+        ) : null}
+        <form onSubmit={(event) => void onSubmit(event)} noValidate>
+          <Stack>
+            <TextInput
+              label={intl.formatMessage(messages.displayName)}
+              description={intl.formatMessage(messages.displayNameHint)}
+              autoComplete="name"
+              error={form.formState.errors.displayName?.message}
+              {...form.register('displayName')}
+            />
+            <TextInput
+              label={intl.formatMessage(messages.login)}
+              description={intl.formatMessage(messages.loginHint)}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              error={form.formState.errors.loginIdentifier?.message}
+              {...form.register('loginIdentifier')}
+            />
+            <PasswordInput
+              label={intl.formatMessage(messages.password)}
+              description={intl.formatMessage(messages.passwordHint)}
+              autoComplete="new-password"
+              error={form.formState.errors.password?.message}
+              {...form.register('password')}
+            />
+            <PasswordInput
+              label={intl.formatMessage(messages.confirm)}
+              autoComplete="new-password"
+              error={form.formState.errors.confirm?.message}
+              {...form.register('confirm')}
+            />
+            <Button type="submit" loading={register.state.status === 'sending' || form.formState.isSubmitting}>
+              <FormattedMessage {...messages.submit} />
+            </Button>
+          </Stack>
+        </form>
+        <Text>
+          <FormattedMessage {...messages.haveAccount} />{' '}
+          <Anchor component={Link} to="/sign-in">
+            <FormattedMessage {...messages.signIn} />
+          </Anchor>
+        </Text>
+      </Stack>
+    </Card>
   );
 }

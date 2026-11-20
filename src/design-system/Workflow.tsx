@@ -50,7 +50,7 @@ export function Wizard({ steps, current, children }: WizardProps) {
           ))}
         </ol>
       </nav>
-      {children}
+      <div className="finapp-panel">{children}</div>
     </Stack>
   );
 }

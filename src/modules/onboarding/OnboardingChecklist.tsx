@@ -44,7 +44,7 @@ type StepState = 'todo' | 'waiting' | 'done' | 'optional';
 
 const STATE_ICON: Record<StepState, { icon: ReactNode; color: string }> = {
   todo: { icon: <IconCircleDashed size={20} aria-hidden />, color: 'gray' },
-  waiting: { icon: <IconClock size={20} aria-hidden />, color: 'blue' },
+  waiting: { icon: <IconClock size={20} aria-hidden />, color: 'navy' },
   done: { icon: <IconCircleCheck size={20} aria-hidden />, color: 'teal' },
   optional: { icon: <IconCircleDashed size={20} aria-hidden />, color: 'gray' },
 };

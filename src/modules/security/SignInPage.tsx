@@ -1,7 +1,7 @@
 // Sign in (P18-TSK-010; blueprint §12.3). One message for every refusal the customer can act on, never
 // revealing whether an account exists or is locked (finapp answers all of them the same way). After
 // signing in, the customer goes to the validated `returnTo`, or home.
-import { Anchor, Button, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Card, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -59,44 +59,46 @@ export function SignInPage() {
     failure instanceof ApiError && (failure.isUnauthenticated || failure.code === 'identity.AuthenticationFailed');
 
   return (
-    <Stack gap="lg" maw={420}>
-      <Title order={1}>
-        <FormattedMessage {...messages.title} />
-      </Title>
-      {failure === undefined ? null : uniformRefusal ? (
-        <Text role="alert" c="red">
-          <FormattedMessage {...messages.failed} />
+    <Card withBorder radius="lg" padding="xl" className="finapp-auth">
+      <Stack gap="lg">
+        <Title order={1}>
+          <FormattedMessage {...messages.title} />
+        </Title>
+        {failure === undefined ? null : uniformRefusal ? (
+          <Text role="alert" c="red">
+            <FormattedMessage {...messages.failed} />
+          </Text>
+        ) : (
+          <ErrorExplained error={failure} />
+        )}
+        <form onSubmit={(event) => void onSubmit(event)} noValidate>
+          <Stack>
+            <TextInput
+              label={intl.formatMessage(messages.login)}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              error={form.formState.errors.loginIdentifier?.message}
+              {...form.register('loginIdentifier')}
+            />
+            <PasswordInput
+              label={intl.formatMessage(messages.password)}
+              autoComplete="current-password"
+              error={form.formState.errors.password?.message}
+              {...form.register('password')}
+            />
+            <Button type="submit" loading={form.formState.isSubmitting}>
+              <FormattedMessage {...messages.submit} />
+            </Button>
+          </Stack>
+        </form>
+        <Text>
+          <FormattedMessage {...messages.noAccount} />{' '}
+          <Anchor component={Link} to="/register">
+            <FormattedMessage {...messages.register} />
+          </Anchor>
         </Text>
-      ) : (
-        <ErrorExplained error={failure} />
-      )}
-      <form onSubmit={(event) => void onSubmit(event)} noValidate>
-        <Stack>
-          <TextInput
-            label={intl.formatMessage(messages.login)}
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            error={form.formState.errors.loginIdentifier?.message}
-            {...form.register('loginIdentifier')}
-          />
-          <PasswordInput
-            label={intl.formatMessage(messages.password)}
-            autoComplete="current-password"
-            error={form.formState.errors.password?.message}
-            {...form.register('password')}
-          />
-          <Button type="submit" loading={form.formState.isSubmitting}>
-            <FormattedMessage {...messages.submit} />
-          </Button>
-        </Stack>
-      </form>
-      <Text>
-        <FormattedMessage {...messages.noAccount} />{' '}
-        <Anchor component={Link} to="/register">
-          <FormattedMessage {...messages.register} />
-        </Anchor>
-      </Text>
-    </Stack>
+      </Stack>
+    </Card>
   );
 }

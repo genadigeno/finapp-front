@@ -170,7 +170,7 @@ export function ConsentsPage() {
       <Title order={1}>
         <FormattedMessage {...messages.title} />
       </Title>
-      <Alert variant="light" color="blue">
+      <Alert variant="light" color="navy">
         <FormattedMessage {...messages.lead} />
       </Alert>
       {consents.data.map((consent) => (

@@ -1,4 +1,10 @@
-/* The application's own classes - a bundled file, so the CSP's `style-src 'self'` serves it (ADR-F07). */
+/* The application's own classes - a bundled file, so the CSP's `style-src 'self'` serves it (ADR-F07).
+ *
+ * Look (Stage 8 visual refresh): a finance product, quiet and exact. White cards on a cool grey canvas, navy ink for
+ * actions, slate for secondary text, figures in tabular digits, sentence case everywhere, one subtle shadow. Colour
+ * carries meaning (tone.ts), never decoration. Every colour pair used here is at least WCAG AA in both schemes. */
+
+/* ---- Foundations -------------------------------------------------------------------------------- */
 
 /* Touch targets of at least 44 px (blueprint §7; WCAG 2.5.8 asks 24, the customer standard is 44). */
 .mantine-Button-root,
@@ -24,6 +30,47 @@
   border: 0;
 }
 
+body {
+  background: var(--finapp-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings in a slightly deeper ink, tightened a little. */
+.finapp-shell h1,
+.finapp-shell h2,
+.finapp-shell h3,
+.finapp-shell h4 {
+  color: var(--finapp-heading);
+  letter-spacing: -0.012em;
+}
+
+/* Links: navy ink, a thin underline set off from the text - still underlined (WCAG 1.4.1), never shouting. Plain
+   router links are styled here so every "Back to …" link matches Mantine's Anchor. */
+.finapp-shell a:not([class*='mantine-']):not(.finapp-entry):not(.finapp-shell__link):not(.finapp-skip-link),
+.mantine-Anchor-root {
+  color: var(--mantine-color-anchor);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.finapp-shell a:not([class*='mantine-']):not(.finapp-entry):not(.finapp-shell__link):not(.finapp-skip-link):hover,
+.mantine-Anchor-root:hover {
+  text-decoration-color: currentColor;
+}
+
+.finapp-shell
+  a:not([class*='mantine-']):not(.finapp-entry):not(.finapp-shell__link):not(.finapp-skip-link):focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---- Figures ------------------------------------------------------------------------------------ */
+
 .finapp-numeric,
 .finapp-money,
 .finapp-countdown {
@@ -37,21 +84,32 @@
 .finapp-money[data-size='lg'] {
   font-size: var(--mantine-font-size-xl);
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .finapp-money[data-size='xl'] {
-  font-size: 2rem;
+  font-size: 2.125rem;
   font-weight: 650;
-  line-height: 1.2;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--finapp-heading);
+}
+
+/* A movement's direction is said in words (visually hidden) and by its sign; the colour only repeats it. */
+.finapp-money[data-direction='in'] {
+  color: var(--mantine-color-teal-text);
 }
 
 .finapp-input-currency {
   color: var(--mantine-color-dimmed);
   font-weight: 600;
+  font-size: var(--mantine-font-size-xs);
+  letter-spacing: 0.02em;
 }
 
 .finapp-mono {
   font-family: var(--mantine-font-family-monospace);
+  font-size: 0.9375em;
   overflow-wrap: anywhere;
 }
 
@@ -59,9 +117,227 @@
   color: var(--mantine-color-red-text);
 }
 
+.finapp-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  color: var(--mantine-color-dimmed);
+}
+
 .finapp-countdown[data-expired] {
   color: var(--mantine-color-red-text);
+}
+
+/* Amount columns line up on the right, figures tabular. */
+.finapp-cell-amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---- Surfaces ----------------------------------------------------------------------------------- */
+
+/* Cards are the surface above the canvas: white (light) or a lifted navy-slate (dark), a hairline border and one
+   quiet shadow. */
+.mantine-Card-root {
+  background: var(--finapp-surface);
+  border-color: var(--mantine-color-default-border);
+  box-shadow: var(--finapp-card-shadow);
+}
+
+/* The balance card on Home: the one place the navy is a surface - the customer's money, first. */
+.finapp-balance-card.mantine-Card-root {
+  --mantine-color-text: #ffffff;
+  --mantine-color-dimmed: rgba(255, 255, 255, 0.82);
+  --finapp-heading: #ffffff;
+  background: var(--finapp-accent-surface);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.finapp-balance-card .finapp-money {
+  color: #ffffff;
+}
+
+.finapp-entry:hover .finapp-balance-card.mantine-Card-root {
+  background: var(--mantine-color-navy-9);
+}
+
+/* A panel: the body of a journey, a card without the card component (the Wizard's content). A card placed directly in
+   it (a review or a result) is flattened, so nothing sits in a box inside a box. */
+.finapp-panel {
+  background: var(--finapp-surface);
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-lg);
+  box-shadow: var(--finapp-card-shadow);
+  padding: 1.5rem;
+}
+
+.finapp-panel > .mantine-Card-root {
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+
+@media (max-width: 47.99em) {
+  .finapp-panel {
+    padding: 1.125rem;
+  }
+}
+
+/* Sign-in and registration: one centred card. */
+.finapp-auth.mantine-Card-root {
+  width: 100%;
+  max-width: 28rem;
+  margin: 1.5rem auto 0;
+}
+
+/* An empty list: said calmly, in a dashed outline, not a loud illustration. */
+.finapp-empty {
+  border: 1px dashed var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-lg);
+  background: var(--finapp-surface-subtle);
+  color: var(--mantine-color-dimmed);
+  text-align: center;
+  padding-inline: 1rem;
+}
+
+.finapp-empty h3 {
+  color: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-md);
+}
+
+/* A setup key or code the customer types elsewhere: grouped, selectable, never wrapped mid-group. */
+.finapp-secret {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-lg);
+  letter-spacing: 0.08em;
+  word-spacing: 0.3em;
+  overflow-wrap: anywhere;
+  user-select: all;
+  padding: 0.75rem 1rem;
+  border-radius: var(--mantine-radius-md);
+  background: var(--finapp-surface-subtle);
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+/* Consent texts are legal wording: keep the author's line breaks. */
+.finapp-consent-text {
+  white-space: pre-line;
+}
+
+/* An agreement's text exactly as finapp sent it: plain, wrapped, scrollable, and focusable for the keyboard. */
+.finapp-document {
+  max-height: 20rem;
+  overflow: auto;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  background: var(--finapp-surface-subtle);
+  padding: 0.875rem 1rem;
+}
+
+.finapp-document:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+.finapp-document pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  line-height: 1.6;
+}
+
+/* ---- Controls ----------------------------------------------------------------------------------- */
+
+.mantine-Button-root {
   font-weight: 600;
+}
+
+/* A disabled button keeps its outline, so it is still seen as a button that is waiting (dark cards especially). */
+.mantine-Button-root:disabled,
+.mantine-Button-root[data-disabled] {
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.mantine-InputWrapper-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.mantine-InputWrapper-description {
+  color: var(--mantine-color-dimmed);
+}
+
+.mantine-Input-input {
+  background: var(--finapp-surface);
+}
+
+/* Statuses and badges in sentence case - nothing shouted in capitals. */
+.mantine-Badge-root {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.finapp-status .mantine-Badge-section {
+  margin-inline-end: 0.25rem;
+}
+
+/* A radio's or checkbox's target is the control and its label together: the row is at least 44 px tall. */
+.mantine-Radio-body,
+.mantine-Checkbox-body {
+  align-items: center;
+  min-height: var(--finapp-touch-target);
+}
+
+/* Tabs: a quiet underline, the selected one in ink. */
+.mantine-Tabs-tab {
+  font-weight: 500;
+  color: var(--mantine-color-dimmed);
+}
+
+.mantine-Tabs-tab[data-active] {
+  color: var(--finapp-heading);
+  font-weight: 600;
+}
+
+/* Tables: a ledger - hairline rows, muted headings, tabular digits, a faint row highlight. */
+.mantine-Table-table {
+  font-variant-numeric: tabular-nums;
+}
+
+.mantine-Table-th {
+  color: var(--mantine-color-dimmed);
+  font-weight: 600;
+  font-size: var(--mantine-font-size-xs);
+  white-space: nowrap;
+}
+
+.mantine-Table-tr {
+  border-color: var(--finapp-hairline);
+}
+
+.mantine-Table-tbody .mantine-Table-tr:hover {
+  background: var(--finapp-surface-subtle);
+}
+
+/* A table wider than the screen scrolls inside its own region, which the keyboard can reach (ScrollableTable). */
+.finapp-table-scroll {
+  overflow-x: auto;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.finapp-table-scroll > table {
+  min-width: 26rem;
+}
+
+.finapp-table-scroll:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
 }
 
 /* Page scroll locked while a CustomerModal is open - a static rule instead of the <style> element
@@ -76,7 +352,14 @@ body[data-finapp-scroll-locked] {
   --finapp-header-height: 64px;
   --finapp-bottom-nav-height: 64px;
   min-height: 100vh;
-  background: var(--mantine-color-body);
+  background: var(--finapp-canvas);
+}
+
+/* The header stays on screen (sticky), so whatever the browser scrolls into view - a focused field, an error, a skip
+   link's target - stops below it rather than under it (WCAG 2.4.11). The phone's bottom bar is allowed for the same
+   way below. The page scrolls on <html>, so the padding goes there; 64 px is --finapp-header-height plus a gap. */
+html:has(.finapp-shell) {
+  scroll-padding-top: calc(64px + 0.75rem);
 }
 
 .finapp-skip-link {
@@ -85,7 +368,7 @@ body[data-finapp-scroll-locked] {
   top: -100px;
   z-index: 200;
   padding: 0.75rem 1rem;
-  background: var(--mantine-color-body);
+  background: var(--finapp-surface);
   color: var(--mantine-color-text);
   border: 2px solid var(--mantine-primary-color-filled);
   border-radius: var(--mantine-radius-md);
@@ -103,20 +386,30 @@ body[data-finapp-scroll-locked] {
   align-items: center;
   gap: 1.5rem;
   height: var(--finapp-header-height);
-  padding: 0 1rem;
-  background: var(--mantine-color-body);
+  padding: 0 1.25rem;
+  background: var(--finapp-surface);
   border-bottom: 1px solid var(--mantine-color-default-border);
 }
 
 .finapp-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: var(--mantine-font-size-lg);
   font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--finapp-heading);
   white-space: nowrap;
+}
+
+.finapp-shell__logo {
+  flex: none;
+  color: var(--mantine-primary-color-filled);
 }
 
 .finapp-shell__nav {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.125rem;
   flex: 1;
 }
 
@@ -125,20 +418,22 @@ body[data-finapp-scroll-locked] {
   align-items: center;
   gap: 0.5rem;
   min-height: var(--finapp-touch-target);
-  padding: 0 0.875rem;
+  padding: 0 0.75rem;
   border-radius: var(--mantine-radius-md);
-  color: var(--mantine-color-text);
+  color: var(--mantine-color-dimmed);
   text-decoration: none;
   font-weight: 500;
 }
 
 .finapp-shell__link:hover {
-  background: var(--mantine-color-default-hover);
+  background: var(--finapp-surface-subtle);
+  color: var(--mantine-color-text);
 }
 
 .finapp-shell__link[aria-current='page'] {
   background: var(--mantine-primary-color-light);
   color: var(--mantine-primary-color-light-color);
+  font-weight: 600;
 }
 
 .finapp-shell__link:focus-visible,
@@ -156,7 +451,7 @@ body[data-finapp-scroll-locked] {
   width: 100%;
   max-width: var(--finapp-content-width);
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 2rem 1.25rem;
 }
 
 .finapp-shell__banner {
@@ -169,6 +464,15 @@ body[data-finapp-scroll-locked] {
 
 /* Phones: the goals move to a bottom bar, icon over label. Mantine's `sm` breakpoint is 48em. */
 @media (max-width: 47.99em) {
+  .finapp-shell__header {
+    padding: 0 1rem;
+  }
+
+  .finapp-shell__banner,
+  .finapp-shell__main {
+    padding: 1.25rem 1rem;
+  }
+
   .finapp-shell[data-has-nav] .finapp-shell__nav {
     position: fixed;
     bottom: 0;
@@ -179,7 +483,7 @@ body[data-finapp-scroll-locked] {
     height: var(--finapp-bottom-nav-height);
     gap: 0;
     padding: 0 0.25rem;
-    background: var(--mantine-color-body);
+    background: var(--finapp-surface);
     border-top: 1px solid var(--mantine-color-default-border);
   }
 
@@ -197,21 +501,73 @@ body[data-finapp-scroll-locked] {
     justify-content: center;
     gap: 0.125rem;
     padding: 0.25rem 0.125rem;
-    font-size: var(--mantine-font-size-xs);
+    font-size: 0.75rem;
     line-height: 1.15;
     text-align: center;
+    border-radius: var(--mantine-radius-sm);
+  }
+
+  /* On a phone the selected entry is marked by ink and a bar above it, not a filled block. */
+  .finapp-shell[data-has-nav] .finapp-shell__link[aria-current='page'] {
+    background: transparent;
+    color: var(--mantine-color-anchor);
+    box-shadow: inset 0 2px 0 var(--mantine-primary-color-filled);
   }
 
   .finapp-shell[data-has-nav] .finapp-shell__main {
     padding-bottom: calc(var(--finapp-bottom-nav-height) + 1.5rem);
   }
+
+  html:has(.finapp-shell[data-has-nav]) {
+    scroll-padding-bottom: calc(64px + 0.75rem);
+  }
 }
 
+/* "Sign out", "change": a quiet text button - it is a button, so it reads as one on hover rather than as a link. */
 .finapp-text-button {
   color: var(--mantine-color-anchor);
-  text-decoration: underline;
+  font-weight: 500;
   min-height: var(--finapp-touch-target);
-  padding: 0 0.25rem;
+  padding: 0 0.625rem;
+  border-radius: var(--mantine-radius-md);
+}
+
+.finapp-text-button:hover {
+  background: var(--finapp-surface-subtle);
+}
+
+/* ---- Start page --------------------------------------------------------------------------------- */
+
+.finapp-hero {
+  padding: 1.5rem 0 0.5rem;
+}
+
+.finapp-hero__eyebrow {
+  color: var(--mantine-color-anchor);
+  font-weight: 600;
+  font-size: var(--mantine-font-size-sm);
+}
+
+.finapp-hero h1 {
+  font-size: clamp(1.875rem, 4.5vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.finapp-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.finapp-feature__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--mantine-radius-md);
+  background: var(--mantine-primary-color-light);
+  color: var(--mantine-primary-color-light-color);
 }
 
 /* ---- Workflow ----------------------------------------------------------------------------------- */
@@ -219,7 +575,8 @@ body[data-finapp-scroll-locked] {
 .finapp-wizard {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -230,22 +587,40 @@ body[data-finapp-scroll-locked] {
   align-items: center;
   gap: 0.5rem;
   color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 500;
+}
+
+/* A short rule between steps. */
+.finapp-wizard__step + .finapp-wizard__step::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  margin-inline-end: 0.25rem;
+  background: var(--mantine-color-default-border);
 }
 
 .finapp-wizard__step[data-state='current'] {
-  color: var(--mantine-color-text);
+  color: var(--finapp-heading);
   font-weight: 600;
 }
 
 .finapp-wizard__index {
   display: inline-grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.625rem;
+  height: 1.625rem;
   border-radius: 50%;
-  border: 2px solid currentColor;
-  font-size: var(--mantine-font-size-xs);
+  border: 1.5px solid var(--mantine-color-default-border);
+  font-size: 0.8125rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.finapp-wizard__step[data-state='done'] .finapp-wizard__index {
+  border-color: transparent;
+  background: var(--mantine-primary-color-light);
+  color: var(--mantine-primary-color-light-color);
 }
 
 .finapp-wizard__step[data-state='current'] .finapp-wizard__index {
@@ -254,6 +629,7 @@ body[data-finapp-scroll-locked] {
   color: var(--mantine-color-white);
 }
 
+/* Review and facts: a statement - label left, figure right, hairline rules, the figures that matter in ink. */
 .finapp-review {
   margin: 0;
 }
@@ -261,9 +637,14 @@ body[data-finapp-scroll-locked] {
 .finapp-review__row {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 1rem;
-  padding: 0.625rem 0;
-  border-bottom: 1px solid var(--mantine-color-default-border);
+  padding: 0.6875rem 0;
+  border-bottom: 1px solid var(--finapp-hairline);
+}
+
+.finapp-review__row:last-child {
+  border-bottom: 0;
 }
 
 .finapp-review__row dt {
@@ -273,10 +654,17 @@ body[data-finapp-scroll-locked] {
 .finapp-review__row dd {
   margin: 0;
   text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.finapp-review__row[data-emphasis] dt {
+  color: var(--mantine-color-text);
+  font-weight: 500;
 }
 
 .finapp-review__row[data-emphasis] dd {
   font-weight: 650;
+  color: var(--finapp-heading);
 }
 
 /* ---- Entry rows (a card that is one link) ------------------------------------------------------- */
@@ -284,6 +672,8 @@ body[data-finapp-scroll-locked] {
 .finapp-entry {
   display: block;
   border-radius: var(--mantine-radius-md);
+  color: inherit;
+  text-decoration: none;
 }
 
 .finapp-entry:focus-visible {
@@ -291,8 +681,15 @@ body[data-finapp-scroll-locked] {
   outline-offset: 2px;
 }
 
+.finapp-entry .mantine-Card-root {
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
 .finapp-entry:hover .mantine-Card-root {
-  background: var(--mantine-color-default-hover);
+  border-color: var(--mantine-color-navy-3);
+  background: var(--finapp-surface-subtle);
 }
 
 .finapp-entry__row {
@@ -301,76 +698,28 @@ body[data-finapp-scroll-locked] {
   gap: 1rem;
 }
 
+.finapp-entry__row > svg:first-child {
+  flex: none;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--mantine-radius-md);
+  background: var(--mantine-primary-color-light);
+  color: var(--mantine-primary-color-light-color);
+}
+
+.finapp-entry__row > svg:last-child {
+  flex: none;
+  color: var(--mantine-color-dimmed);
+}
+
 .finapp-entry__text {
   flex: 1;
+  min-width: 0;
 }
 
-/* A setup key or code the customer types elsewhere: grouped, selectable, never wrapped mid-group. */
-.finapp-secret {
-  font-family: var(--mantine-font-family-monospace);
-  font-size: var(--mantine-font-size-lg);
-  letter-spacing: 0.08em;
-  word-spacing: 0.3em;
-  overflow-wrap: anywhere;
-  user-select: all;
-}
-
-/* Consent texts are legal wording: keep the author's line breaks. */
-.finapp-consent-text {
-  white-space: pre-line;
-}
-
-/* A movement's direction is said in words (visually hidden) and by its sign; the colour only repeats it. */
-.finapp-money[data-direction='in'] {
-  color: var(--mantine-color-teal-text);
-}
-
-/* Amount columns line up on the right, figures tabular. */
-.finapp-cell-amount {
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* A radio's or checkbox's target is the control and its label together: the row is at least 44 px tall. */
-.mantine-Radio-body,
-.mantine-Checkbox-body {
-  align-items: center;
-  min-height: var(--finapp-touch-target);
-}
-
-/* An agreement's text exactly as finapp sent it: plain, wrapped, scrollable, and focusable for the keyboard. */
-.finapp-document {
-  max-height: 20rem;
-  overflow: auto;
-  border: 1px solid var(--mantine-color-default-border);
-  border-radius: var(--mantine-radius-sm);
-  padding: var(--mantine-spacing-sm);
-}
-
-.finapp-document:focus-visible {
-  outline: 2px solid var(--mantine-primary-color-filled);
-  outline-offset: 2px;
-}
-
-.finapp-document pre {
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-family: var(--mantine-font-family-monospace);
-  font-size: var(--mantine-font-size-sm);
-}
-
-/* A table wider than the screen scrolls inside its own region, which the keyboard can reach (ScrollableTable). */
-.finapp-table-scroll {
-  overflow-x: auto;
-  border-radius: var(--mantine-radius-sm);
-}
-
-.finapp-table-scroll > table {
-  min-width: 26rem;
-}
-
-.finapp-table-scroll:focus-visible {
-  outline: 2px solid var(--mantine-primary-color-filled);
-  outline-offset: 2px;
+@media (prefers-reduced-motion: reduce) {
+  .finapp-entry .mantine-Card-root {
+    transition: none;
+  }
 }

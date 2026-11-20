@@ -336,6 +336,49 @@ gzipped.
 download; the same budgets are measured with the Playwright and DevTools-protocol tooling already in use (D-O). LCP
 has about 12% headroom; a measurement on a loaded machine varies by a few hundred milliseconds.
 
+### 4.8 Visual refresh record (2026-11-20, D-P: the owner's "make front end app more beautiful ... cover all pages")
+
+One calm look across every page, so the application reads as a finance product; it changes no behaviour, no
+message and no request; `finapp` unchanged.
+
+| Area | Done |
+|---|---|
+| Palette | Mantine's bright blue replaced by a muted navy primary (`theme.ts`) and a slate dark scheme; info tones are navy. Colour still marks status only (green, amber, red, grey), never decoration |
+| Surfaces | Pages sit on a soft grey canvas with white cards and a hairline border (dark: slate layers); the balance card is navy with white figures; journeys (wizards) sit in one panel; empty states are dashed |
+| Type | Headings in ink, numbers in tabular figures, badges in sentence case, buttons in semibold; the system font stack is kept (no web font to download) |
+| Ledger | Tables as a ledger: quiet header, hairline rows, figures right-aligned; review rows on hairlines with the amount in ink |
+| Shell | A small logo mark beside the name; navigation entries dimmed with the current one on a navy tint; the phone bar marks the current entry with a top bar |
+| Start, sign-in, registration | The start page has a short lead, the two ways in and three feature cards that each describe something the application does today; sign-in and registration sit in one card |
+| Links | Every plain link (including router links) looks like Mantine's anchor: navy with a thin offset underline, still underlined (WCAG 1.4.1) |
+
+Reviewed by eye on screenshots of all 44 pages, desktop and phone, light and dark (`e2e/catalogue/screenshots.spec.ts`,
+run only when `SHOTS_DIR` names a folder; Edge runs it with `--disable-gpu` because headless screenshots stalled on
+this machine).
+
+Gates: `npm run verify` green (292 tests; one lint guard timed out at 60 s while the machine was at 100% CPU and
+passed when rerun); first load 196,834 B gzipped (budget 200 kB); builds byte-identical. `test:catalogue`: 47 of 48
+green - accessibility in both themes, CSP and Trusted Types, touch targets, navigation fit and the start page's LCP;
+the interaction budget on the phone profile measured 296 ms (budget 200) on that loaded machine, where the commit
+before the refresh measured 424 ms (finding 5). **To do:** measure the budgets again on an idle machine.
+
+**Found, fixed, recorded:**
+1. **The sticky header could cover what the browser scrolls to.** A field taking focus, or a control scrolled into
+   view, could stop under the 64 px header (WCAG 2.4.11 asks that focus is not hidden). The page now keeps a
+   scroll padding below the header, and above the phone's bottom bar.
+2. **The browser checks judged a control by where the last click had scrolled.** The refresh made the component
+   catalogue slightly taller, so at the bottom of the page one radio button sat 2 px under the sticky header and axe
+   reported it as too small to tap (`target-size`). Accessibility is now judged from the top of the page, where
+   nothing is under the header (`e2e/catalogue/checks.ts`).
+3. **A full browser run once timed out on nearly every check** (waiting for the sign-in field to become editable):
+   the machine was busy; the same checks passed when run again.
+4. **A first cut darkened the danger button in the dark scheme below AA.** Setting the primary shade to suit navy
+   (8 light, 6 dark) moved every palette's filled colour with it: the red "Close wallet" button fell to about 3.3:1.
+   Every palette is back on shade 9; navy alone gets its filled shades in `theme-stylesheet.ts`.
+5. **The performance budgets were measured on a machine at 100% CPU** (other programs). Measured back to back on the
+   phone profile, the refresh was no slower than the commit before it: LCP 2,552 ms against 3,484 and 3,196 ms;
+   slowest interaction 176 ms against 208 and 424 ms. The start page transfers 238 KiB, 3 KiB more than before. On an
+   idle machine Stage 7 measured 2,192 ms and 120 ms.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -357,8 +400,9 @@ has about 12% headroom; a measurement on a loaded machine varies by a few hundre
 | D-M | Start Stage 5 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 5" | §4.5 |
 | D-N | Start Stage 6 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 6" | §4.6 |
 | D-O | Stage 7 as far as this repository goes; budgets by Playwright, not Lighthouse CI | 2026-11-19, "Start Stage 7" | §4.7 |
+| D-P | A visual refresh of every page: navy and slate, cards, ledger tables; no behaviour change | 2026-11-20, "make front end app more beautiful" | §4.8 |
 
-Further decisions are numbered from D-P and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-Q and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

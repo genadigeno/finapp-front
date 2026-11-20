@@ -81,7 +81,7 @@ export function TopUpStatusPage() {
         </Stack>
       </Card>
       {link !== undefined && status === 'PROCESSING' ? (
-        <Alert variant="light" color="blue" title={intl.formatMessage(messages.approve)}>
+        <Alert variant="light" color="navy" title={intl.formatMessage(messages.approve)}>
           <Stack gap="sm">
             <Text>
               <FormattedMessage {...messages.approveBody} />

@@ -172,7 +172,7 @@ export function StatusChip({ value, map }: { value: string; map: StatusMap }) {
       color={TONE_COLOR[status.tone]}
       variant="light"
       size="lg"
-      radius="sm"
+      radius="xl"
       leftSection={<Icon size={14} aria-hidden />}
       className="finapp-status"
     >

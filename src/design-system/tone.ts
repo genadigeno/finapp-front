@@ -8,6 +8,6 @@ export const TONE_COLOR: Readonly<Record<Tone, string>> = {
   positive: 'teal',
   caution: 'orange',
   critical: 'red',
-  info: 'blue',
+  info: 'navy',
   neutral: 'gray',
 };

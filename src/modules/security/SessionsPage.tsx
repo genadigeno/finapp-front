@@ -138,7 +138,7 @@ export function SessionsPage() {
               <Group gap="xs">
                 <Text fw={600}>{session.device ?? intl.formatMessage(messages.unknownDevice)}</Text>
                 {session.current ? (
-                  <Badge variant="light" color="blue">
+                  <Badge variant="light" color="navy">
                     <FormattedMessage {...messages.thisDevice} />
                   </Badge>
                 ) : null}

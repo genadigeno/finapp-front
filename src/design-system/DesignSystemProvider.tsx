@@ -1,5 +1,5 @@
 // Adapted from finapp-admin-panel/src/design-system/DesignSystemProvider.tsx (ADR-F08).
-import '@mantine/core/styles.css';
+import './mantine-styles.ts';
 import './theme.generated.css';
 import './design-system.css';
 import { MantineProvider } from '@mantine/core';

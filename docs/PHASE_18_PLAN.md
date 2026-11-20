@@ -411,6 +411,12 @@ own words). No tests were added for these two, as asked.
 Gates: `npm run verify` green (346 tests); first load 197,877 B gzipped; `test:catalogue` 48 of 48 green, the two new
 receipt pages in the sweep and both performance budgets met.
 
+**Then ("go ahead with WP-9 and WP-11"):** WP-9 - Mantine styles per component instead of the library sheet: the
+stylesheet goes from 43.0 to 22.1 KB gzipped (288.9 to 142.6 KB raw); a component newly imported needs its sheet in
+`mantine-styles.ts`. WP-11 - every page photographed in both themes on desktop and phone; nothing unstyled; the
+transfer receipt no longer shows two lines called "Reference" ("Your reference" and, on every outcome page, "Support
+reference").
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |

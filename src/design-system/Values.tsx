@@ -15,7 +15,7 @@ const messages = defineMessages({
   available: { id: 'balance.available', defaultMessage: 'Available' },
   settled: { id: 'balance.settled', defaultMessage: 'Settled balance' },
   holds: { id: 'balance.holds', defaultMessage: 'On hold' },
-  reference: { id: 'reference.label', defaultMessage: 'Reference' },
+  reference: { id: 'reference.label', defaultMessage: 'Support reference' },
   countdownExpired: { id: 'countdown.expired', defaultMessage: 'Expired' },
   inputEmpty: { id: 'moneyInput.empty', defaultMessage: 'Enter an amount.' },
   inputZero: { id: 'moneyInput.zero', defaultMessage: 'Enter an amount greater than zero.' },

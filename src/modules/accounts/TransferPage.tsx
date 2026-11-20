@@ -21,7 +21,7 @@ const messages = defineMessages({
   title: { id: 'transfer.title', defaultMessage: 'Transfer' },
   back: { id: 'transfer.back', defaultMessage: 'Back to activity' },
   sent: { id: 'transfer.sent', defaultMessage: 'Sent' },
-  reference: { id: 'transfer.reference', defaultMessage: 'Reference' },
+  reference: { id: 'transfer.reference', defaultMessage: 'Your reference' },
   reversedBody: {
     id: 'transfer.reversed.body',
     defaultMessage: 'This transfer was reversed after it was sent.',

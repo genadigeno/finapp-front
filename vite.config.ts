@@ -7,14 +7,21 @@ import { CUSTOMER_HEADERS } from './config/customer-web-headers.mjs';
 // exactly as it will behind the edge: no CORS, ever.
 const backend = process.env['FINAPP_BACKEND_URL'] ?? 'http://localhost:8080';
 
-export default defineConfig({
+// The dev server carries the session in finapp's HttpOnly cookie (ADR-F02; finapp ADR-0156, X-TSK-029), so a reload
+// keeps the customer signed in. finapp reads that cookie on the PUBLIC surface only - which the public edge marks with
+// X-Finapp-Surface, and the dev proxy marks here in its place. VITE_SESSION_CARRIER=memory still selects the old carrier;
+// a build keeps its own default (RUNBOOK.md), and so do the tests.
+const devCarrier = process.env['VITE_SESSION_CARRIER'] ?? 'cookie';
+
+export default defineConfig(({ command }) => ({
   base: '/',
   plugins: [react()],
+  define: command === 'serve' ? { 'import.meta.env.VITE_SESSION_CARRIER': JSON.stringify(devCarrier) } : {},
   server: {
     port: 5180,
     strictPort: true,
     proxy: {
-      '/v1': { target: backend, changeOrigin: false },
+      '/v1': { target: backend, changeOrigin: false, headers: { 'X-Finapp-Surface': 'public' } },
     },
   },
   preview: {
@@ -44,4 +51,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

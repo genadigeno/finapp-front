@@ -8,6 +8,8 @@ import { ApiProvider } from '../platform/api/api-context.tsx';
 import { createApiClient } from '../platform/api/client.ts';
 import { AppIntlProvider } from '../platform/i18n/IntlProvider.tsx';
 import { createQueryClient } from '../platform/query/query-client.ts';
+import { restoreSession } from '../platform/session/auth-api.ts';
+import { sessionCarrier } from '../platform/session/carrier.ts';
 import { openCrossTab, setCrossTabPoster } from '../platform/session/cross-tab.ts';
 import { endSession, sessionState, subscribeSession } from '../platform/session/session-store.ts';
 import { track } from '../platform/telemetry/telemetry.ts';
@@ -38,6 +40,22 @@ export function App() {
   const [api] = useState(() => createApiClient());
   const [queryClient] = useState(createAppQueryClient);
   const [router] = useState(() => createAppRouter());
+  // With the cookie carrier, a reload may still hold a live session that only finapp can confirm (ADR-0156):
+  // routing waits for that answer, so a signed-in customer is never bounced to the sign-in page first.
+  const [restoring, setRestoring] = useState(() => sessionCarrier().kind === 'cookie');
+
+  useEffect(() => {
+    if (!restoring) return;
+    let mounted = true;
+    void restoreSession(api)
+      .catch(() => false)
+      .finally(() => {
+        if (mounted) setRestoring(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [api, restoring]);
 
   useEffect(() => {
     // Other tabs: a sign-out there signs out here; a command there re-reads the named roots here.
@@ -68,9 +86,7 @@ export function App() {
       <DesignSystemProvider>
         <QueryClientProvider client={queryClient}>
           <ApiProvider client={api}>
-            <StepUpProvider>
-              <RouterProvider router={router} />
-            </StepUpProvider>
+            <StepUpProvider>{restoring ? null : <RouterProvider router={router} />}</StepUpProvider>
           </ApiProvider>
         </QueryClientProvider>
       </DesignSystemProvider>

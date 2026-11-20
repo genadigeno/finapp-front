@@ -1,6 +1,6 @@
 # ADR-F02 — The customer session carried in an HttpOnly cookie on the public surface, with a CSRF defence
 
-Status: Proposed
+Status: Accepted - adopted by `finapp` as ADR-0156 (`X-TSK-029`, 2026-11-20), as `__Host-fa_session; Path=/` (see "Adopted" below)
 
 Date: 2026-11-19
 
@@ -81,3 +81,13 @@ Financial impact: none.
 
 - `finapp` assigns this decision a number in its own register and implements it (G-04, Stage 2's hard dependency).
 - If declined, Stage 2 ships with option A and the sign-out-on-reload cost is recorded in `PHASE_18_PLAN.md`.
+
+## Adopted (2026-11-20)
+
+`finapp` adopted this decision as **ADR-0156** (`X-TSK-029`), pulled forward from Phase 18 on the owner's word. Two details were
+settled at implementation, as decision 1 allowed: the cookie is `__Host-fa_session` with `Path=/` (the `__Host-` prefix stops a
+sibling host or a plain-HTTP response planting or overwriting it; a path is no boundary within one origin), and the CSRF custom
+header is `X-Finapp-Request: 1`, which this application's client already sends on every request. The allowed origins are
+`finapp`'s `FINAPP_SESSION_COOKIE_ALLOWED_ORIGINS`; locally they default to `http://localhost:5180` and `:4180`. The dev server
+selects the cookie carrier and marks its proxied requests `X-Finapp-Surface: public` (`vite.config.ts`); on start-up the
+application restores a live session from `GET /v1/sessions` (`restoreSession`).

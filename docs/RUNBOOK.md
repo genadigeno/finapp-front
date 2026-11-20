@@ -26,7 +26,7 @@ the edge's `customer-web-headers` middleware from `config/customer-web-headers.m
 
 | Setting | Where | Values | Note |
 |---|---|---|---|
-| `VITE_SESSION_CARRIER` | build argument (`Dockerfile`) | `memory` (default), `cookie` | `cookie` only once `finapp` ships G-04; a build with `cookie` against a `finapp` without it cannot sign anyone in |
+| `VITE_SESSION_CARRIER` | build argument (`Dockerfile`) | `memory` (default), `cookie` | `cookie` needs `finapp` with ADR-0156 (`X-TSK-029`, G-04 - shipped 2026-11-20) and the public origin in its `FINAPP_SESSION_COOKIE_ALLOWED_ORIGINS`, or nobody can sign in; the dev server (`npm run dev`) uses `cookie` unless `VITE_SESSION_CARRIER=memory` |
 | `FINAPP_BACKEND_URL` | development only (`vite.config.ts` proxy) | URL | never in an image |
 
 Nothing else is configured at run time: the same image runs in every environment.

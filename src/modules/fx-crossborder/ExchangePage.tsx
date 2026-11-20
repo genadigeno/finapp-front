@@ -47,6 +47,7 @@ const messages = defineMessages({
   done: { id: 'fx.done', defaultMessage: 'Exchanged' },
   doneBody: { id: 'fx.done.body', defaultMessage: 'The money is in your wallet.' },
   accounts: { id: 'fx.accounts', defaultMessage: 'See your accounts' },
+  receipt: { id: 'fx.receipt', defaultMessage: 'View receipt' },
   another: { id: 'fx.another', defaultMessage: 'Exchange more' },
   quoting: { id: 'fx.quoting', defaultMessage: 'Getting your quote…' },
   exchanging: { id: 'fx.exchanging', defaultMessage: 'Exchanging…' },
@@ -146,6 +147,8 @@ export function ExchangePage() {
   const issued = quote.state.status === 'succeeded' ? quote.state.data : undefined;
   const quoteFailure = failureOf(quote.state);
   const convertFailure = failureOf(convert.state);
+  // The receipt's id comes from the convert answer itself; it lives only in the in-app path.
+  const tradeId = convert.state.status === 'succeeded' ? convert.state.data.id : undefined;
   const step = convert.state.status !== 'idle' ? 2 : issued !== undefined ? 1 : 0;
   const steps = [messages.stepDetails, messages.stepQuote, messages.stepDone].map((m) => intl.formatMessage(m));
   const bounds =
@@ -280,6 +283,14 @@ export function ExchangePage() {
             correlationId={convert.state.correlationId}
             actions={
               <>
+                {tradeId === undefined ? null : (
+                  <Button
+                    variant="light"
+                    renderRoot={(props) => <Link {...props} to="/exchange/conversions/$tradeId" params={{ tradeId }} />}
+                  >
+                    <FormattedMessage {...messages.receipt} />
+                  </Button>
+                )}
                 <Button onClick={() => void navigate({ to: '/accounts' })}>
                   <FormattedMessage {...messages.accounts} />
                 </Button>

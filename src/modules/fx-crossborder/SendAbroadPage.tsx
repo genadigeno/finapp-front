@@ -16,7 +16,7 @@ import { ok } from '../../platform/api/client.ts';
 import type { IdempotencyIntent } from '../../platform/api/idempotency.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { useCorridors, useRecipients, XB_ROOT, type Corridor, type Recipient } from './api.ts';
-import { deliveryEstimate, entityName, fractionToPercent, RECIPIENT_STATUS } from './labels.ts';
+import { countryName, deliveryEstimate, entityName, fractionToPercent, RECIPIENT_STATUS } from './labels.ts';
 
 const messages = defineMessages({
   title: { id: 'xb.title', defaultMessage: 'Send abroad' },
@@ -59,15 +59,6 @@ const hoursMessage = defineMessage<{ hours: number }>({
   defaultMessage: 'Usually arrives within {hours, plural, one {# hour} other {# hours}}',
 });
 const suffixMessage = defineMessage<{ suffix: string }>({ id: 'xb.suffix', defaultMessage: 'account ending {suffix}' });
-
-function countryName(code: string | undefined, locale: string): string {
-  if (code === undefined) return '';
-  try {
-    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
-  } catch {
-    return code;
-  }
-}
 
 export function EstimateText({ hours }: { hours: number | undefined }) {
   const intl = useIntl();

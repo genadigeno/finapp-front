@@ -50,6 +50,7 @@ const messages = defineMessages({
   notSent: { id: 'send.notSent', defaultMessage: 'The money was not sent' },
   sendAnother: { id: 'send.another', defaultMessage: 'Send more' },
   activity: { id: 'send.activity', defaultMessage: 'See your activity' },
+  receipt: { id: 'send.receipt', defaultMessage: 'View receipt' },
   offline: { id: 'send.offline', defaultMessage: 'You are offline. Nothing will be sent.' },
   sending: { id: 'send.sending', defaultMessage: 'Sending…' },
   // finapp's FailureReason, in words the customer can act on.
@@ -100,6 +101,22 @@ interface TransferRequest {
   amount: string;
   currency: string;
   reference?: string;
+}
+
+/**
+ * The receipt of a transfer finapp answered, by the id in its answer. The receipt page re-reads the transfer from
+ * finapp; nothing of this answer is carried there. The path is the accounts module's, named by string only.
+ */
+function ReceiptButton({ transferId, primary = false }: { transferId: string | undefined; primary?: boolean }) {
+  if (transferId === undefined) return null;
+  return (
+    <Button
+      variant={primary ? 'filled' : 'default'}
+      renderRoot={(props) => <Link {...props} to="/activity/transfers/$transferId" params={{ transferId }} />}
+    >
+      <FormattedMessage {...messages.receipt} />
+    </Button>
+  );
 }
 
 export function SendPage() {
@@ -253,9 +270,12 @@ export function SendPage() {
               title={intl.formatMessage(messages.notSent)}
               correlationId={flow.state.correlationId}
               actions={
-                <Button variant="default" onClick={flow.back}>
-                  <FormattedMessage {...messages.sendAnother} />
-                </Button>
+                <>
+                  <ReceiptButton transferId={flow.state.data.id} />
+                  <Button variant="default" onClick={flow.back}>
+                    <FormattedMessage {...messages.sendAnother} />
+                  </Button>
+                </>
               }
             >
               {intl.formatMessage(failureWords(flow.state.data.failureReason))}
@@ -267,7 +287,8 @@ export function SendPage() {
               correlationId={flow.state.correlationId}
               actions={
                 <>
-                  <Button onClick={() => void navigate({ to: '/activity' })}>
+                  <ReceiptButton transferId={flow.state.data.id} primary />
+                  <Button variant="default" onClick={() => void navigate({ to: '/activity' })}>
                     <FormattedMessage {...messages.activity} />
                   </Button>
                   <Button variant="default" onClick={flow.back}>

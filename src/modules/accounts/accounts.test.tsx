@@ -265,3 +265,171 @@ describe('activity (P18-TSK-020)', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeTruthy();
   });
 });
+
+describe('transfer receipt (WP-1)', () => {
+  const TID = '0190a3c1-7777-7222-8333-444455556666';
+  const SENT = {
+    id: TID,
+    amount: '20.00',
+    currency: 'EUR',
+    status: 'COMPLETED',
+    reference: '<b>Rent</b>',
+    createdAt: '2026-11-18T10:00:00Z',
+    journalEntryId: 'je-secret-1',
+  };
+  const REVERSED = {
+    ...SENT,
+    status: 'REVERSED',
+    reversedAt: '2026-11-19T15:30:00Z',
+    reversalEntryId: 're-secret-2',
+  };
+
+  it('each sent transfer links to its receipt', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    const { router } = renderAppAt('/activity', {
+      'GET /v1/transfers': json([SENT]),
+      'GET /v1/payments': json([]),
+      [`GET /v1/transfers/${TID}`]: json(SENT),
+    });
+    await user.click(await screen.findByRole('link', { name: 'View receipt' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/activity/transfers/${TID}`));
+    expect(await screen.findByText('Completed')).toBeTruthy();
+  });
+
+  it('shows a reversal as its own dated line, never netted, and no ledger ids', async () => {
+    signInForTest();
+    renderAppAt(`/activity/transfers/${TID}`, { [`GET /v1/transfers/${TID}`]: json(REVERSED) });
+    expect(await screen.findByText('Reversed')).toBeTruthy();
+    // The amount stays as sent; the reversal is a separate line with its date.
+    expect(screen.getByText('€20.00')).toBeTruthy();
+    expect(screen.queryByText('€0.00')).toBeNull();
+    const line = screen.getByTestId('transfer-reversal');
+    expect(line.textContent).toMatch(/^Reversed on /);
+    expect(line.querySelector('time')?.getAttribute('dateTime')).toBe('2026-11-19T15:30:00Z');
+    // The customer's reference is plain text, not markup.
+    expect(screen.getByText(/<b>Rent<\/b>/)).toBeTruthy();
+    expect(document.querySelector('main b')).toBeNull();
+    expect(document.body.textContent).not.toMatch(/je-secret|re-secret/);
+    expect(screen.queryByRole('button', { name: /try again|send/i })).toBeNull();
+  });
+
+  it('a failed transfer says why in the customer’s words; a risk refusal says nothing more', async () => {
+    signInForTest();
+    renderAppAt(`/activity/transfers/${TID}`, {
+      [`GET /v1/transfers/${TID}`]: json({ ...SENT, status: 'FAILED', failureReason: 'RISK_REFUSED' }),
+    });
+    expect(
+      await screen.findByText('This transfer could not be completed. Nothing was taken from your wallet.'),
+    ).toBeTruthy();
+    expect(screen.queryByText(/risk/i)).toBeNull();
+  });
+
+  it('re-reads finapp on every view, so a later reversal shows', async () => {
+    signInForTest();
+    const { router, sent } = renderAppAt(`/activity/transfers/${TID}`, {
+      [`GET /v1/transfers/${TID}`]: [json(SENT), json(REVERSED)],
+      'GET /v1/transfers': json([SENT]),
+      'GET /v1/payments': json([]),
+    });
+    expect(await screen.findByText('Completed')).toBeTruthy();
+    await router.navigate({ to: '/activity' });
+    await screen.findByRole('link', { name: 'View receipt' });
+    await router.navigate({ to: '/activity/transfers/$transferId', params: { transferId: TID } });
+    // Nothing from the earlier view is shown while finapp is asked again.
+    await waitFor(() => expect(screen.queryByRole('link', { name: 'View receipt' })).toBeNull());
+    expect(screen.queryByText('Completed')).toBeNull();
+    expect(await screen.findByTestId('transfer-reversal')).toBeTruthy();
+    expect(screen.queryByText('Completed')).toBeNull();
+    expect(sent.filter((s) => s.method === 'GET' && s.path === `/v1/transfers/${TID}`)).toHaveLength(2);
+  });
+
+  it('missing, malformed and not-yours read the same neutral words, with no retry', async () => {
+    signInForTest();
+    renderAppAt('/activity/transfers/nope', { 'GET /v1/transfers/nope': problem(404, 'api.NotFound') });
+    expect(await screen.findByText('Only transfers you sent have details here.')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Go to your accounts' }).getAttribute('href')).toBe('/accounts');
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+});
+
+describe('refunds on a payment (WP-1)', () => {
+  it('shows what finapp reports as refunded or on its way, and nothing for zero', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    renderAppAt('/activity', {
+      'GET /v1/transfers': json([]),
+      'GET /v1/payments': json([
+        {
+          id: 'pi-1',
+          amount: '100.00',
+          currency: 'EUR',
+          status: 'SUCCEEDED',
+          refunded: '30.00',
+          refundPending: '10.00',
+          createdAt: '2026-11-16T10:00:00Z',
+        },
+        {
+          id: 'pi-2',
+          amount: '40.00',
+          currency: 'EUR',
+          status: 'SUCCEEDED',
+          refunded: '0.00',
+          refundPending: '0',
+          createdAt: '2026-11-15T10:00:00Z',
+        },
+      ]),
+    });
+    await user.click(await screen.findByRole('tab', { name: 'Top-ups and purchases' }));
+    expect(await screen.findByText('€100.00')).toBeTruthy();
+    expect(screen.getAllByText(/^Refunded/)).toHaveLength(1);
+    expect(screen.getByText(/^Refunded/).textContent).toBe('Refunded €30.00');
+    expect(screen.getByText(/^Refund on its way/).textContent).toBe('Refund on its way €10.00');
+    // Nothing derived: no net figure appears.
+    expect(screen.queryByText('€60.00')).toBeNull();
+    expect(screen.queryByText('€70.00')).toBeNull();
+    // Payments have no transfer receipt.
+    expect(screen.queryByRole('link', { name: 'View receipt' })).toBeNull();
+  });
+});
+
+describe('restricted account (WP-1; finapp ADR-0153)', () => {
+  const NOTICE =
+    'This account cannot send money at the moment. Money you receive still arrives. Contact us to find out more.';
+  const SUSPENDED = { ...ACCOUNT, status: 'SUSPENDED' };
+
+  it('says so on the accounts list, with no reason, and every way to move money stays offered', async () => {
+    signInForTest();
+    renderAppAt('/accounts', {
+      'GET /v1/me/accounts': json([SUSPENDED]),
+      [`GET /v1/me/accounts/${ACC}/balances`]: BALANCES,
+    });
+    expect(await screen.findByText(NOTICE)).toBeTruthy();
+    expect(screen.getByText('Suspended')).toBeTruthy();
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(nav).getByRole('link', { name: 'Move money' })).toBeTruthy();
+  });
+
+  it('says so on the account, and keeps its actions', async () => {
+    signInForTest();
+    renderAppAt(`/accounts/${ACC}`, {
+      'GET /v1/me/accounts': json([SUSPENDED]),
+      [`GET /v1/me/accounts/${ACC}/balances`]: BALANCES,
+    });
+    expect(await screen.findByText(NOTICE)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Statement' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Close this account' })).toBeTruthy();
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(nav).getByRole('link', { name: 'Move money' })).toBeTruthy();
+  });
+
+  it('an open account shows no notice', async () => {
+    signInForTest();
+    renderAppAt(`/accounts/${ACC}`, {
+      'GET /v1/me/accounts': json([ACCOUNT]),
+      [`GET /v1/me/accounts/${ACC}/balances`]: BALANCES,
+    });
+    expect(await screen.findByText('€1,180.00')).toBeTruthy();
+    expect(screen.queryByText(NOTICE)).toBeNull();
+  });
+});

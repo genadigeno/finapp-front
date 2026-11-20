@@ -7,7 +7,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { Money, StatusChip } from '../../design-system/Values.tsx';
 import { useAccounts, useBalances, type Account } from './api.ts';
-import { ACCOUNT_STATUS, isLive, productName } from './labels.ts';
+import { ACCOUNT_STATUS, isLive, isSuspended, productName } from './labels.ts';
+import { SuspendedNotice } from './SuspendedNotice.tsx';
 
 const messages = defineMessages({
   title: { id: 'accounts.title', defaultMessage: 'Accounts' },
@@ -86,6 +87,7 @@ export function AccountsPage() {
           </Button>
         )}
       </Group>
+      {accounts.data.some((a) => isSuspended(a.status)) ? <SuspendedNotice /> : null}
       {accounts.data.length === 0 ? (
         <EmptyState title={intl.formatMessage(messages.empty)}>
           <FormattedMessage {...messages.emptyBody} />

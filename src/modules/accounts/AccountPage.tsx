@@ -16,7 +16,8 @@ import type { IdempotencyIntent } from '../../platform/api/idempotency.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { ACCOUNTS_ROOT, useAccounts, useBalances } from './api.ts';
 import { currencyOptions } from './currencies.ts';
-import { ACCOUNT_STATUS, productName, SUPPORTED_CURRENCIES } from './labels.ts';
+import { ACCOUNT_STATUS, isSuspended, productName, SUPPORTED_CURRENCIES } from './labels.ts';
+import { SuspendedNotice } from './SuspendedNotice.tsx';
 
 const messages = defineMessages({
   back: { id: 'account.back', defaultMessage: 'All accounts' },
@@ -156,6 +157,7 @@ export function AccountPage() {
           <FormattedMessage {...messages.statement} />
         </Button>
       </Group>
+      {isSuspended(account.status) ? <SuspendedNotice /> : null}
       {balances.isError ? (
         <ErrorExplained error={balances.error} onRetry={() => void balances.refetch()} />
       ) : balances.data.lines.length === 0 ? (

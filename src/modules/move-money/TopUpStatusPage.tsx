@@ -13,9 +13,11 @@ import { ok } from '../../platform/api/client.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { ACCOUNTS_ROOT } from '../../platform/customer/wallets.ts';
 import { pollUntil } from '../../platform/query/polling.ts';
-import { safeAuthorizationUrl, topUpFailure } from './labels.ts';
+import { isNonZero, safeAuthorizationUrl, topUpFailure } from './labels.ts';
 
 const messages = defineMessages({
+  refundPending: { id: 'topUpStatus.refundPending', defaultMessage: 'Refund on its way' },
+  refunded: { id: 'topUpStatus.refunded', defaultMessage: 'Refunded' },
   title: { id: 'topUpStatus.title', defaultMessage: 'Your top-up' },
   approve: { id: 'topUpStatus.approve', defaultMessage: 'Approve the payment at your bank' },
   approveBody: {
@@ -77,6 +79,18 @@ export function TopUpStatusPage() {
               <FormattedMessage {...messages.started} />: <Timestamp value={view.createdAt} withZone />
             </Text>
           )}
+          {/* Refunds exactly as finapp reports them; nothing is derived or netted against the amount. */}
+          {view.currency !== undefined && isNonZero(view.refunded) ? (
+            <Text size="sm">
+              <FormattedMessage {...messages.refunded} /> <Money amount={view.refunded} currency={view.currency} />
+            </Text>
+          ) : null}
+          {view.currency !== undefined && isNonZero(view.refundPending) ? (
+            <Text size="sm">
+              <FormattedMessage {...messages.refundPending} />{' '}
+              <Money amount={view.refundPending} currency={view.currency} />
+            </Text>
+          ) : null}
           <CorrelationReference correlationId={payment.data.correlationId} />
         </Stack>
       </Card>

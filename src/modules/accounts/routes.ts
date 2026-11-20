@@ -42,4 +42,10 @@ export const ACCOUNTS_ROUTES: AppRoute[] = [
     nav: { label: messages.activity, icon: IconListDetails, order: 20 },
     returnable: true,
   },
+  {
+    // One transfer the customer sent. An identifier in the path: never a returnTo target (ADR-F07 decision 7).
+    path: '/activity/transfers/$transferId',
+    access: 'signed-in',
+    component: lazy(() => import('./TransferPage.tsx').then((m) => ({ default: m.TransferPage }))),
+  },
 ];

@@ -23,6 +23,50 @@ const categories = defineMessages({
   OTHER: { id: 'credit.dispute.other', defaultMessage: 'Something else' },
 });
 
+// Why finapp closed a credit check (credit's ClosureReason). Our words, never finapp's statusText.
+const checkClosures = defineMessages({
+  CONSENT_WITHDRAWN: {
+    id: 'credit.check.closure.consent',
+    defaultMessage: 'You withdrew your consent; give it again to start a new check.',
+  },
+  STANDING_LOST: {
+    id: 'credit.check.closure.standing',
+    defaultMessage: 'This check was closed. You can start a new one later.',
+  },
+});
+
+// Why finapp closed a pay-later application without a decision (bnpl's BnplApplicationClosureReason).
+const applicationClosures = defineMessages({
+  CREDIT_REQUEST_CANCELLED: {
+    id: 'bnpl.application.closure.checkCancelled',
+    defaultMessage: 'The credit check for this application was cancelled.',
+  },
+  CREDIT_REQUEST_EXPIRED: {
+    id: 'bnpl.application.closure.checkExpired',
+    defaultMessage: 'The credit check for this application ran out of time.',
+  },
+  CREDIT_REQUEST_ABANDONED: {
+    id: 'bnpl.application.closure.checkAbandoned',
+    defaultMessage: 'The credit check for this application was not completed.',
+  },
+  SESSION_CLOSED: {
+    id: 'bnpl.application.closure.session',
+    defaultMessage: 'The shop’s checkout closed before we could make you an offer.',
+  },
+  APPROVED_BELOW_PURCHASE: {
+    id: 'bnpl.application.closure.belowPurchase',
+    defaultMessage: 'We could not offer pay later for the full price of this purchase.',
+  },
+  PRODUCT_NOT_OFFERED: {
+    id: 'bnpl.application.closure.notOffered',
+    defaultMessage: 'This way to pay later is not available at the moment.',
+  },
+  DECISION_LAPSED: {
+    id: 'bnpl.application.closure.lapsed',
+    defaultMessage: 'Our answer ran out of time before we could make you an offer.',
+  },
+});
+
 function lookup<K extends string>(
   map: Record<K, MessageDescriptor>,
   code: string | undefined,
@@ -39,6 +83,10 @@ export type ApplicableProduct = (typeof APPLICABLE_PRODUCTS)[number];
 
 export const productName = (code: string | undefined) => lookup(products, code);
 export const planName = (code: string | undefined) => lookup(plans, code);
+/** A credit check's closure reason in our words; an unknown reason adds nothing. */
+export const checkClosureText = (code: string | undefined) => lookup(checkClosures, code);
+/** A pay-later application's closure reason in our words; an unknown reason adds nothing. */
+export const applicationClosureText = (code: string | undefined) => lookup(applicationClosures, code);
 
 export const DISPUTE_CATEGORIES = ['NOT_RECEIVED', 'NOT_AS_DESCRIBED', 'RETURNED_NOT_REFUNDED', 'OTHER'] as const;
 export type DisputeCategory = (typeof DISPUTE_CATEGORIES)[number];

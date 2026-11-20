@@ -17,7 +17,7 @@ import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { pollUntil } from '../../platform/query/polling.ts';
 import { CREDIT_ROOT, type CreditKind } from './api.ts';
 import { Reasons } from './CreditParts.tsx';
-import { planName, productName } from './labels.ts';
+import { applicationClosureText, planName, productName } from './labels.ts';
 
 const messages = defineMessages({
   title: { id: 'application.title', defaultMessage: 'Your application' },
@@ -47,6 +47,8 @@ interface ApplicationView {
   plan?: string;
   reasons?: string[];
   offerId?: string;
+  /** Pay-later applications only (loan applications carry none). */
+  closureReason?: string;
 }
 
 export function ApplicationStatusPage({ kind }: { kind: CreditKind }) {
@@ -83,6 +85,8 @@ export function ApplicationStatusPage({ kind }: { kind: CreditKind }) {
   const name = planName(view.plan) ?? productName(view.product);
   const withdrawFailure = failureOf(withdraw.state);
   const offerId = view.offerId;
+  // Why it closed, in our words; finapp's own text is never shown.
+  const closure = kind === 'bnpl' ? applicationClosureText(view.closureReason) : undefined;
 
   return (
     <Stack gap="lg" maw={560}>
@@ -133,9 +137,16 @@ export function ApplicationStatusPage({ kind }: { kind: CreditKind }) {
               <FormattedMessage {...messages.withdrawn} />
             </Text>
           ) : status === 'CLOSED_UNDECIDED' ? (
-            <Text>
-              <FormattedMessage {...messages.closed} />
-            </Text>
+            <Stack gap="xs">
+              <Text>
+                <FormattedMessage {...messages.closed} />
+              </Text>
+              {closure === undefined ? null : (
+                <Text>
+                  <FormattedMessage {...closure} />
+                </Text>
+              )}
+            </Stack>
           ) : (
             <Text>
               <FormattedMessage {...messages.working} />

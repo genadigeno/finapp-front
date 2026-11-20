@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react';
 import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { ConfirmDangerous } from '../../design-system/Dialogs.tsx';
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
-import { INSTALMENT_STATUS, LOAN_STATUS } from '../../design-system/status.ts';
+import { INSTALMENT_STATUS, LOAN_STATUS, STATEMENT_STATUS } from '../../design-system/status.ts';
 import { BusinessDate, CorrelationReference, StatusChip } from '../../design-system/Values.tsx';
 import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { useApi } from '../../platform/api/api-context.tsx';
@@ -17,6 +17,14 @@ import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { CREDIT_ROOT, useLoan, useLoanRepayments, useLoanSchedule, useLoanStatements } from './api.ts';
 import { AnnualRate, Facts, MaybeMoney, type Fact } from './CreditParts.tsx';
 import { isLine, productName } from './labels.ts';
+import {
+  DefaultedNotice,
+  LateFeeNote,
+  moneyFacts,
+  PayoutNotice,
+  RepaymentHistory,
+  RowWithDetails,
+} from './ServicingParts.tsx';
 
 const messages = defineMessages({
   back: { id: 'loan.back', defaultMessage: 'Back to Credit' },
@@ -61,6 +69,17 @@ const messages = defineMessages({
   minimum: { id: 'loan.col.minimum', defaultMessage: 'Minimum to pay' },
   balance: { id: 'loan.col.balance', defaultMessage: 'Balance' },
   totalPayable: { id: 'loan.totalPayable', defaultMessage: 'Total to repay' },
+  paid: { id: 'bnpl.col.paid', defaultMessage: 'Paid' },
+  stillToPay: { id: 'loan.col.stillToPay', defaultMessage: 'Still to pay' },
+  openingBalance: { id: 'loan.statement.opening', defaultMessage: 'Opening balance' },
+  interestBilled: { id: 'loan.billing.interestBilled', defaultMessage: 'Interest billed' },
+  principalBilled: { id: 'loan.billing.principalBilled', defaultMessage: 'Borrowed amount billed' },
+  feesBilled: { id: 'loan.billing.feesBilled', defaultMessage: 'Fees billed' },
+  interestPaid: { id: 'loan.billing.interestPaid', defaultMessage: 'Interest paid' },
+  principalPaid: { id: 'loan.billing.principalPaid', defaultMessage: 'Borrowed amount paid' },
+  feesPaid: { id: 'loan.billing.feesPaid', defaultMessage: 'Fees paid' },
+  interestWaived: { id: 'loan.billing.interestWaived', defaultMessage: 'Interest waived' },
+  notBilled: { id: 'loan.billing.none', defaultMessage: 'Not billed yet' },
 });
 
 const overdueMessage = defineMessage<{ days: string }>({
@@ -102,6 +121,9 @@ export function LoanPage() {
   const balances = view.balances ?? {};
   const name = productName(view.product);
   const active = status === 'ACTIVE';
+  // finapp accepts a repayment and a payoff on a closing credit line (it closes once nothing is owed); drawing and
+  // closing are for an active line only. finapp's refusal stays the guard.
+  const canRepay = active || (line && status === 'CLOSING');
   const closeFailure = failureOf(close.state);
   const closed = close.state.status === 'succeeded' ? close.state.data.outcome : undefined;
 
@@ -146,7 +168,10 @@ export function LoanPage() {
           title={intl.formatMessage(overdueMessage, { days: String(view.condition.daysPastDue) })}
         />
       ) : null}
-      {status === 'PENDING_DISBURSEMENT' ? (
+      <DefaultedNotice defaulted={view.condition?.defaulted} />
+      {view.payoutStatus !== undefined ? (
+        <PayoutNotice status={view.payoutStatus} />
+      ) : status === 'PENDING_DISBURSEMENT' ? (
         <Text>
           <FormattedMessage {...messages.payingOut} />
         </Text>
@@ -164,14 +189,14 @@ export function LoanPage() {
       <Card withBorder radius="md" padding="lg">
         <Facts rows={facts} />
       </Card>
-      {active ? (
+      {canRepay ? (
         <Group>
           {link('/credit/loans/$loanId/repay', <FormattedMessage {...messages.repay} />)}
           {link('/credit/loans/$loanId/payoff', <FormattedMessage {...messages.payoff} />, 'default')}
-          {line && view.condition?.drawsSuspended !== true
+          {active && line && view.condition?.drawsSuspended !== true
             ? link('/credit/loans/$loanId/draw', <FormattedMessage {...messages.draw} />, 'default')
             : null}
-          {line ? (
+          {active && line ? (
             <Button variant="default" onClick={() => setClosing(true)}>
               <FormattedMessage {...messages.close} />
             </Button>
@@ -208,22 +233,53 @@ export function LoanPage() {
                       <Table.Th>{intl.formatMessage(messages.due)}</Table.Th>
                       <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.amount)}</Table.Th>
                       <Table.Th>{intl.formatMessage(messages.status)}</Table.Th>
+                      <Table.Th />
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {(schedule.data?.instalments ?? []).map((instalment, index) => (
-                      <Table.Tr key={instalment.sequence ?? index}>
-                        <Table.Td>
-                          {instalment.dueDate === undefined ? null : <BusinessDate value={instalment.dueDate} />}
-                        </Table.Td>
-                        <Table.Td className="finapp-cell-amount">
-                          <MaybeMoney amount={instalment.amount} currency={currency} />
-                        </Table.Td>
-                        <Table.Td>
-                          <StatusChip value={instalment.status ?? ''} map={INSTALMENT_STATUS} />
-                        </Table.Td>
-                      </Table.Tr>
-                    ))}
+                    {(schedule.data?.instalments ?? []).map((instalment, index) => {
+                      const billing = instalment.billing;
+                      const billingFacts = moneyFacts(
+                        [
+                          [intl.formatMessage(messages.principalBilled), billing?.principalBilled],
+                          [intl.formatMessage(messages.interestBilled), billing?.interestBilled],
+                          [intl.formatMessage(messages.feesBilled), billing?.feesBilled],
+                          [intl.formatMessage(messages.principalPaid), billing?.principalPaid],
+                          [intl.formatMessage(messages.interestPaid), billing?.interestPaid],
+                          [intl.formatMessage(messages.feesPaid), billing?.feesPaid],
+                          [intl.formatMessage(messages.interestWaived), billing?.interestWaived],
+                          [intl.formatMessage(messages.stillToPay), billing?.outstanding],
+                        ],
+                        currency,
+                      );
+                      return (
+                        <RowWithDetails
+                          key={instalment.sequence ?? index}
+                          colSpan={4}
+                          cells={
+                            <>
+                              <Table.Td>
+                                {instalment.dueDate === undefined ? null : <BusinessDate value={instalment.dueDate} />}
+                              </Table.Td>
+                              <Table.Td className="finapp-cell-amount">
+                                <MaybeMoney amount={instalment.amount} currency={currency} />
+                                <LateFeeNote fee={billing?.feesBilled} currency={currency} />
+                              </Table.Td>
+                              <Table.Td>
+                                <StatusChip value={instalment.status ?? ''} map={INSTALMENT_STATUS} />
+                              </Table.Td>
+                            </>
+                          }
+                          details={
+                            billingFacts.length === 0 ? (
+                              <Text size="sm">{intl.formatMessage(messages.notBilled)}</Text>
+                            ) : (
+                              <Facts rows={billingFacts} />
+                            )
+                          }
+                        />
+                      );
+                    })}
                   </Table.Tbody>
                 </Table>
               </ScrollableTable>
@@ -244,26 +300,9 @@ export function LoanPage() {
           ) : (repayments.data ?? []).length === 0 ? (
             <EmptyState title={intl.formatMessage(messages.noRepayments)} />
           ) : (
-            <Table>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{intl.formatMessage(messages.date)}</Table.Th>
-                  <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.amount)}</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {(repayments.data ?? []).map((repayment, index) => (
-                  <Table.Tr key={repayment.repaymentId ?? index}>
-                    <Table.Td>
-                      {repayment.valueDate === undefined ? null : <BusinessDate value={repayment.valueDate} />}
-                    </Table.Td>
-                    <Table.Td className="finapp-cell-amount">
-                      <MaybeMoney amount={repayment.amount} currency={repayment.currency ?? currency} />
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+            <ScrollableTable label={intl.formatMessage(messages.repayments)}>
+              <RepaymentHistory repayments={repayments.data ?? []} currency={currency} />
+            </ScrollableTable>
           )}
         </Tabs.Panel>
         <Tabs.Panel value="statements" pt="md">
@@ -279,30 +318,63 @@ export function LoanPage() {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>{intl.formatMessage(messages.statementDate)}</Table.Th>
+                    <Table.Th>{intl.formatMessage(messages.status)}</Table.Th>
                     <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.balance)}</Table.Th>
                     <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.minimum)}</Table.Th>
+                    <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.paid)}</Table.Th>
+                    <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.stillToPay)}</Table.Th>
                     <Table.Th>{intl.formatMessage(messages.due)}</Table.Th>
+                    <Table.Th />
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {(statements.data ?? []).map((statement, index) => (
-                    <Table.Tr key={statement.statementId ?? index}>
-                      <Table.Td>
-                        {statement.statementDate === undefined ? null : (
-                          <BusinessDate value={statement.statementDate} />
-                        )}
-                      </Table.Td>
-                      <Table.Td className="finapp-cell-amount">
-                        <MaybeMoney amount={statement.closingBalance} currency={statement.currency ?? currency} />
-                      </Table.Td>
-                      <Table.Td className="finapp-cell-amount">
-                        <MaybeMoney amount={statement.minimumPayment} currency={statement.currency ?? currency} />
-                      </Table.Td>
-                      <Table.Td>
-                        {statement.dueDate === undefined ? null : <BusinessDate value={statement.dueDate} />}
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
+                  {(statements.data ?? []).map((statement, index) => {
+                    const own = statement.currency ?? currency;
+                    const detail = moneyFacts(
+                      [
+                        [intl.formatMessage(messages.openingBalance), statement.openingBalance],
+                        [intl.formatMessage(messages.principalBilled), statement.principalBilled],
+                        [intl.formatMessage(messages.interestBilled), statement.interestBilled],
+                        [intl.formatMessage(messages.feesBilled), statement.feesBilled],
+                        [intl.formatMessage(messages.interestWaived), statement.interestWaived],
+                      ],
+                      own,
+                    );
+                    return (
+                      <RowWithDetails
+                        key={statement.statementId ?? index}
+                        colSpan={8}
+                        cells={
+                          <>
+                            <Table.Td>
+                              {statement.statementDate === undefined ? null : (
+                                <BusinessDate value={statement.statementDate} />
+                              )}
+                            </Table.Td>
+                            <Table.Td>
+                              <StatusChip value={statement.status ?? ''} map={STATEMENT_STATUS} />
+                            </Table.Td>
+                            <Table.Td className="finapp-cell-amount">
+                              <MaybeMoney amount={statement.closingBalance} currency={own} />
+                            </Table.Td>
+                            <Table.Td className="finapp-cell-amount">
+                              <MaybeMoney amount={statement.minimumPayment} currency={own} />
+                            </Table.Td>
+                            <Table.Td className="finapp-cell-amount">
+                              <MaybeMoney amount={statement.paid} currency={own} />
+                            </Table.Td>
+                            <Table.Td className="finapp-cell-amount">
+                              <MaybeMoney amount={statement.outstanding} currency={own} />
+                            </Table.Td>
+                            <Table.Td>
+                              {statement.dueDate === undefined ? null : <BusinessDate value={statement.dueDate} />}
+                            </Table.Td>
+                          </>
+                        }
+                        details={<Facts rows={detail} />}
+                      />
+                    );
+                  })}
                 </Table.Tbody>
               </Table>
             </ScrollableTable>

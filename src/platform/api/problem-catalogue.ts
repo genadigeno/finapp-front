@@ -154,6 +154,58 @@ const byCode = defineMessages({
   },
   notActiveTitle: { id: 'problem.code.accountNotActive.title', defaultMessage: 'This account is not open' },
   notActiveNext: { id: 'problem.code.accountNotActive.next', defaultMessage: 'Nothing was changed.' },
+  // A restricted account (finapp ADR-0153, after the contract pin): money still arrives; nothing can leave. finapp
+  // gives the customer no reason, so neither do we.
+  outflowSuspendedTitle: {
+    id: 'problem.code.outflowSuspended.title',
+    defaultMessage: 'Your account cannot send money at the moment',
+  },
+  outflowSuspendedNext: {
+    id: 'problem.code.outflowSuspended.next',
+    defaultMessage: 'Nothing was sent. Money you receive still arrives. Contact us to find out more.',
+  },
+  walletUnfundedTitle: { id: 'problem.code.walletUnfunded.title', defaultMessage: 'Not enough money in your wallet' },
+  walletUnfundedNext: {
+    id: 'problem.code.walletUnfunded.next',
+    defaultMessage: 'Nothing was paid. Add money to your wallet, then confirm the same payment again.',
+  },
+  quoteNotCancellableTitle: {
+    id: 'problem.code.quoteNotCancellable.title',
+    defaultMessage: 'This quote can no longer be cancelled',
+  },
+  quoteNotCancellableNext: {
+    id: 'problem.code.quoteNotCancellable.next',
+    defaultMessage: 'It has already been used or has ended. Check your accounts before you exchange again.',
+  },
+  offerNotFoundTitle: { id: 'problem.code.offerNotFound.title', defaultMessage: 'We could not find that offer' },
+  offerNotFoundNext: {
+    id: 'problem.code.offerNotFound.next',
+    defaultMessage: 'Start again to get a new offer. Nothing was sent.',
+  },
+  abroadProviderUnavailableTitle: {
+    id: 'problem.code.abroadProviderUnavailable.title',
+    defaultMessage: 'Our payment partner is not available right now',
+  },
+  abroadProviderUnavailableNext: {
+    id: 'problem.code.abroadProviderUnavailable.next',
+    defaultMessage: 'Nothing was sent. Try again in a few minutes.',
+  },
+  creditDataStaleTitle: {
+    id: 'problem.code.creditDataStale.title',
+    defaultMessage: 'We need up-to-date information to decide',
+  },
+  creditDataStaleNext: {
+    id: 'problem.code.creditDataStale.next',
+    defaultMessage: 'Nothing was decided. Start a new credit check, then try again.',
+  },
+  loanWrittenOffTitle: {
+    id: 'problem.code.loanWrittenOff.title',
+    defaultMessage: 'This account cannot take payments here',
+  },
+  loanWrittenOffNext: {
+    id: 'problem.code.loanWrittenOff.next',
+    defaultMessage: 'Nothing was moved, and what you owe is unchanged. Contact us about repaying it.',
+  },
   // Stage 4 (money movement). Risk, limit and screening refusals say nothing about why (INV-RSK-08).
   unknownSourceTitle: {
     id: 'problem.code.unknownSource.title',
@@ -558,6 +610,16 @@ const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
   ],
   ['accounts.AccountNotEmpty', { title: byCode.notEmptyTitle, nextStep: byCode.notEmptyNext }],
   ['accounts.AccountNotActive', { title: byCode.notActiveTitle, nextStep: byCode.notActiveNext }],
+  ['accounts.OutflowSuspended', { title: byCode.outflowSuspendedTitle, nextStep: byCode.outflowSuspendedNext }],
+  ['payments.WalletPaymentUnfunded', { title: byCode.walletUnfundedTitle, nextStep: byCode.walletUnfundedNext }],
+  ['fx.QuoteNotCancellable', { title: byCode.quoteNotCancellableTitle, nextStep: byCode.quoteNotCancellableNext }],
+  ['crossborder.OfferNotFound', { title: byCode.offerNotFoundTitle, nextStep: byCode.offerNotFoundNext }],
+  [
+    'crossborder.ProviderUnavailable',
+    { title: byCode.abroadProviderUnavailableTitle, nextStep: byCode.abroadProviderUnavailableNext },
+  ],
+  ['credit.DataStale', { title: byCode.creditDataStaleTitle, nextStep: byCode.creditDataStaleNext }],
+  ['lending.LoanWrittenOff', { title: byCode.loanWrittenOffTitle, nextStep: byCode.loanWrittenOffNext }],
   ['transfers.UnknownSource', { title: byCode.unknownSourceTitle, nextStep: byCode.unknownSourceNext }],
   ['transfers.UnknownDestination', { title: byCode.unknownDestinationTitle, nextStep: byCode.unknownDestinationNext }],
   ['payments.NoWallet', { title: byCode.noWalletTitle, nextStep: byCode.noWalletNext }],

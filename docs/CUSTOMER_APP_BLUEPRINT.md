@@ -555,7 +555,7 @@ Full contract inventory: 440 operations; customer-session ≈ 97. Abbreviations:
 | Cross-border | Send abroad | crossborder | corridors, beneficiaries (Idem, Risk), quotes (Idem), payments (Idem, Risk, 202), cancel | S | own | ✅ (no payment list) | Ready | G-01 | KYC screening |
 | Credit decision | Know eligibility | credit | `GET /v1/me/credit/profile`, decision-requests (MFA, Idem, 202) | S | own; consent | ✅ non-prod | Ready | prod gate | consent |
 | Loan apply/offer | Borrow | lending | applications (MFA, Idem), offers accept (MFA)/decline (Cond) | S | own | ✅ non-prod | Ready | prod gate | credit |
-| Loan servicing | Repay | lending | loans, schedule, repayments (Cond), prepay/payoff/draw/closure (MFA), statements, amendments | S | own | ✅ | Ready | — | — |
+| Loan servicing | Repay | lending | loans, schedule, repayments (Cond), prepay/payoff/draw/closure (MFA), statements, amendments | S | own | ◐ amendments unreachable | Ready (amendments blocked) | G-21 | — |
 | BNPL | Pay later | bnpl | agreements, schedule, repayments, payoff, disputes (create/withdraw) | S | own | ◐ no dispute read | Ready | G-13 | checkout origin |
 | Checkout confirm | Pay a merchant | checkout | `POST /v1/checkout/sessions/confirmation`, `…/bnpl-options` | S | Risk | ✅ | Requires design | redirect contract | merchant |
 | Notifications | Be informed | — | — | — | — | ✗ | — | G-03 | — |

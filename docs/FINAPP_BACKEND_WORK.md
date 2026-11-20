@@ -38,6 +38,8 @@ nothing here: the application already answers every problem document by its `cod
 | B6.1 | MFA factor removal and recovery codes | G-11 | `P18-TSK-111` | P2 | MFA management |
 | B6.2 | Support and complaints; BNPL dispute read | G-13 | `P18-TSK-112` | P3 | Support screens |
 | B6.3 | Sign out every other session at once | G-22 | `P18-TSK-119` | P3 | An atomic "sign out all other devices" |
+| B7.1 | A human merchant session for a merchant portal | G-23 | `P18-TSK-120` | P2 | Any merchant ("client") screen in a browser |
+| B7.2 | Keep staff and ledger identifiers out of customer views | G-24 | `P18-TSK-121` | P2 | Data minimisation; offering amendments safely |
 | E1 | Downloadable statements; receiving identifiers | G-05, G-06 | — | P3 | Nice-to-have |
 | E2 | Organisation members, mandates, "act as organisation" | G-09 | epic | P3 | Business banking |
 
@@ -118,7 +120,9 @@ for known and unknown identifiers. **DoD:** `DOD-SEC`. *(No owning phase today; 
 *Confirmed by Stage 6:* recovery also needs its request identifier delivered - `POST /v1/recoveries` answers 202 with
 no body, and the `{id}` of `/v1/recoveries/{id}/completion` appears only in the internal `identity.RecoveryInitiated`
 event. Contact channels are e-mail only, have no read (no `GET /v1/me/channels`) and no removal. The application offers
-neither recovery nor contact addresses until this lands.
+neither recovery nor contact addresses until this lands. *Confirmed at finapp c8ffee5a4 (end-user map):* still no notifier;
+also, a verified e-mail can never be replaced (409 `identity.VerifiedChannelAlreadyExists`), so "change my e-mail" needs
+its own door after delivery lands.
 
 ## B2.1 — Customer standing on `GET /v1/me` (G-08)
 
@@ -176,7 +180,11 @@ application keeps a copy (`src/modules/accounts/labels.ts`) and `accounts.Unsupp
 ## B3.3 — Contract quality (G-14)
 
 In `docs/api/openapi.json`: `securitySchemes` and per-operation `security`; status fields as `enum`s; each operation's problem
-codes listed; the two webhook routes the contract omits. Non-breaking. **DoD:** `DOD-API`.
+codes listed; the two webhook routes the contract omits. Non-breaking. **DoD:** `DOD-API`. *Confirmed at finapp c8ffee5a4
+(end-user map):* the contract still declares no security, so merchant-key routes, operator acts on customer-looking paths
+(`POST /v1/payments/{id}/refund` and `/void`, `POST /v1/transfers/{id}/reversal`) and session routes look alike in the
+generated client. The omitted webhook routes are `POST /v1/providers/fx/webhooks` and
+`POST /v1/providers/payments/corridor/webhooks`; `GET /v1/operator/transfer-reversals/{id}` is missing too.
 
 ## B4.1 — Browser card tokenisation (G-10)
 
@@ -240,6 +248,25 @@ revoking in one transaction, audited. **DoD:** `DOD-SEC`.
 A new capability; until it exists the application shows no support screen (D-H). *Confirmed by Stage 5:* the only
 dispute reads are under `/v1/merchant/` and `/v1/operator/`; a customer sees a dispute only in the answer to opening
 or withdrawing it, which is where the application shows it. **DoD:** `DOD-API`.
+
+## B7.1 — A human merchant session for a merchant portal (G-23) *(found by the end-user map, 2026-11-20)*
+
+**Where:** `MerchantKeyAuthenticationInterceptor.java` and ADR-0052 decisions 1-4. Every `/v1/merchant/**` door (profile,
+payable, payouts, transactions, card disputes and evidence, pay-later purchases, refunds and disputes) and checkout
+session creation authenticate a **merchant API key** only: operator-issued, no expiry, `Bearer <keyId>.<secret>`. There
+is no human merchant user, no merchant role a person holds (`MERCHANT_ADMINISTRATOR` is a staff role), and no session
+a browser could carry. A merchant portal in a browser would have to hold the key - a long-lived secret the brief forbids
+in the browser. **What:** merchant users (people) bound to a merchant, with their own sessions, roles (view, refund,
+payout, dispute) and step-up for money acts, on a merchant surface separate from the customer one. Until then the
+application offers no merchant screen; merchants integrate server to server. **DoD:** `DOD-SEC`, `DOD-API`.
+
+## B7.2 — Keep staff and ledger identifiers out of customer views (G-24) *(found by the end-user map)*
+
+`OfferedAmendmentView` (`GET /v1/me/loans/{id}/amendments/{aid}`) wraps `AmendmentView`, which since P17-TSK-116
+carries `proposedBy` - the actor id of the member of staff who proposed it. `TransferView` carries `journalEntryId` and
+`reversalEntryId`, unlike `PaymentView`, whose comment keeps ledger ids out of customer views. The application never
+shows or logs them; finapp should not send them. **What:** customer-specific views without staff actor ids or ledger
+identifiers. **DoD:** `DOD-SEC`.
 
 ## E1, E2 — Epics
 

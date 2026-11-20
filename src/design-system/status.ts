@@ -65,6 +65,7 @@ const m = defineMessages({
   refunded: { id: 'status.refunded', defaultMessage: 'Refunded' },
   noRefund: { id: 'status.noRefund', defaultMessage: 'Closed without a refund' },
   unknown: { id: 'status.unknown', defaultMessage: 'In progress - check back' },
+  reversedNotCounted: { id: 'status.reversedNotCounted', defaultMessage: 'Reversed - not counted as paid' },
 });
 
 const p = (tone: Tone, label: MessageDescriptor, terminal: boolean): StatusPresentation => ({ tone, label, terminal });
@@ -215,6 +216,21 @@ export const CHECKOUT_STATUS = {
   EXPIRED: p('neutral', m.expired, true),
   ABANDONED: p('neutral', m.cancelled, true),
 } as const satisfies Record<CheckoutStatus, StatusPresentation>;
+
+/** A loan or pay-later repayment. REVERSED comes from an approved operator reversal: the money did not count. */
+export type RepaymentStatus = 'ALLOCATED' | 'REVERSED';
+export const REPAYMENT_STATUS = {
+  ALLOCATED: p('positive', m.received, true),
+  REVERSED: p('caution', m.reversedNotCounted, true),
+} as const satisfies Record<RepaymentStatus, StatusPresentation>;
+
+/** A credit line's statement, as finapp derives it from what has been paid against it. */
+export type StatementStatus = 'DUE' | 'PARTIALLY_PAID' | 'PAID';
+export const STATEMENT_STATUS = {
+  DUE: p('caution', m.due, false),
+  PARTIALLY_PAID: p('caution', m.partlyPaid, false),
+  PAID: p('positive', m.paid, true),
+} as const satisfies Record<StatementStatus, StatusPresentation>;
 
 export type StatusMap = Readonly<Record<string, StatusPresentation>>;
 

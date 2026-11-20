@@ -73,3 +73,12 @@ keeps its one job: status. -> `PHASE_18_PLAN.md` §4.8
 stays, with square corners: the theme's radius scale is zero, so buttons, inputs, cards, badges, alerts and dialogs
 are all square; the logo mark and the wizard's step numbers follow. Radio buttons stay round (a convention people
 read as "pick one"). -> `PHASE_18_PLAN.md` §4.8
+
+**D-R (the owner, 2026-11-20: "make deep research of back end finapp project ... create implementation map for end
+users, find out what features back end provides for users and clients and apply them ... security and data
+consistency is crucial").** finapp's code and documents were read at `c8ffee5a4` by parallel agents with an adversarial
+check on every claim; the result is `END_USER_IMPLEMENTATION_MAP.md`. The contract pin stays at `5227f57e` (no
+customer-facing operation changed except `AmendmentView`). Built: the four work packages a customer's own session can
+use end to end. Not built: the merchant portal - finapp authenticates merchants by machine API key only, which must
+never reach a browser (new gap G-23) - and everything the map lists under "Waits on finapp". Two new gaps: G-23, G-24.
+-> `PHASE_18_PLAN.md` §4.9

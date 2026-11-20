@@ -403,8 +403,9 @@ before the refresh measured 424 ms (finding 5). **To do:** measure the budgets a
 | D-O | Stage 7 as far as this repository goes; budgets by Playwright, not Lighthouse CI | 2026-11-19, "Start Stage 7" | §4.7 |
 | D-P | A visual refresh of every page: navy and slate, cards, ledger tables; no behaviour change | 2026-11-20, "make front end app more beautiful" | §4.8 |
 | D-Q | Keep the D-P look; square corners on every box | 2026-11-20, "only sharp corners on buttons and divs" | §4.8 |
+| D-R | Map finapp for end users and clients; build what a customer session can use; no merchant portal (G-23) | 2026-11-20, "deep research of back end finapp ... apply them" | §4.9 |
 
-Further decisions are numbered from D-R and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-S and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

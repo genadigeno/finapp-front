@@ -17,6 +17,10 @@ const messages = defineMessages({
   hideDetails: { id: 'credit.details.hide', defaultMessage: 'Hide details' },
   noBreakdown: { id: 'repayment.noBreakdown', defaultMessage: 'No breakdown for this payment' },
   breakdown: { id: 'repayment.breakdown', defaultMessage: 'How this payment was used' },
+  breakdownReversed: {
+    id: 'repayment.breakdownReversed',
+    defaultMessage: 'How this payment was used before it was reversed - none of it counts as paid',
+  },
   defaulted: { id: 'credit.defaulted', defaultMessage: 'This account is in default' },
 });
 
@@ -210,7 +214,7 @@ export function RepaymentHistory({
                   ) : (
                     <>
                       <Text size="sm" fw={600}>
-                        {intl.formatMessage(messages.breakdown)}
+                        {intl.formatMessage(reversed ? messages.breakdownReversed : messages.breakdown)}
                       </Text>
                       <dl className="finapp-review">
                         {allocations.map((allocation, at) => (

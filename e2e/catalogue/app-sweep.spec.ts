@@ -19,6 +19,7 @@ const MODULES: Record<string, readonly string[]> = {
     `/accounts/${IDS.account}`,
     `/accounts/${IDS.account}/statement`,
     '/activity',
+    `/activity/transfers/${IDS.transfer}`,
   ],
   'move money': [
     '/move',
@@ -30,6 +31,7 @@ const MODULES: Record<string, readonly string[]> = {
     `/move/withdrawals/${IDS.withdrawal}`,
     '/move/payment-methods',
     '/exchange',
+    `/exchange/conversions/${IDS.trade}`,
     '/send-abroad',
     '/send-abroad/send',
     `/send-abroad/payments/${IDS.xbPayment}`,

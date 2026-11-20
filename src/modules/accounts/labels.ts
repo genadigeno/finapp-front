@@ -1,6 +1,6 @@
 // Customer words for the accounts module's finapp values (read against finapp 5227f57e2).
 import { defineMessages, type MessageDescriptor } from 'react-intl';
-import type { StatusPresentation } from '../../design-system/status.ts';
+import { transferFailureKind, type StatusPresentation } from '../../design-system/status.ts';
 
 const m = defineMessages({
   wallet: { id: 'account.product.wallet', defaultMessage: 'Wallet' },
@@ -37,29 +37,15 @@ export function isSuspended(status: string | undefined): boolean {
   return status === 'SUSPENDED';
 }
 
-/**
- * Whether finapp reported an amount other than zero. The decimal string is read as text - a zero is written only
- * with zeros - so nothing is converted to a number (ADR-F04).
- */
-export function isNonZero(amount: string | undefined): amount is string {
-  return amount !== undefined && /[1-9]/.test(amount);
-}
-
-/** finapp's failure reasons a customer can act on; every other reason - risk, limits - is generic (INV-RSK-08). */
+/** The receipt's words for finapp's failure reason (past tense; the send page has its own). */
 export function transferFailureWords(reason: string | undefined): MessageDescriptor {
-  switch (reason) {
-    case 'INSUFFICIENT_FUNDS':
-      return m.failureFunds;
-    case 'CURRENCY_MISMATCH':
-      return m.failureCurrency;
-    case 'SELF_TRANSFER':
-      return m.failureSelf;
-    case 'SOURCE_NOT_POSTABLE':
-    case 'DESTINATION_NOT_POSTABLE':
-      return m.failurePostable;
-    default:
-      return m.failureGeneric;
-  }
+  return {
+    funds: m.failureFunds,
+    currency: m.failureCurrency,
+    self: m.failureSelf,
+    postable: m.failurePostable,
+    generic: m.failureGeneric,
+  }[transferFailureKind(reason)];
 }
 
 export function productName(productType: string | undefined): MessageDescriptor {

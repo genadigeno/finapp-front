@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 export const CREDIT_ROOT = 'credit';
 
@@ -27,6 +28,7 @@ export function useLoan(loanId: string, enabled = true) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'loan', loanId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/me/loans/{id}', { params: { path: { id: loanId } } })),
     enabled,
   });
@@ -36,6 +38,7 @@ export function useLoanSchedule(loanId: string, enabled: boolean) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'loan', loanId, 'schedule'],
+    ...FRESH_ON_VIEW,
     queryFn: async () => (await ok(api.GET('/v1/me/loans/{id}/schedule', { params: { path: { id: loanId } } }))).data,
     enabled,
   });
@@ -45,6 +48,7 @@ export function useLoanRepayments(loanId: string, enabled: boolean) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'loan', loanId, 'repayments'],
+    ...FRESH_ON_VIEW,
     queryFn: async () =>
       (await ok(api.GET('/v1/me/loans/{id}/repayments', { params: { path: { id: loanId } } }))).data.repayments ?? [],
     enabled,
@@ -55,6 +59,7 @@ export function useLoanStatements(loanId: string, enabled: boolean) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'loan', loanId, 'statements'],
+    ...FRESH_ON_VIEW,
     queryFn: async () =>
       (await ok(api.GET('/v1/me/loans/{id}/statements', { params: { path: { id: loanId } } }))).data.statements ?? [],
     enabled,
@@ -74,6 +79,7 @@ export function useBnplAgreement(agreementId: string, enabled = true) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'bnpl', agreementId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/me/bnpl-agreements/{id}', { params: { path: { id: agreementId } } })),
     enabled,
   });
@@ -83,6 +89,7 @@ export function useBnplSchedule(agreementId: string, enabled: boolean) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'bnpl', agreementId, 'schedule'],
+    ...FRESH_ON_VIEW,
     queryFn: async () =>
       (await ok(api.GET('/v1/me/bnpl-agreements/{id}/schedule', { params: { path: { id: agreementId } } }))).data,
     enabled,
@@ -93,6 +100,7 @@ export function useBnplRepayments(agreementId: string, enabled: boolean) {
   const api = useApi();
   return useQuery({
     queryKey: [CREDIT_ROOT, 'bnpl', agreementId, 'repayments'],
+    ...FRESH_ON_VIEW,
     queryFn: async () =>
       (await ok(api.GET('/v1/me/bnpl-agreements/{id}/repayments', { params: { path: { id: agreementId } } }))).data
         .repayments ?? [],

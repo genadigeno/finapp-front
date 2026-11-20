@@ -263,6 +263,17 @@ describe('condition and payout (WP-3 e)', () => {
     expect(screen.queryByText(/B4/)).toBeNull();
   });
 
+  it('finapp sends payoutStatus null for a wallet loan: no payout words at all (review finding)', async () => {
+    signInForTest();
+    renderAppAt('/credit/loans/ln-1', {
+      'GET /v1/me/loans/ln-1': json({ ...LOAN, payoutStatus: null }),
+      'GET /v1/me/loans/ln-1/schedule': json({ instalments: [] }),
+    });
+    expect(await screen.findByRole('heading', { level: 1 })).toBeTruthy();
+    expect(screen.queryByText(/bank account/)).toBeNull();
+    expect(screen.queryByText(/It is in your wallet/)).toBeNull();
+  });
+
   it('a payout that did not reach the bank says the money is in the wallet', async () => {
     signInForTest();
     renderAppAt('/credit/loans/ln-1', {

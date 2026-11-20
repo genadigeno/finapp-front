@@ -184,3 +184,11 @@ export function fractionToPercent(fraction: string): string | undefined {
   const rest = padded.slice(2).replace(/0+$/, '');
   return `${integer}.${rest.padEnd(2, '0')}`;
 }
+
+/**
+ * Whether finapp reported an amount other than zero. The decimal string is read as text - a zero is written only
+ * with zeros - so nothing is converted to a number (ADR-F04).
+ */
+export function isNonZero(amount: string | undefined): amount is string {
+  return amount !== undefined && /[1-9]/.test(amount);
+}

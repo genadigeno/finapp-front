@@ -131,6 +131,8 @@ export function useConversion(tradeId: string) {
   return useQuery({
     queryKey: [FX_ROOT, 'conversion', tradeId],
     queryFn: async () => (await ok(api.GET('/v1/me/fx/conversions/{tradeId}', { params: { path: { tradeId } } }))).data,
+    staleTime: 0,
+    gcTime: 0,
     refetchOnMount: 'always',
   });
 }

@@ -18,6 +18,7 @@ import { pollUntil } from '../../platform/query/polling.ts';
 import { CREDIT_ROOT } from './api.ts';
 import { Facts, Reasons } from './CreditParts.tsx';
 import { checkClosureText, productName } from './labels.ts';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 const messages = defineMessages({
   title: { id: 'creditCheckStatus.title', defaultMessage: 'Your credit check' },
@@ -59,6 +60,7 @@ export function CreditCheckStatusPage() {
   const [confirming, setConfirming] = useState(false);
   const request = useQuery({
     queryKey: [CREDIT_ROOT, 'check', requestId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/me/credit/decision-requests/{id}', { params: { path: { id: requestId } } })),
     refetchInterval: pollUntil((answer: { data: { status?: string } }) => TERMINAL.has(answer.data.status ?? '')),
   });

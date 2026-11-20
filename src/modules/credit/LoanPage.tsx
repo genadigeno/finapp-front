@@ -169,7 +169,7 @@ export function LoanPage() {
         />
       ) : null}
       <DefaultedNotice defaulted={view.condition?.defaulted} />
-      {view.payoutStatus !== undefined ? (
+      {typeof view.payoutStatus === 'string' ? (
         <PayoutNotice status={view.payoutStatus} />
       ) : status === 'PENDING_DISBURSEMENT' ? (
         <Text>

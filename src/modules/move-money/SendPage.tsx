@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { defineMessage, defineMessages, FormattedMessage, useIntl, type MessageDescriptor } from 'react-intl';
 import { CommandOutcome } from '../../design-system/CommandOutcome.tsx';
 import { parseMoneyInput, type MoneyInputProblem } from '../../design-system/money.ts';
+import { transferFailureKind } from '../../design-system/status.ts';
 import { PocketSelect, pocketKey } from '../../design-system/PocketSelect.tsx';
 import { EmptyState, ErrorExplained, LoadingState } from '../../design-system/States.tsx';
 import { Money, MoneyInput } from '../../design-system/Values.tsx';
@@ -78,21 +79,15 @@ const sentMessage = defineMessage<{ name: string }>({
   defaultMessage: 'It has arrived in {name}’s account.',
 });
 
-/** finapp's failure reasons a customer can act on; every other reason - risk, limits - is generic (INV-RSK-08). */
+/** The send page's words for finapp's failure reason (what to do now; the receipt has its own). */
 export function failureWords(reason: string | undefined): MessageDescriptor {
-  switch (reason) {
-    case 'INSUFFICIENT_FUNDS':
-      return messages.INSUFFICIENT_FUNDS;
-    case 'CURRENCY_MISMATCH':
-      return messages.CURRENCY_MISMATCH;
-    case 'SELF_TRANSFER':
-      return messages.SELF_TRANSFER;
-    case 'SOURCE_NOT_POSTABLE':
-    case 'DESTINATION_NOT_POSTABLE':
-      return messages.NOT_POSTABLE;
-    default:
-      return messages.GENERIC;
-  }
+  return {
+    funds: messages.INSUFFICIENT_FUNDS,
+    currency: messages.CURRENCY_MISMATCH,
+    self: messages.SELF_TRANSFER,
+    postable: messages.NOT_POSTABLE,
+    generic: messages.GENERIC,
+  }[transferFailureKind(reason)];
 }
 
 interface TransferRequest {

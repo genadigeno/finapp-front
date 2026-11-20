@@ -380,6 +380,37 @@ before the refresh measured 424 ms (finding 5). **To do:** measure the budgets a
    slowest interaction 176 ms against 208 and 424 ms. The start page transfers 238 KiB, 3 KiB more than before. On an
    idle machine Stage 7 measured 2,192 ms and 120 ms.
 
+### 4.9 End-user map and its work packages (2026-11-21, D-R: the owner's "deep research of back end finapp ... apply them")
+
+finapp read at `c8ffee5a4` by four parallel readers, each refuted by a skeptic, then a completeness critic; the result
+is `END_USER_IMPLEMENTATION_MAP.md`. Four work packages were then built in parallel - each in its own git worktree,
+confined to its module, reviewed adversarially for security and consistency - and merged; `finapp` unchanged.
+
+| Package | Done |
+|---|---|
+| Shared | Wording for seven codes finapp returns (`accounts.OutflowSuspended`, `payments.WalletPaymentUnfunded`, `fx.QuoteNotCancellable`, `crossborder.OfferNotFound`, `crossborder.ProviderUnavailable`, `credit.DataStale`, `lending.LoanWrittenOff`); repayment and statement status presentations |
+| WP-1 Money | Transfer receipt (`/activity/transfers/$transferId`), re-read on every view, a reversal its own dated line, no ledger ids; "View receipt" from activity and after sending; refunds on a payment as finapp reports them; a notice on a restricted (`SUSPENDED`) account, no reason, no entry point hidden |
+| WP-2 Exchange, abroad | Conversion receipt (`/exchange/conversions/$tradeId`), nothing cached between views, `bookedOn` a plain date; on a payment abroad, the agreed figures from its frozen offer (read once; no figures if it fails; the status only from the payment) and who it went to |
+| WP-3 Credit | **A reversed repayment is shown reversed and never as paid** (it looked paid); kind and allocation breakdown; credit-line statements with status, paid and still to pay; repay and pay off a closing line; schedule billing detail and late fees; default and payout shown; why a check or application closed, in our words; interest built up; every servicing command re-reads history |
+| WP-4 Security | "Sign out all other devices" claims success only while a fresh list shows this device alone, says when one signed in meanwhile, and points to a password change for a compromise; when each session ends; the authenticator period when it is not 30 seconds |
+
+Not built, and why: the merchant portal (finapp knows merchants only by machine API key - G-23), and everything the map
+lists under "Waits on finapp". New gaps G-23 and G-24.
+
+**Found by the reviewers, fixed before merge:** the "all signed out" words outlived a later refresh of the device list;
+the conversion receipt could show a cached answer for a moment; finapp sends `payoutStatus: null` for wallet loans,
+which the first cut took for a payout; a reversed repayment's breakdown read like a payment that counted; the agreed
+figures on a failed payment abroad read as an outcome.
+
+**Then, at the owner's word ("go ahead, no tests"):** WP-6 - every page about one thing whose status finapp can still
+change (top-up, withdrawal, payment abroad, credit check, application, loan and its tabs, pay-later plan) keeps nothing
+once left (`FRESH_ON_VIEW`), so returning never shows an older "paid" before finapp's answer; WP-7 - `isNonZero` and the
+reading of finapp's transfer failure reasons live once in the design system (the send page and the receipt keep their
+own words). No tests were added for these two, as asked.
+
+Gates: `npm run verify` green (346 tests); first load 197,877 B gzipped; `test:catalogue` 48 of 48 green, the two new
+receipt pages in the sweep and both performance budgets met.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |

@@ -171,7 +171,7 @@ describe('a payment abroad: what was agreed and who it went to', () => {
     expect(agreed.getByText('€3.00')).toBeTruthy();
     expect(agreed.getByText('€203.00')).toBeTruthy();
     expect(agreed.getByText('US$215.10')).toBeTruthy();
-    expect(agreed.getByText('They receive (guaranteed)')).toBeTruthy();
+    expect(agreed.getByText('They were to receive (guaranteed)')).toBeTruthy();
     expect(agreed.getByText('1 EUR = 1.0755 USD')).toBeTruthy();
     expect(agreed.getByText(/margin of 0.30% over the mid-market rate/)).toBeTruthy();
     expect(agreed.getByText(/Usually arrives within 2 days/)).toBeTruthy();

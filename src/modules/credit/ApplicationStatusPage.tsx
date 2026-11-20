@@ -18,6 +18,7 @@ import { pollUntil } from '../../platform/query/polling.ts';
 import { CREDIT_ROOT, type CreditKind } from './api.ts';
 import { Reasons } from './CreditParts.tsx';
 import { applicationClosureText, planName, productName } from './labels.ts';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 const messages = defineMessages({
   title: { id: 'application.title', defaultMessage: 'Your application' },
@@ -60,6 +61,7 @@ export function ApplicationStatusPage({ kind }: { kind: CreditKind }) {
     kind === 'loan' ? '/credit/applications/$applicationId' : '/credit/pay-later/applications/$applicationId';
   const application = useQuery({
     queryKey: [CREDIT_ROOT, kind, 'application', applicationId],
+    ...FRESH_ON_VIEW,
     queryFn: async (): Promise<ApiSuccess<ApplicationView>> =>
       kind === 'loan'
         ? ok(api.GET('/v1/me/loan-applications/{id}', { params: { path: { id: applicationId } } }))

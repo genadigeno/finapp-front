@@ -13,6 +13,7 @@ import { ok } from '../../platform/api/client.ts';
 import { ACCOUNTS_ROOT } from '../../platform/customer/wallets.ts';
 import { pollUntil } from '../../platform/query/polling.ts';
 import { withdrawalFailure } from './labels.ts';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 const messages = defineMessages({
   title: { id: 'withdrawalStatus.title', defaultMessage: 'Your withdrawal' },
@@ -34,6 +35,7 @@ export function WithdrawalStatusPage() {
   const { withdrawalId } = useParams({ strict: false }) as { withdrawalId: string };
   const withdrawal = useQuery({
     queryKey: [ACCOUNTS_ROOT, 'withdrawal', withdrawalId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/me/withdrawals/{id}', { params: { path: { id: withdrawalId } } })),
     refetchInterval: pollUntil((answer: { data: { status?: string } }) => TERMINAL.has(answer.data.status ?? '')),
   });

@@ -12,7 +12,7 @@ import { Money, StatusChip, Timestamp } from '../../design-system/Values.tsx';
 import { useApi } from '../../platform/api/api-context.tsx';
 import { ok } from '../../platform/api/client.ts';
 import { ACCOUNTS_ROOT } from './api.ts';
-import { isNonZero } from './labels.ts';
+import { isNonZero } from '../../design-system/money.ts';
 
 const messages = defineMessages({
   refundPending: { id: 'activity.refundPending', defaultMessage: 'Refund on its way' },

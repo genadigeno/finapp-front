@@ -13,7 +13,9 @@ import { ok } from '../../platform/api/client.ts';
 import { failureOf, useCommand } from '../../platform/api/use-command.ts';
 import { ACCOUNTS_ROOT } from '../../platform/customer/wallets.ts';
 import { pollUntil } from '../../platform/query/polling.ts';
-import { isNonZero, safeAuthorizationUrl, topUpFailure } from './labels.ts';
+import { isNonZero } from '../../design-system/money.ts';
+import { safeAuthorizationUrl, topUpFailure } from './labels.ts';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 const messages = defineMessages({
   refundPending: { id: 'topUpStatus.refundPending', defaultMessage: 'Refund on its way' },
@@ -45,6 +47,7 @@ export function TopUpStatusPage() {
   const { paymentId } = useParams({ strict: false }) as { paymentId: string };
   const payment = useQuery({
     queryKey: [ACCOUNTS_ROOT, 'payment', paymentId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/payments/{id}', { params: { path: { id: paymentId } } })),
     refetchInterval: pollUntil((answer: { data: { status?: string } }) => TERMINAL.has(answer.data.status ?? '')),
   });

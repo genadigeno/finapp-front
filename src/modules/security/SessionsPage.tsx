@@ -177,12 +177,13 @@ export function SessionsPage() {
       {revokeOthers.state.status === 'refused' || revokeOthers.state.status === 'unknown' ? (
         <ErrorExplained error={revokeOthers.state.error} />
       ) : null}
-      {revokeOthers.state.status === 'succeeded' && revokeOthers.state.data === 'alone' ? (
+      {revokeOthers.state.status === 'succeeded' && revokeOthers.state.data === 'alone' && others.length === 0 ? (
         <Text role="status">
           <FormattedMessage {...messages.othersDone} />
         </Text>
       ) : null}
-      {revokeOthers.state.status === 'succeeded' && revokeOthers.state.data === 'survivors' ? (
+      {revokeOthers.state.status === 'succeeded' &&
+      (revokeOthers.state.data === 'survivors' || (revokeOthers.state.data === 'alone' && others.length > 0)) ? (
         <Stack gap="xs" role="status">
           <Text>
             <FormattedMessage {...messages.othersSurvived} />

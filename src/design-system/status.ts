@@ -240,3 +240,21 @@ export const UNKNOWN_STATUS: StatusPresentation = p('neutral', m.unknown, false)
 export function presentStatus(value: string, map: StatusMap): StatusPresentation {
   return Object.hasOwn(map, value) ? (map[value] ?? UNKNOWN_STATUS) : UNKNOWN_STATUS;
 }
+
+/** What a customer can act on in finapp's transfer FailureReason; risk, limits and the rest stay generic (INV-RSK-08). */
+export type TransferFailureKind = 'funds' | 'currency' | 'self' | 'postable' | 'generic';
+export function transferFailureKind(reason: string | undefined): TransferFailureKind {
+  switch (reason) {
+    case 'INSUFFICIENT_FUNDS':
+      return 'funds';
+    case 'CURRENCY_MISMATCH':
+      return 'currency';
+    case 'SELF_TRANSFER':
+      return 'self';
+    case 'SOURCE_NOT_POSTABLE':
+    case 'DESTINATION_NOT_POSTABLE':
+      return 'postable';
+    default:
+      return 'generic';
+  }
+}

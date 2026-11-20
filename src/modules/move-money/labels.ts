@@ -27,14 +27,6 @@ const m = defineMessages({
   },
 });
 
-/**
- * Whether finapp reported an amount other than zero. The decimal string is read as text - a zero is written only
- * with zeros - so nothing is converted to a number (ADR-F04).
- */
-export function isNonZero(amount: string | undefined): amount is string {
-  return amount !== undefined && /[1-9]/.test(amount);
-}
-
 export function methodKind(kind: string | undefined): MessageDescriptor {
   return kind === 'CARD_TOKEN' ? m.card : kind === 'BANK_ACCOUNT' ? m.bank : m.other;
 }

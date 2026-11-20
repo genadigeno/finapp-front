@@ -38,6 +38,13 @@ export function createQueryClient(options: QueryClientOptions = {}): QueryClient
 }
 
 /**
+ * For a page about one thing whose status finapp can still change - a payment, a withdrawal, a loan, a credit check,
+ * a receipt (D-R WP-6). Nothing is kept once the page is left, so coming back shows a loading state and then finapp's
+ * answer, never an older one first: a later reversal, refund or closure must not be preceded by a stale "paid".
+ */
+export const FRESH_ON_VIEW = { staleTime: 0, gcTime: 0, refetchOnMount: 'always' } as const;
+
+/**
  * Re-reads every query under the given roots - in this tab, and (through the cross-tab channel the caller
  * passes) in every other tab. Never carries data between tabs (ADR-F05 decision 8).
  */

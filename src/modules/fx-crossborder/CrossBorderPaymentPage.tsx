@@ -21,6 +21,7 @@ import { pollUntil } from '../../platform/query/polling.ts';
 import { useAgreedOffer, useRecipient, XB_ROOT } from './api.ts';
 import { countryName, fractionToPercent, RECIPIENT_STATUS } from './labels.ts';
 import { EstimateText } from './SendAbroadPage.tsx';
+import { FRESH_ON_VIEW } from '../../platform/query/query-client.ts';
 
 const messages = defineMessages({
   title: { id: 'xbPayment.title', defaultMessage: 'Your payment abroad' },
@@ -58,8 +59,8 @@ const messages = defineMessages({
   agreed: { id: 'xbPayment.agreed', defaultMessage: 'What you agreed' },
   send: { id: 'xbPayment.agreed.send', defaultMessage: 'You send' },
   fee: { id: 'xbPayment.agreed.fee', defaultMessage: 'Fee' },
-  total: { id: 'xbPayment.agreed.total', defaultMessage: 'Total taken from your wallet' },
-  receives: { id: 'xbPayment.agreed.receives', defaultMessage: 'They receive (guaranteed)' },
+  total: { id: 'xbPayment.agreed.total', defaultMessage: 'Total to be taken from your wallet' },
+  receives: { id: 'xbPayment.agreed.receives', defaultMessage: 'They were to receive (guaranteed)' },
   rate: { id: 'xbPayment.agreed.rate', defaultMessage: 'Rate' },
 });
 
@@ -174,6 +175,7 @@ export function CrossBorderPaymentPage() {
   const [confirming, setConfirming] = useState(false);
   const payment = useQuery({
     queryKey: [XB_ROOT, 'payment', paymentId],
+    ...FRESH_ON_VIEW,
     queryFn: async () => ok(api.GET('/v1/me/cross-border/payments/{id}', { params: { path: { id: paymentId } } })),
     refetchInterval: pollUntil((answer: { data: { status?: string } }) => TERMINAL.has(answer.data.status ?? '')),
   });

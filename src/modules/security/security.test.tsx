@@ -110,6 +110,8 @@ describe('two-step verification (P18-TSK-012)', () => {
     });
     await user.click(await screen.findByRole('button', { name: 'Set up an authenticator app' }));
     expect(await screen.findByText('JBSW Y3DP EHPK 3PXP JBSW Y3DP EHPK 3PXP')).toBeTruthy();
+    // The usual 30 seconds is not worth a line.
+    expect(screen.queryByText(/Codes change every/)).toBeNull();
     await user.type(screen.getByLabelText('Code from your app'), '123456');
     await user.click(screen.getByRole('button', { name: 'Turn on two-step verification' }));
     expect(await screen.findByText(/That code did not work/)).toBeTruthy();
@@ -121,6 +123,16 @@ describe('two-step verification (P18-TSK-012)', () => {
       { code: '123456' },
       { code: '654321' },
     ]);
+  });
+
+  it('shows how often codes change beside the key only when it is not 30 seconds', async () => {
+    const user = userEvent.setup();
+    signInForTest();
+    renderAppAt('/security/two-step', {
+      'POST /v1/me/mfa': json({ provisioningUri: URI, digits: 6, periodSeconds: 60 }, 201),
+    });
+    await user.click(await screen.findByRole('button', { name: 'Set up an authenticator app' }));
+    expect(await screen.findByText(/Codes change every 60 seconds/)).toBeTruthy();
   });
 
   it('replacing an existing factor asks for a code first, then starts again', async () => {

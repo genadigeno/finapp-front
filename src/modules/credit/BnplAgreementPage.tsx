@@ -11,6 +11,7 @@ import { ScrollableTable } from '../../design-system/ScrollableTable.tsx';
 import { useBnplAgreement, useBnplRepayments, useBnplSchedule } from './api.ts';
 import { Facts, MaybeMoney, type Fact } from './CreditParts.tsx';
 import { planName, productName } from './labels.ts';
+import { DefaultedNotice, LateFeeNote, RepaymentHistory } from './ServicingParts.tsx';
 
 const messages = defineMessages({
   back: { id: 'bnpl.back', defaultMessage: 'Back to Credit' },
@@ -20,6 +21,7 @@ const messages = defineMessages({
   principalDue: { id: 'loan.principalDue', defaultMessage: 'Borrowed amount due now' },
   interestDue: { id: 'loan.interestDue', defaultMessage: 'Interest due now' },
   feesDue: { id: 'loan.feesDue', defaultMessage: 'Fees due now' },
+  interestAccrued: { id: 'bnpl.interestAccrued', defaultMessage: 'Interest built up' },
   credit: { id: 'loan.credit', defaultMessage: 'In your favour' },
   writtenOff: {
     id: 'loan.writtenOff',
@@ -70,6 +72,8 @@ export function BnplAgreementPage() {
     ...money(intl.formatMessage(messages.principalDue), balances.principalDue),
     ...money(intl.formatMessage(messages.interestDue), balances.interestDue),
     ...money(intl.formatMessage(messages.feesDue), balances.feesDue),
+    // Pay monthly builds up interest between instalments; shown as finapp returns it.
+    ...money(intl.formatMessage(messages.interestAccrued), balances.interestAccrued),
     ...money(intl.formatMessage(messages.credit), balances.creditBalance),
   ];
   const link = (to: string, label: ReactNode, variant: 'filled' | 'default' = 'filled') => (
@@ -93,6 +97,7 @@ export function BnplAgreementPage() {
           title={intl.formatMessage(overdueMessage, { days: String(view.condition.daysPastDue) })}
         />
       ) : null}
+      <DefaultedNotice defaulted={view.condition?.defaulted} />
       {status === 'WRITTEN_OFF' ? (
         <Text>
           <FormattedMessage {...messages.writtenOff} />
@@ -145,6 +150,9 @@ export function BnplAgreementPage() {
                       </Table.Td>
                       <Table.Td className="finapp-cell-amount">
                         <MaybeMoney amount={instalment.due} currency={currency} />
+                        {instalment.billed === true ? (
+                          <LateFeeNote fee={instalment.billedFees} currency={currency} />
+                        ) : null}
                       </Table.Td>
                     </Table.Tr>
                   ))}
@@ -161,26 +169,9 @@ export function BnplAgreementPage() {
           ) : (repayments.data ?? []).length === 0 ? (
             <EmptyState title={intl.formatMessage(messages.noRepayments)} />
           ) : (
-            <Table>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{intl.formatMessage(messages.date)}</Table.Th>
-                  <Table.Th className="finapp-cell-amount">{intl.formatMessage(messages.amount)}</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {(repayments.data ?? []).map((repayment, index) => (
-                  <Table.Tr key={repayment.repaymentId ?? index}>
-                    <Table.Td>
-                      {repayment.valueDate === undefined ? null : <BusinessDate value={repayment.valueDate} />}
-                    </Table.Td>
-                    <Table.Td className="finapp-cell-amount">
-                      <MaybeMoney amount={repayment.amount} currency={repayment.currency ?? currency} />
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+            <ScrollableTable label={intl.formatMessage(messages.repayments)}>
+              <RepaymentHistory repayments={repayments.data ?? []} currency={currency} />
+            </ScrollableTable>
           )}
         </Tabs.Panel>
       </Tabs>

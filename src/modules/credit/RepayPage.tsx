@@ -106,7 +106,8 @@ export function RepayPage({ kind }: { kind: CreditKind }) {
   const view = credit.data.data;
   const currency = view.currency ?? '';
   const balances = view.balances ?? {};
-  const instalmentLoan = kind === 'loan' && !isLine(view.product);
+  // An extra payment (prepayment) is offered only on an active instalment loan.
+  const instalmentLoan = kind === 'loan' && !isLine(view.product) && view.status === 'ACTIVE';
   const back = () =>
     kind === 'loan'
       ? navigate({ to: '/credit/loans/$loanId', params: { loanId: id } })

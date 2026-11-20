@@ -350,6 +350,7 @@ message and no request; `finapp` unchanged.
 | Shell | A small logo mark beside the name; navigation entries dimmed with the current one on a navy tint; the phone bar marks the current entry with a top bar |
 | Start, sign-in, registration | The start page has a short lead, the two ways in and three feature cards that each describe something the application does today; sign-in and registration sit in one card |
 | Links | Every plain link (including router links) looks like Mantine's anchor: navy with a thin offset underline, still underlined (WCAG 1.4.1) |
+| Corners (D-Q) | Square everywhere - buttons, inputs, cards, badges, alerts, dialogs, the logo mark and the wizard's step numbers - through a zero radius scale in `theme.ts`; radio buttons stay round |
 
 Reviewed by eye on screenshots of all 44 pages, desktop and phone, light and dark (`e2e/catalogue/screenshots.spec.ts`,
 run only when `SHOTS_DIR` names a folder; Edge runs it with `--disable-gpu` because headless screenshots stalled on
@@ -401,8 +402,9 @@ before the refresh measured 424 ms (finding 5). **To do:** measure the budgets a
 | D-N | Start Stage 6 ahead of the entry gate, frontend only | 2026-11-19, "Start Stage 6" | §4.6 |
 | D-O | Stage 7 as far as this repository goes; budgets by Playwright, not Lighthouse CI | 2026-11-19, "Start Stage 7" | §4.7 |
 | D-P | A visual refresh of every page: navy and slate, cards, ledger tables; no behaviour change | 2026-11-20, "make front end app more beautiful" | §4.8 |
+| D-Q | Keep the D-P look; square corners on every box | 2026-11-20, "only sharp corners on buttons and divs" | §4.8 |
 
-Further decisions are numbered from D-Q and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-R and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

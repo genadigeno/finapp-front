@@ -66,7 +66,6 @@ body {
   a:not([class*='mantine-']):not(.finapp-entry):not(.finapp-shell__link):not(.finapp-skip-link):focus-visible {
   outline: 2px solid var(--mantine-primary-color-filled);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* ---- Figures ------------------------------------------------------------------------------------ */
@@ -610,7 +609,6 @@ html:has(.finapp-shell) {
   place-items: center;
   width: 1.625rem;
   height: 1.625rem;
-  border-radius: 50%;
   border: 1.5px solid var(--mantine-color-default-border);
   font-size: 0.8125rem;
   font-weight: 600;

@@ -51,8 +51,11 @@ export const themeOverride = createTheme({
   primaryShade: { light: 9, dark: 9 },
   fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   fontFamilyMonospace: 'ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace',
+  // Square corners on every box - buttons, inputs, cards, badges, dialogs (the owner's choice, D-Q). Every `radius`
+  // prop and every --mantine-radius-* variable resolves through this scale. Radio buttons stay round (Mantine sizes
+  // them by --radio-size, not by this scale).
   defaultRadius: 'md',
-  radius: { xs: '4px', sm: '6px', md: '10px', lg: '14px', xl: '20px' },
+  radius: { xs: '0', sm: '0', md: '0', lg: '0', xl: '0' },
   shadows: {
     xs: '0 1px 2px rgba(16, 24, 40, 0.05)',
     sm: '0 1px 3px rgba(16, 24, 40, 0.07), 0 1px 2px rgba(16, 24, 40, 0.04)',

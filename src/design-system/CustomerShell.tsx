@@ -58,10 +58,10 @@ export function CustomerShell({
       <header className="finapp-shell__header">
         <span className="finapp-shell__brand">
           <svg className="finapp-shell__logo" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
-            <rect width="28" height="28" rx="8" fill="currentColor" />
-            <rect x="7" y="15" width="3.5" height="6" rx="1" fill="#ffffff" />
-            <rect x="12.25" y="11" width="3.5" height="10" rx="1" fill="#ffffff" />
-            <rect x="17.5" y="7" width="3.5" height="14" rx="1" fill="#ffffff" />
+            <rect width="28" height="28" fill="currentColor" />
+            <rect x="7" y="15" width="3.5" height="6" fill="#ffffff" />
+            <rect x="12.25" y="11" width="3.5" height="10" fill="#ffffff" />
+            <rect x="17.5" y="7" width="3.5" height="14" fill="#ffffff" />
           </svg>
           FinApp
         </span>

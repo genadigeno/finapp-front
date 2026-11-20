@@ -68,3 +68,8 @@ application through the design system - theme, generated theme stylesheet and gl
 sign-in and registration layouts. A muted navy and slate palette, cards on a soft canvas, ledger tables; no new
 dependency, no web font, no animation beyond Mantine's own, no change to wording, behaviour or requests. Colour
 keeps its one job: status. -> `PHASE_18_PLAN.md` §4.8
+
+**D-Q (the owner, 2026-11-20: "i like it. keep this style. only sharp corners on buttons and divs").** The D-P look
+stays, with square corners: the theme's radius scale is zero, so buttons, inputs, cards, badges, alerts and dialogs
+are all square; the logo mark and the wizard's step numbers follow. Radio buttons stay round (a convention people
+read as "pick one"). -> `PHASE_18_PLAN.md` §4.8

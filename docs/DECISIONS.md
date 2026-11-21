@@ -83,6 +83,11 @@ use end to end. Not built: the merchant portal - finapp authenticates merchants 
 never reach a browser (new gap G-23) - and everything the map lists under "Waits on finapp". Two new gaps: G-23, G-24.
 -> `PHASE_18_PLAN.md` §4.9
 
+**D-S (the owner, 2026-11-21: "Yes, do both").** finapp has adopted G-04 (ADR-0156, `X-TSK-029`, master `5b31d6821`).
+The backend-work record marks B0.2 and B1.1 done, with the as-built differences and what finapp still owes. The new
+refusal `403 identity.CsrfRejected` is worded in the problem catalogue as a request not accepted, with the customer
+still signed in and told to reload and try again; it is never treated as a lost session. -> `PHASE_18_PLAN.md` §4.10
+
 **D-J decided (the owner, 2026-11-21: "go ahead with WP-10").** The authenticator setup shows a QR code. The library is
 `uqr` 0.1.3: MIT, no dependencies, pinned exactly, in the licence policy. It only encodes - the application draws the
 code itself as one SVG path (no injected markup, no inline style, so the CSP and Trusted Types hold), and it travels

@@ -17,8 +17,8 @@ nothing here: the application already answers every problem document by its `cod
 | # | Work | Gap | Task | Priority | Blocks |
 |---|---|---|---|---|---|
 | B0.1 | Phase 18 in `finapp`'s own records | — | — | At `P18-INIT` | The phase opening |
-| B0.2 | Adopt ADR-F02 in `finapp`'s register | G-04 | `P18-TSK-101` | **P0** | B1.1 |
-| B1.1 | Cookie session carrier and CSRF defence on the public surface | G-04 | `P18-TSK-101` | **P0** | Stage 2 |
+| B0.2 | Adopt ADR-F02 in `finapp`'s register | G-04 | `P18-TSK-101` | **P0** | B1.1 — **done** (ADR-0156) |
+| B1.1 | Cookie session carrier and CSRF defence on the public surface | G-04 | `P18-TSK-101` | **P0** | Stage 2 — **done** (`X-TSK-029`) |
 | B1.2 | Public-edge route, headers and deployable for `finapp-customer-web`; `no-store` on customer API | G-15 | `P18-TSK-102` | **P0** | Stage 2 |
 | B1.3 | Notification delivery for verification and recovery tokens | G-03 | `P18-TSK-103` | **P0** | Recovery and e-mail verification screens |
 | B2.1 | Customer standing on `GET /v1/me` | G-08 | `P18-TSK-104` | P1 | Standing-based routing |
@@ -59,7 +59,22 @@ code. `finapp` writes it as its own `ADR-NNNN` (next free number at the time), w
 CSRF decision in the semgrep baseline as `finapp-spring-csrf-disabled`'s message asks
 (`infra/semgrep/rules/spring.yml`). If `finapp` declines, say so: the Customer Application falls back to the in-memory token.
 
+**Done (2026-11-21):** adopted as ADR-0156, "the customer session in an HttpOnly cookie", under `X-TSK-029` (pulled forward
+from Phase 18 by the owner), in `finapp`'s DECISIONS.md. See B1.1 for the commits.
+
 ## B1.1 — Cookie session carrier and CSRF defence (G-04)
+
+> **Adopted (2026-11-21), checked in `finapp`'s code and records.** `X-TSK-029`, gated `COMPLETE`: implementation
+> `fff6aed21`, gate `25da140af`, on master at `5b31d6821` (ADR-0156). As built, it differs from the request below in three ways.
+> (1) The cookie is `__Host-fa_session` with `Path=/`, `Secure`, `HttpOnly`, `SameSite=Strict` and no lifetime of its own.
+> (2) The check needs `X-Finapp-Request: 1` and an `Origin` in `finapp.session.cookie.allowed-origins`. That list is empty on
+> a deployed instance until it is set, so it fails closed; the deployed public origin is owed with B1.2.
+> (3) The refusal is `403 identity.CsrfRejected` (ERROR_CONTRACT.md; API_CONVENTIONS.md §8b).
+> This application uses it: the dev server opts in, `restoreSession` reads `GET /v1/sessions` at start-up (ADR-F02, commit
+> `ef00e9a`), and the problem catalogue words `identity.CsrfRejected` as "not accepted, still signed in, reload and try
+> again", never as a signed-out session. Still owed on `finapp`'s side: the threat-register entry, auditing and metering the
+> refusals (ADR-0156 follow-up), and the contract's `securitySchemes` (G-14). The pinned contract here (`5227f57e`) predates the
+> new code; it is worded ahead of the next re-pin, and the change is additive.
 
 **Where:** `app/src/main/java/com/finapp/app/session/SessionAuthenticationInterceptor.java`;
 `app/src/main/java/com/finapp/app/authentication/AuthenticationController.java` (sign-in, step-up);

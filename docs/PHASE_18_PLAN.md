@@ -420,6 +420,24 @@ reference").
 **Then ("go ahead with WP-10"):** WP-10 - the authenticator setup shows a scannable QR code (D-J decided: `uqr` 0.1.3,
 MIT, no dependencies), drawn as one SVG path, dark on white in both schemes; the setup key and the link stay beside it.
 
+### 4.10 G-04 adopted by finapp (2026-11-21, D-S: the owner's "Yes, do both")
+
+finapp adopted ADR-F02 as ADR-0156 under `X-TSK-029` (implementation `fff6aed21`, gate `25da140af`, master
+`5b31d6821`); the application's side - the dev server opting in and the session restored on reload - is commit
+`ef00e9a`, written by another session. Two follow-ups, done here and checked in finapp's code and records first:
+
+1. `FINAPP_BACKEND_WORK.md` marks B0.2 and B1.1 done, and notes how the result differs from what was asked: the cookie is
+   `__Host-fa_session` on `Path=/`; the allowed origins come from `finapp.session.cookie.allowed-origins`, empty (fail
+   closed) on a deployed instance until set; the refusal code is `identity.CsrfRejected`. Still owed by finapp: the threat
+   register entry, auditing and metering of refusals, and `securitySchemes` (G-14).
+2. `identity.CsrfRejected` (403) has its own words in the problem catalogue: "That request was not accepted" / "Nothing was
+   changed and you are still signed in. Reload the page and try again." It stays in the `defect` class Stage 2 gave it (ADR-F02: the application always sends the header and its own Origin, so a
+   refusal is a fault, not the customer's doing). Only a 401 or `api.Unauthenticated` signs the customer out, and a command
+   refused this way is "not applied". One unit test holds both.
+   The pinned contract (`5227f57e`) predates the code; the wording is ready for the next re-pin, which is additive.
+
+Gates: `npm run verify` green (347 tests; first load 197,940 B gzipped). The browser checks were not rerun: no page changed.
+
 ## 5. Owner decisions
 
 | # | Decision | Decided | Record |
@@ -444,8 +462,9 @@ MIT, no dependencies), drawn as one SVG path, dark on white in both schemes; the
 | D-P | A visual refresh of every page: navy and slate, cards, ledger tables; no behaviour change | 2026-11-20, "make front end app more beautiful" | §4.8 |
 | D-Q | Keep the D-P look; square corners on every box | 2026-11-20, "only sharp corners on buttons and divs" | §4.8 |
 | D-R | Map finapp for end users and clients; build what a customer session can use; no merchant portal (G-23) | 2026-11-20, "deep research of back end finapp ... apply them" | §4.9 |
+| D-S | Record G-04 as adopted by finapp; word `identity.CsrfRejected` without signing out | 2026-11-21, "Yes, do both" | §4.10 |
 
-Further decisions are numbered from D-S and recorded in [`DECISIONS.md`](DECISIONS.md).
+Further decisions are numbered from D-T and recorded in [`DECISIONS.md`](DECISIONS.md).
 
 ## 6. Threats to register at `P18-INIT`
 

@@ -67,7 +67,8 @@ const DEFECT_CODES: ReadonlySet<string> = new Set([
   'api.IdempotencyKeyRequired',
   // The same idempotency key with a different body (ADR-F05 decision 4): never resolved automatically.
   'api.Conflict',
-  // The cookie carrier's CSRF refusal (ADR-F02 decision 4), once finapp implements it.
+  // The cookie carrier's CSRF refusal (ADR-F02 decision 4; finapp ADR-0156). The application always sends the header
+  // and its own Origin, so a refusal is a fault here or in finapp's allow-list - never a signed-out session.
   'identity.CsrfRejected',
 ]);
 

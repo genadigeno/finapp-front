@@ -75,6 +75,13 @@ const byCode = defineMessages({
     id: 'problem.code.authenticationFailed.next',
     defaultMessage: 'Check your login and password and try again.',
   },
+  // 403 identity.CsrfRejected (G-04, ADR-0156): the request did not look as if it came from this application's own page.
+  // The session is still good, so the customer is not signed out - a reload and another try is the whole remedy.
+  csrfRejectedTitle: { id: 'problem.code.csrfRejected.title', defaultMessage: 'That request was not accepted' },
+  csrfRejectedNext: {
+    id: 'problem.code.csrfRejected.next',
+    defaultMessage: 'Nothing was changed and you are still signed in. Reload the page and try again.',
+  },
   quoteExpiredTitle: { id: 'problem.code.quoteExpired.title', defaultMessage: 'Your quote has expired' },
   quoteExpiredNext: {
     id: 'problem.code.quoteExpired.next',
@@ -588,6 +595,7 @@ const byCode = defineMessages({
  */
 const CODE_EXPLANATIONS: ReadonlyMap<string, Explanation> = new Map([
   ['identity.AuthenticationFailed', { title: byCode.authFailedTitle, nextStep: byCode.authFailedNext }],
+  ['identity.CsrfRejected', { title: byCode.csrfRejectedTitle, nextStep: byCode.csrfRejectedNext }],
   ['fx.QuoteExpired', { title: byCode.quoteExpiredTitle, nextStep: byCode.quoteExpiredNext }],
   ['lending.TermsChanged', { title: byCode.termsChangedTitle, nextStep: byCode.termsChangedNext }],
   ['bnpl.TermsChanged', { title: byCode.termsChangedTitle, nextStep: byCode.termsChangedNext }],

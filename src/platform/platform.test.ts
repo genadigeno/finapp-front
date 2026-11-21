@@ -145,6 +145,21 @@ describe('every failure has customer words (blueprint §11.1)', () => {
     expect(explain(new Error('boom'))).toBe(CATEGORY_EXPLANATIONS.defect);
   });
 
+  it('a refused cross-site check (403 identity.CsrfRejected) is not a signed-out session', () => {
+    const refused = new ApiError({
+      kind: 'problem',
+      method: 'POST',
+      route: '/v1/x',
+      status: 403,
+      code: 'identity.CsrfRejected',
+    });
+    expect(refused.isUnauthenticated).toBe(false);
+    // A defect (ADR-F02 decision 4): the application always sends the header and its own Origin.
+    expect(refused.category).toBe('defect');
+    expect(refused.commandOutcome).toBe('not-applied');
+    expect(explain(refused).title.id).toBe('problem.code.csrfRejected.title');
+  });
+
   it('never shows an internal code in its words', () => {
     for (const code of catalogueCodes()) {
       const error = new ApiError({ kind: 'problem', method: 'POST', route: '/v1/x', status: 409, code });

@@ -56,7 +56,7 @@ FOR /f "tokens=*" %i IN ('fnm env --use-on-cd --shell cmd') DO CALL %i
 PowerShell:
 
 ```powershell
-git clone <repository-url> finapp-front-end
+git clone https://github.com/genadigeno/finapp-front.git finapp-front-end
 cd finapp-front-end
 fnm install
 fnm use
@@ -66,7 +66,7 @@ node --version
 cmd:
 
 ```bat
-git clone <repository-url> finapp-front-end
+git clone https://github.com/genadigeno/finapp-front.git finapp-front-end
 cd finapp-front-end
 fnm install
 fnm use
@@ -162,7 +162,7 @@ source ~/.zshrc
 **Step 3 - get the code and the right Node**
 
 ```bash
-git clone <repository-url> finapp-front-end
+git clone https://github.com/genadigeno/finapp-front.git finapp-front-end
 ```
 
 ```bash
